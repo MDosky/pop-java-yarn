@@ -14,11 +14,15 @@ public class DaemonService {
 
     public static void main(String[] args) {
         POPSystem.initialize(args);
+        DaemonService mainService = new DaemonService(args[1], Integer.parseInt(args[2]), false);
     }
 
     public DaemonService() {
+        this("", POPJavaDeamon.POP_JAVA_DEAMON_PORT, false);
     }
     
+    public DaemonService(String password, int port, boolean isStandalone) {
+        daemon = new POPJavaDeamon(password, port);
         
         Thread thread = new Thread(daemon);
         thread.setDaemon(isStandalone);
