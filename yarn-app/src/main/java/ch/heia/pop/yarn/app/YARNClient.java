@@ -54,6 +54,7 @@ public class YARNClient {
                         "$JAVA_HOME/bin/java"
                         + " -Xmx256M"
                         + " ch.heia.popdna.yarn.ApplicationMasterAsync"
+                        + " --dir " + hdfs_dir
                         + " --vcores " + vcores
                         + " --memory " + memory
                         + " --containers " + containers
@@ -66,7 +67,9 @@ public class YARNClient {
 
         // Setup jar for ApplicationMaster
         LocalResource appMasterJar = Records.newRecord(LocalResource.class);
+        setupAppMasterJar(new Path(hdfs_dir + "/yarn-app.jar"), appMasterJar);
         amContainer.setLocalResources(
+                Collections.singletonMap("yarn-app.jar", appMasterJar));
 
         // Setup CLASSPATH for ApplicationMaster
         Map<String, String> appMasterEnv = new HashMap<String, String>();
@@ -129,6 +132,8 @@ public class YARNClient {
                 Environment.PWD.$() + File.separator + "*");
     }
 
+    @Parameter(names = "--dir", required = true)
+    private String hdfs_dir;
     @Parameter(names = "--vcores", required = true)
     private int vcores;
     @Parameter(names = "--memory", required = true)
