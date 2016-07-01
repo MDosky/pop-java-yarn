@@ -162,10 +162,6 @@ hdfs dfs -mkdir "$TMP_DIR"
 hdfs dfs -copyFromLocal "$jar" "${TMP_DIR}/pop-app.jar"
 hdfs dfs -copyFromLocal "$YARN_APP" "${TMP_DIR}/yarn-app.jar"
 
-hdfs dfs -ls "$TMP_DIR"
-
-sleep 5
-
 # Start YARN client
 yarn jar "$YARN_APP" ch.heia.pop.yarn.app.YARNClient --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
 
