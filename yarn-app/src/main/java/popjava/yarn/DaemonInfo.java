@@ -1,4 +1,4 @@
-package ch.heia.pop.yarn.app;
+package popjava.yarn;
 
 /**
  * This class contain the credential of a specific POPJavaDeamon

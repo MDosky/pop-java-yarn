@@ -15,8 +15,6 @@
 PROGNAME=${0##*/}
 VERSION="0.1"
 
-HDFS_TMP="/tmp"
-
 clean_up() { # Perform pre-exit housekeeping
   return
 }
@@ -45,12 +43,12 @@ signal_exit() { # Handle trapped signals
 }
 
 is_numeric() {
-  test "$1" -eq "$1" > /dev/null
+  test "$1" -eq "$1" > /dev/null 2> /dev/null
   return $?
 }
 
 usage() {
-  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-p|--vcpu] [-m|--memory] <-j|--jar> <-m|--main>"
+  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-m|--memory] <-j|--jar> <-m|--main>"
 }
 
 help_message() {
@@ -62,10 +60,11 @@ help_message() {
 
   Options:
   -h, --help         Display this help message and exit.
+  -p, --pop        * The popjava executable jar to start the application.
   -j, --jar        * The .jar file containing all the dependency of the project.
   -m, --main       * The main class of the POP-Java application.
   -c, --containers   How many containers should be deployed on the cluster.
-  -p, --vcores       How many vCores should each container have.
+  -t, --vcores       How many vCores should each container have.
   -m, --memory       How much Memory should each container have.
 
   Extra arguments will be passed to the main class.
@@ -91,7 +90,13 @@ while [[ -n $1 ]]; do
       help_message; graceful_exit ;;
     -j | --jar)
       shift
-      jar="$1" ;;
+      if [ -e "$1" ]
+      then
+        jar="$1"
+      else
+        error_exit "Can't find the application har file"
+      fi
+      ;;
     -m | --main)
       shift
       main="$1" ;;
@@ -104,7 +109,7 @@ while [[ -n $1 ]]; do
         error_exit "Containers should be numeric"
       fi
       ;;
-    -c | --vcores)
+    -t | --vcores)
       shift
       if is_numeric "$1"
       then
@@ -120,6 +125,15 @@ while [[ -n $1 ]]; do
         memory="$1"
       else
         error_exit "Memory should be numeric"
+      fi
+      ;;
+    -p | --pop)
+      shift
+      if [ -e "$1" ]
+      then
+        popjava="$1"
+      else
+        error_exit "The popjava jar file can't be found"
       fi
       ;;
     -* | --*)
@@ -145,25 +159,16 @@ fi
 # Main logic
 
 # Temp dir on HDFS
-TMP_DIR=${HDFS_TMP}/$(basename `mktemp -ud`)
-BASE_JAR=`basename "$jar"`
-HDFS_JAR="${TMP_DIR}/${BASE_JAR}"
-
-# Find yarn app
-YARN_APP=`find . -name yarn-app*.jar | tail -n 1`
-if [ -z "YARN_APP" ]
-then
-  error_exit "Couldn't find the default YARN application, did you run mvn install?"
-fi
+TMP_DIR=`mktemp -ud`
 
 # Create temp dir
 hdfs dfs -mkdir "$TMP_DIR"
 # Put packed jar in HDFS
 hdfs dfs -copyFromLocal "$jar" "${TMP_DIR}/pop-app.jar"
-hdfs dfs -copyFromLocal "$YARN_APP" "${TMP_DIR}/yarn-app.jar"
+hdfs dfs -copyFromLocal "$popjava" "${TMP_DIR}/popjava.jar"
 
 # Start YARN client
-yarn jar "$YARN_APP" ch.heia.pop.yarn.app.YARNClient --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
+yarn jar "$popjava" popjava.yarn.YARNClient --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
 
 # Cleanup by removing temp dir
 hdfs dfs -rm -R "$TMP_DIR"

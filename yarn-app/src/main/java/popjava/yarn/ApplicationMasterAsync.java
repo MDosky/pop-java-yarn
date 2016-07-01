@@ -1,4 +1,4 @@
-package ch.heia.pop.yarn.app;
+package popjava.yarn;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -15,7 +15,6 @@ import java.util.Random;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest;
@@ -25,6 +24,7 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
 import popjava.service.POPJavaDeamon;
+import popjava.yarn.command.ContainerServer;
 
 /**
  * This class implements a simple async app master.
@@ -35,7 +35,14 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     private final NMClient nmClient;
 
     private int numContainersToWaitFor;
+    
+    private final Map<Long, DaemonInfo> daemonInfo = new HashMap<>();
+    private final Random rnd = new SecureRandom();
+    private final String exitPassword;
+    private int lastPort = POPJavaDeamon.POP_JAVA_DEAMON_PORT;
 
+    @Parameter(names = "--master", required = true)
+    private String hostname;
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
     @Parameter(names = "--vcores", required = true)
@@ -48,12 +55,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     private String main;
     @Parameter
     private List<String> args = new ArrayList<>();
-    
-    private final Map<Long, DaemonInfo> daemonInfo = new HashMap<>();
-    
-    private int lastPort = POPJavaDeamon.POP_JAVA_DEAMON_PORT;
-    
-    private final Random rnd = new SecureRandom();
 
     public static void main(String... args) throws Exception {
         ApplicationMasterAsync master = new ApplicationMasterAsync();
@@ -63,6 +64,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public ApplicationMasterAsync() {
+        exitPassword = generatePassword();
+        
         configuration = new YarnConfiguration();
         nmClient = NMClient.createNMClient();
         nmClient.init(configuration);
@@ -88,13 +91,32 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             }
         }
         
-        for (Container container : containers) {
-            // skip main if it appears again
-            if (mayStartMainApp(container)) {
-                continue;
-            }
-            
+        for (Container container : containers) {            
             DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
+            
+            String main = "echo ";
+            // master container, who will start the main
+            if (mainContainer == null || container == mainContainer) {
+                // keep track of container
+                mainContainer = container;
+                
+                main =    "sleep 5"
+                        + ";"
+                        + "$JAVA_HOME/bin/java"
+                        + " -javaagent:popjava.jar"
+                        + " -cp popjava.jar:pop-app.jar"
+                        + " " + main + " " + args
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + ";"
+                        + "sleep 2"
+                        + ";"
+                        + "$JAVA_HOME/bin/java -cp popjava.jar"
+                        + " popjava.yarn.command.ContainerExit " + hostname +" " + exitPassword
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + ";";
+            }
 
             System.out.println("[AM] Starting client");
             // Launch container by create ContainerLaunchContext
@@ -102,95 +124,45 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                     = Records.newRecord(ContainerLaunchContext.class);
             ctx.setCommands(
                 Lists.newArrayList(
-                        "sleep 10"
-                        + ";",
                         "echo " + container.getNodeId().getHost()
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
-                        "ls -lah"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        "ls -lh"
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
-                        //"hdfs dfs -copyToLocal " + hdfs_dir + " " + jar_name
-                        //+ " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        //+ " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        //+ ";",
-                        "$JAVA_HOME/bin/java ch.heia.pop.yarn.app.DaemonService " + di.password + " " + di.port
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";"
-                )
-            );
-            
-            LocalResource popJar = Records.newRecord(LocalResource.class);
-            LocalResource appJar = Records.newRecord(LocalResource.class);
-            try {
-                setupClientJar(new Path(hdfs_dir + "/pop-app.jar"), popJar);
-                setupClientJar(new Path(hdfs_dir + "/yarn-app.jar"), popJar);
-            } catch (IOException ex) {}
-            Map<String, LocalResource> resources = new HashMap<>();
-            resources.put("pop-app.jar", popJar);
-            resources.put("yarn-app.jar", appJar);
-            ctx.setLocalResources(resources);
-            
-            System.out.println("[AM] Launching container " + container.getId());
-            try {
-                nmClient.startContainer(container, ctx);
-            } catch (Exception ex) {
-                System.err.println("[AM] Error launching container " + container.getId() + " " + ex);
-            }
-        }
-    }
-
-    private boolean mayStartMainApp(Container container) {
-        if (mainContainer == null || container == mainContainer) {
-            System.out.println("[AM] Starting server");
-            
-            DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
-
-            // keep track of container
-            mainContainer = container;
-
-            // Launch container by create ContainerLaunchContext
-            ContainerLaunchContext ctx
-                    = Records.newRecord(ContainerLaunchContext.class);
-            ctx.setCommands(
-                Lists.newArrayList(
-                        "echo " + container.getNodeId().getHost()
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
-                        "ls -lah"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
-                        //"hdfs dfs -copyToLocal " + hdfs_dir + " " + jar_name
-                        //+ " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        //+ " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        //+ ";",
-                        "$JAVA_HOME/bin/java ch.heia.pop.yarn.app.DaemonService " + di.password + " " + di.port
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        "$JAVA_HOME/bin/java"
+                        + " -javaagent:popjava.jar"
+                        + " -cp popjava.jar:pop-app.jar"
+                        + " popjava.yarn.DaemonService"
+                        + " -pwd " + di.password + " -port " + di.port 
+                        + " -master " + hostname
+                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + " &;",
-                        "sleep 5",
-                        "$JAVA_HOME/bin/java " + main + " " + args
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";"
+                        main
                 )
             );
             
-            LocalResource popJar = Records.newRecord(LocalResource.class);
-            LocalResource appJar = Records.newRecord(LocalResource.class);
-            try {
-                setupClientJar(new Path(hdfs_dir + "/pop-app.jar"), popJar);
-                setupClientJar(new Path(hdfs_dir + "/yarn-app.jar"), popJar);
-            } catch (IOException ex) {}
-            Map<String, LocalResource> resources = new HashMap<>();
-            resources.put("pop-app.jar", popJar);
-            resources.put("yarn-app.jar", appJar);
-            ctx.setLocalResources(resources);
+            //LocalResource popJar = Records.newRecord(LocalResource.class);
+            //LocalResource appJar = Records.newRecord(LocalResource.class);
+            //try {
+            //    setupClientJar(new Path(hdfs_dir + "/pop-app.jar"), popJar);
+            //    setupClientJar(new Path(hdfs_dir + "/yarn-app.jar"), popJar);
+            //} catch (IOException ex) {}
+            //Map<String, LocalResource> resources = new HashMap<>();
+            //resources.put("pop-app.jar", popJar);
+            //resources.put("yarn-app.jar", appJar);
+            //ctx.setLocalResources(resources);
             
             System.out.println("[AM] Launching container " + container.getId());
             try {
@@ -198,10 +170,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             } catch (Exception ex) {
                 System.err.println("[AM] Error launching container " + container.getId() + " " + ex);
             }
-
-            return true;
         }
-        return false;
     }
 
     public void onContainersCompleted(List<ContainerStatus> statuses) {
@@ -226,7 +195,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public float getProgress() {
-        return 0;//1f - containers / (float) numContainersToWaitFor;
+        return 0.5f;
     }
 
     public boolean doneWithContainers() {
@@ -238,6 +207,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public void runMainLoop() throws Exception {
+        startContainerListener();
+        
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
         rmClient.start();
@@ -286,5 +257,12 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     private String generatePassword() {
         return new BigInteger(256, rnd).toString(Character.MAX_RADIX);
+    }
+
+    private void startContainerListener() {
+        try {
+            new ContainerServer(exitPassword).start();
+        } catch (IOException ex) {
+        }
     }
 }

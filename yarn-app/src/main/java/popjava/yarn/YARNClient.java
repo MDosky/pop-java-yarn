@@ -1,9 +1,10 @@
-package ch.heia.pop.yarn.app;
+package popjava.yarn;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +54,8 @@ public class YARNClient {
                 Collections.singletonList(
                         "$JAVA_HOME/bin/java"
                         + " -Xmx256M"
-                        + " ch.heia.pop.yarn.app.ApplicationMasterAsync"
+                        + " popjava.yarn.ApplicationMasterAsync"
+                        + " --master `hostname`"
                         + " --dir " + hdfs_dir
                         + " --vcores " + vcores
                         + " --memory " + memory
@@ -67,9 +69,8 @@ public class YARNClient {
 
         // Setup jar for ApplicationMaster
         LocalResource appMasterJar = Records.newRecord(LocalResource.class);
-        setupAppMasterJar(new Path(hdfs_dir + "/yarn-app.jar"), appMasterJar);
-        amContainer.setLocalResources(
-                Collections.singletonMap("yarn-app.jar", appMasterJar));
+        setupAppMasterJar(new Path(hdfs_dir + "/popjava.jar"), appMasterJar);
+        amContainer.setLocalResources(Collections.singletonMap("popjava.jar", appMasterJar));
 
         // Setup CLASSPATH for ApplicationMaster
         Map<String, String> appMasterEnv = new HashMap<String, String>();
