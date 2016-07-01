@@ -150,7 +150,7 @@ BASE_JAR=`basename "$jar"`
 HDFS_JAR="${TMP_DIR}/${BASE_JAR}"
 
 # Find yarn app
-YARN_APP=`find . -name yarn-app*.jar | tail -n 1`
+YARN_APP=`find . -name yarn-app*.jar`
 if [ -z "YARN_APP" ]
 then
   error_exit "Couldn't find the default YARN application, did you run mvn install?"
