@@ -163,7 +163,7 @@ hdfs dfs -copyFromLocal "$jar" "${TMP_DIR}/pop-app.jar"
 hdfs dfs -copyFromLocal "$YARN_APP" "${TMP_DIR}/yarn-app.jar"
 
 # Start YARN client
-yarn jar "$YARN_APP" ch.heia.popdna.yarn.YARNClient --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
+yarn jar "$YARN_APP" ch.heia.pop.yarn.YARNClient --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
 
 # Cleanup by removing temp dir
 hdfs dfs -rm -R "$TMP_DIR"
