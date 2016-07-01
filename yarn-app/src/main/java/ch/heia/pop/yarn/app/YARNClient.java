@@ -34,11 +34,11 @@ import org.apache.hadoop.yarn.util.Records;
 
 public class YARNClient {
 
-    Configuration conf = new YarnConfiguration();
+    private Configuration conf;
 
     public void run() throws Exception {
         // Create yarnClient
-        YarnConfiguration conf = new YarnConfiguration();
+        conf = new YarnConfiguration();
         YarnClient yarnClient = YarnClient.createYarnClient();
         yarnClient.init(conf);
         yarnClient.start();
@@ -53,7 +53,7 @@ public class YARNClient {
                 Collections.singletonList(
                         "$JAVA_HOME/bin/java"
                         + " -Xmx256M"
-                        + " ch.heia.popdna.yarn.ApplicationMasterAsync"
+                        + " ch.heia.pop.yarn.app.ApplicationMasterAsync"
                         + " --dir " + hdfs_dir
                         + " --vcores " + vcores
                         + " --memory " + memory
