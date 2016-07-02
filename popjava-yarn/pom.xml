@@ -57,7 +57,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ch.heia.pop.yarn.app.YARNClient</mainClass>
+                            <mainClass>popjava.yarn.YARNClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
