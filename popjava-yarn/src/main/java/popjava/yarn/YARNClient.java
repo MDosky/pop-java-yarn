@@ -61,8 +61,8 @@ public class YARNClient {
                         + " --containers " + containers
                         + " --main " + main
                         + " " + args
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                 )
         );
 

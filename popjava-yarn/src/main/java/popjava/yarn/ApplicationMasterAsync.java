@@ -106,15 +106,15 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " -javaagent:popjava.jar"
                         + " -cp popjava.jar:pop-app.jar"
                         + " " + main + " " + args
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";"
                         + "sleep 2"
                         + ";"
                         + "$JAVA_HOME/bin/java -cp popjava.jar"
                         + " popjava.yarn.command.ContainerExit " + hostname +" " + exitPassword
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";";
             }
 
@@ -125,20 +125,20 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             ctx.setCommands(
                 Lists.newArrayList(
                         "echo " + container.getNodeId().getHost()
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "ls -lh"
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "$JAVA_HOME/bin/java"
                         + " -javaagent:popjava.jar"
@@ -146,8 +146,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " popjava.yarn.DaemonService"
                         + " -pwd " + di.password + " -port " + di.port 
                         + " -master " + hostname
-                        + " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + " &;",
                         main
                 )
