@@ -96,10 +96,12 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
             
             String mainStarter = "echo ";
+            String background = "";
             // master container, who will start the main
             if (mainContainer == null || container == mainContainer) {
                 // keep track of container
                 mainContainer = container;
+                background = "&";
                 
                 mainStarter =    "sleep 5"
                         + ";"
@@ -129,15 +131,15 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
-                        "ls -lh"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
                         "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
+                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + ";",
+                        "ls -lh"
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
@@ -149,7 +151,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " -master " + hostname
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + " &;",
+                        + " " + background + ";",
                         mainStarter
                 )
             );
