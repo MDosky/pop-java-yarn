@@ -100,7 +100,7 @@ while [[ -n $1 ]]; do
     -m | --main)
       shift
       main="$1" ;;
-    -C | --containers)
+    -c | --containers)
       shift
       if is_numeric "$1"
       then
