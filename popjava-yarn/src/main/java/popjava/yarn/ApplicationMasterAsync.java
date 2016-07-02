@@ -106,8 +106,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 mainStarter =    "sleep 5"
                         + ";"
                         + "$JAVA_HOME/bin/java"
-                        + " -javaagent:popjava.jar"
-                        + " -cp popjava.jar:pop-app.jar"
+                        + " -javaagent:`readlink -e popjava.jar`"
+                        + " -cp `readlink -e popjava.jar`:`readlink -e pop-app.jar`"
                         + " " + mainStarter + " " + args
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
@@ -144,8 +144,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "$JAVA_HOME/bin/java"
-                        + " -javaagent:popjava.jar"
-                        + " -cp popjava.jar:pop-app.jar"
+                        + " -javaagent:`readlink -e popjava.jar`"
+                        + " -cp `readlink -e popjava.jar`:`readlink -e pop-app.jar`"
                         + " popjava.yarn.DaemonService"
                         + " -pwd " + di.password + " -port " + di.port 
                         + " -master " + hostname
