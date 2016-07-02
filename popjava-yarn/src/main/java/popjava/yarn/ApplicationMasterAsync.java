@@ -78,6 +78,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     private Container mainContainer = null;
 
+    @Override
     public void onContainersAllocated(List<Container> containers) {
         // already allocated
         if(daemonInfo.size() != containers.size()) {
@@ -94,18 +95,18 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         for (Container container : containers) {            
             DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
             
-            String main = "echo ";
+            String mainStarter = "echo ";
             // master container, who will start the main
             if (mainContainer == null || container == mainContainer) {
                 // keep track of container
                 mainContainer = container;
                 
-                main =    "sleep 5"
+                mainStarter =    "sleep 5"
                         + ";"
                         + "$JAVA_HOME/bin/java"
                         + " -javaagent:popjava.jar"
                         + " -cp popjava.jar:pop-app.jar"
-                        + " " + main + " " + args
+                        + " " + mainStarter + " " + args
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";"
@@ -149,7 +150,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + " &;",
-                        main
+                        mainStarter
                 )
             );
             
@@ -261,8 +262,10 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     private void startContainerListener() {
         try {
+            System.out.println("Starting container server.");
             new ContainerServer(exitPassword).start();
         } catch (IOException ex) {
+            System.err.println("Failed to start container server.");
         }
     }
 }
