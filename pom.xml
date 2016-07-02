@@ -10,7 +10,7 @@
     <description>Base project to make a POP-Java application work with YARN</description>
     
     <modules>
-        <module>yarn-app</module>
+        <module>popjava-yarn</module>
         <module>yarn-example</module>
     </modules>
     

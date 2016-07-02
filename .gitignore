@@ -63,3 +63,4 @@ $RECYCLE.BIN/
 *.lnk
 /yarn-app/target/
 /yarn-example/target/
+/popjava-yarn/target/
