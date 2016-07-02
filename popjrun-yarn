@@ -48,7 +48,7 @@ is_numeric() {
 }
 
 usage() {
-  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-m|--memory] <-j|--jar> <-m|--main>"
+  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-m|--memory] {-p|-pop} {-j|--jar} {-m|--main}"
 }
 
 help_message() {
