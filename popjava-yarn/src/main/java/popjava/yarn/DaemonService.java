@@ -44,14 +44,15 @@ public class DaemonService {
         thread.start();
         
         // connect to master server
-        while(true) {
-            try {
-                ContainerClient containerClient = new ContainerClient(masterHost);
-                containerClient.start();
-            } catch (IOException ex) {
-                System.out.println("Server not up, retry");
-            }
-        }
+//        while(true) {
+//            try {
+//                System.out.println("Connecting to server...");
+//                ContainerClient containerClient = new ContainerClient(masterHost);
+//                containerClient.start();
+//            } catch (IOException ex) {
+//                System.err.println("Server not up, retry...");
+//            }
+//        }
     }
 
     public void stop() {

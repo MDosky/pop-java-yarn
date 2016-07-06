@@ -80,6 +80,10 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     @Override
     public void onContainersAllocated(List<Container> containers) {
+        // wait for all containers
+        if(containers.size() != this.numContainersToWaitFor)
+            return;
+        
         // already allocated
         if(daemonInfo.size() != containers.size()) {
             // assign to vagabond containers

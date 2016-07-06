@@ -20,6 +20,7 @@ public class ContainerClient extends Thread {
         this.writer = new PrintWriter(socket.getOutputStream());
         this.reader = new Scanner(socket.getInputStream());
         setName("Master Server tunnel");
+        System.out.println("Connected.");
     }
 
     @Override
