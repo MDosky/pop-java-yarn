@@ -3,6 +3,7 @@ package ch.heia.pop.yarn.example;
 import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
+import popjava.base.POPObject;
 import popjava.system.POPSystem;
 
 /**
@@ -24,7 +25,7 @@ public class NoSpec {
 
     
     @POPClass
-    public static class AAA {
+    public static class AAA extends POPObject {
 
         static int aAa = 1000;
         
