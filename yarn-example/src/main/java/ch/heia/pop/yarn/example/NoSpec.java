@@ -4,6 +4,7 @@ import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
+import popjava.service.POPJavaJobManager;
 import popjava.system.POPSystem;
 
 /**
@@ -14,6 +15,8 @@ public class NoSpec {
    
     public static void main(String[] args) {
         POPSystem.initialize(args);
+        
+        PopJava.newActive(POPJavaJobManager.class);
         
         System.out.println(PopJava.newActive(AAA.class).aaa());
         System.out.println(PopJava.newActive(AAA.class).aaa());
