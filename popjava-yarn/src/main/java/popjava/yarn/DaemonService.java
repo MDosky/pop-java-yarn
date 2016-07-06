@@ -42,17 +42,6 @@ public class DaemonService {
         thread.setName("POP-Java Daemon");
         
         thread.start();
-        
-        // connect to master server
-//        while(true) {
-//            try {
-//                System.out.println("Connecting to server...");
-//                ContainerClient containerClient = new ContainerClient(masterHost);
-//                containerClient.start();
-//            } catch (IOException ex) {
-//                System.err.println("Server not up, retry...");
-//            }
-//        }
     }
 
     public void stop() {

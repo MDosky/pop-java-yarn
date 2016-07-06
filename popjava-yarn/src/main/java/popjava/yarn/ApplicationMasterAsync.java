@@ -1,5 +1,6 @@
 package popjava.yarn;
 
+import popjava.service.DaemonInfo;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
@@ -90,7 +91,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             for(Container cont : containers) {
                 long id = cont.getId().getContainerId();
                 if(!daemonInfo.containsKey(id)) {
-                    DaemonInfo di = new DaemonInfo(generatePassword(), ++lastPort, id);
+                    DaemonInfo di = new DaemonInfo(cont.getNodeHttpAddress(), generatePassword(), ++lastPort, id);
                     daemonInfo.put(id, di);
                 }
             }
@@ -151,7 +152,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " -javaagent:`readlink -e popjava.jar`"
                         + " -cp `readlink -e popjava.jar`:`readlink -e pop-app.jar`"
                         + " popjava.yarn.DaemonService"
-                        + " -pwd " + di.password + " -port " + di.port 
+                        + " -pwd " + di.getPassword() + " -port " + di.getPort()
                         + " -master " + hostname
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"

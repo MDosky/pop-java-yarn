@@ -2,6 +2,7 @@ package ch.heia.pop.yarn.example;
 
 import popjava.PopJava;
 import popjava.annotation.POPClass;
+import popjava.annotation.POPConfig;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
 import popjava.service.POPJavaJobManager;

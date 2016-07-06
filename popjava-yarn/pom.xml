@@ -56,9 +56,17 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
+                        <index>true</index>
                         <manifest>
                             <mainClass>popjava.yarn.YARNClient</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Premain-Class>popjava.javaagent.POPJavaAgent</Premain-Class>
+                            <Agent-Class>popjava.javaagent.POPJavaAgent</Agent-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                            <Can-Set-Native-Method-Prefix>true</Can-Set-Native-Method-Prefix>
+                        </manifestEntries>
                     </archive>
                 </configuration>
                 <executions>
