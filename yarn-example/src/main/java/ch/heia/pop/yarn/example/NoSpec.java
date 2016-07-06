@@ -16,7 +16,7 @@ public class NoSpec {
     public static void main(String[] args) {
         POPSystem.initialize(args);
         
-        PopJava.newActive(POPJavaJobManager.class);
+        POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
         
         System.out.println(PopJava.newActive(AAA.class).aaa());
         System.out.println(PopJava.newActive(AAA.class).aaa());
