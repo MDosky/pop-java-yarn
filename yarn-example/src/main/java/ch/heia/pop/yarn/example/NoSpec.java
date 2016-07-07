@@ -1,6 +1,7 @@
 package ch.heia.pop.yarn.example;
 
 import popjava.PopJava;
+import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPConfig;
 import popjava.annotation.POPSyncSeq;
@@ -25,6 +26,7 @@ public class NoSpec {
         System.out.println(PopJava.newActive(AAA.class).aaa());
         System.out.println(PopJava.newActive(AAA.class).aaa());
         
+        POPSystem.end();
     }
 
     
@@ -36,9 +38,9 @@ public class NoSpec {
         public AAA() {
         }
         
-        @POPSyncSeq
-        public int aaa() {
-            return aAa++;
+        @POPAsyncConc
+        public long aaa() {
+            return aAa + System.currentTimeMillis();
         }
     }
     
