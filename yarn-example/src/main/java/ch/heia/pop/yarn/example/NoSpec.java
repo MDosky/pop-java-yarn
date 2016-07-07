@@ -16,15 +16,19 @@ import popjava.system.POPSystem;
  */
 public class NoSpec {
    
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         POPSystem.initialize(args);
         
         //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
         
         PopJava.newActive(AAA.class).aaa();
+        Thread.sleep(1000);
         PopJava.newActive(AAA.class).aaa();
+        Thread.sleep(1000);
         PopJava.newActive(AAA.class).aaa();
+        Thread.sleep(1000);
         PopJava.newActive(AAA.class).aaa();
+        Thread.sleep(1000);
         PopJava.newActive(AAA.class).aaa();
         
         POPSystem.end();
