@@ -22,13 +22,13 @@ public class NoSpec {
         //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
         
         PopJava.newActive(AAA.class).aaa();
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         PopJava.newActive(AAA.class).aaa();
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         PopJava.newActive(AAA.class).aaa();
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         PopJava.newActive(AAA.class).aaa();
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         PopJava.newActive(AAA.class).aaa();
         
         POPSystem.end();
