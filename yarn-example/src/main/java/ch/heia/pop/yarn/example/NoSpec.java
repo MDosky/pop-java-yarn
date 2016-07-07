@@ -4,6 +4,7 @@ import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPConfig;
+import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
 import popjava.service.POPJavaJobManager;
@@ -20,11 +21,11 @@ public class NoSpec {
         
         //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
         
-        System.out.println(PopJava.newActive(AAA.class).aaa());
-        System.out.println(PopJava.newActive(AAA.class).aaa());
-        System.out.println(PopJava.newActive(AAA.class).aaa());
-        System.out.println(PopJava.newActive(AAA.class).aaa());
-        System.out.println(PopJava.newActive(AAA.class).aaa());
+        PopJava.newActive(AAA.class).aaa();
+        PopJava.newActive(AAA.class).aaa();
+        PopJava.newActive(AAA.class).aaa();
+        PopJava.newActive(AAA.class).aaa();
+        PopJava.newActive(AAA.class).aaa();
         
         POPSystem.end();
     }
@@ -39,8 +40,8 @@ public class NoSpec {
         }
         
         @POPAsyncConc
-        public long aaa() {
-            return aAa + System.currentTimeMillis();
+        public void aaa() {
+            System.out.println(System.currentTimeMillis());
         }
     }
     
