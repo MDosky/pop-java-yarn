@@ -87,8 +87,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             // assign to vagabond containers
             for(Container cont : containers) {
                 long id = cont.getId().getContainerId();
-                if(!daemonInfo.containsKey(id)) {
-                    DaemonInfo di = new DaemonInfo(cont.getNodeHttpAddress(), generatePassword(), ++lastPort, id);
+                if(!daemonInfo.containsKey(id)) {                    
+                    DaemonInfo di = new DaemonInfo(cont.getNodeId().getHost(), generatePassword(), ++lastPort, id);
                     daemonInfo.put(id, di);
                     
                     // check for last container
