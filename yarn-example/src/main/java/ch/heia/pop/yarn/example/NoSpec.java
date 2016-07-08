@@ -30,14 +30,14 @@ public class NoSpec {
         aaa = PopJava.newActive(AAA.class);
         aaa.aaa();
         aaa.exit();
-        Thread.sleep(5000);
-        aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
-        aaa.exit();
-        Thread.sleep(5000);
-        aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
-        aaa.exit();
+//        Thread.sleep(5000);
+//        aaa = PopJava.newActive(AAA.class);
+//        aaa.aaa();
+//        aaa.exit();
+//        Thread.sleep(5000);
+//        aaa = PopJava.newActive(AAA.class);
+//        aaa.aaa();
+//        aaa.exit();
         
         POPSystem.end();
     }
