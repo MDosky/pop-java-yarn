@@ -81,11 +81,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     @Override
     public void onContainersAllocated(List<Container> containers) {
-        // wait for all containers
-        System.out.println("onContainersAllocated " + containers.size());
-        if(containers.size() != this.containers)
-            return;
-        
         // already allocated
         if(daemonInfo.size() != containers.size()) {
             // assign to vagabond containers
@@ -94,6 +89,10 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 if(!daemonInfo.containsKey(id)) {
                     DaemonInfo di = new DaemonInfo(cont.getNodeHttpAddress(), generatePassword(), ++lastPort, id);
                     daemonInfo.put(id, di);
+                    
+                    // check for last container
+                    if(daemonInfo.size() == this.containers)
+                        mainContainer = cont;
                 }
             }
         }
@@ -103,10 +102,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             
             String mainStarter = "";
             // master container, who will start the main
-            if (mainContainer == null || container == mainContainer) {
-                // keep track of container
-                mainContainer = container;
-                
+            if (container == mainContainer) {                
                 String daemons = "";
                 for(DaemonInfo info : daemonInfo.values())
                     daemons += " -daemon " + info.toString();
