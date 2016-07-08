@@ -53,7 +53,7 @@ public class YARNContainer {
      */
     private void startDaemon() {
         DaemonInfo di = new DaemonInfo(myDaemon);
-        String daemonCmd = "$JAVA_HOME/bin/java -cp popjava.jar:yarn-app.jar popjava.yarn.DaemonService %s";
+        String daemonCmd = env("JAVA_HOME") + "/bin/java -cp popjava.jar:yarn-app.jar popjava.yarn.DaemonService %s";
         runCmd(String.format(daemonCmd, di.toString()));
     }
 
@@ -61,7 +61,7 @@ public class YARNContainer {
      * Start the JobManager and then the POP Main class
      */
     private void startMainContainer() {
-        String popjava = "$JAVA_HOME/bin/java -javaagent:popjava.jar -cp popjava.jar:yarn-app.jar %s %s";
+        String popjava = env("JAVA_HOME") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:yarn-app.jar %s %s";
         
         // start JM
         runCmd(String.format(popjava, "popjava.jobmanager.POPJavaJobManager", groupList(daemons)));
@@ -95,5 +95,9 @@ public class YARNContainer {
             out.append(arg.toString()).append(" ");
         
         return out.toString();
+    }
+    
+    private String env(String var) {
+        return System.getProperty(var);
     }
 }
