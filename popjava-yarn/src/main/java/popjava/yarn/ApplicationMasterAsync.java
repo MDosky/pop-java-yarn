@@ -37,6 +37,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     private final NMClient nmClient;
 
     private int numContainersToWaitFor;
+    private Container mainContainer = null;
+    private int lauchedContainers;
     
     private final Map<Long, DaemonInfo> daemonInfo = new HashMap<>();
     private final Random rnd = new SecureRandom();
@@ -52,7 +54,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     @Parameter(names = "--memory", required = true)
     private int memory;
     @Parameter(names = "--containers", required = true)
-    private int containers;
+    private int askedContainers;
     @Parameter(names = "--main", required = true)
     private String main;
     @Parameter
@@ -75,10 +77,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     private void setup() {
-        numContainersToWaitFor = containers;
+        numContainersToWaitFor = askedContainers;
     }
-
-    private Container mainContainer = null;
 
     @Override
     public void onContainersAllocated(List<Container> containers) {
@@ -92,7 +92,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                     daemonInfo.put(id, di);
                     
                     // check for last container
-                    if(daemonInfo.size() == this.containers)
+                    if(daemonInfo.size() == this.askedContainers)
                         mainContainer = cont;
                 }
             }
@@ -150,6 +150,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             System.out.println("[AM] Launching container " + container.getId());
             try {
                 nmClient.startContainer(container, ctx);
+                lauchedContainers++;
             } catch (Exception ex) {
                 System.err.println("[AM] Error launching container " + container.getId() + " " + ex);
             }
@@ -178,7 +179,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public float getProgress() {
-        return 0.5f;
+        return lauchedContainers / (float) askedContainers;
     }
 
     public boolean doneWithContainers() {
@@ -211,7 +212,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         capability.setVirtualCores(vcores);
 
         // Make container requests to ResourceManager
-        for (int i = 0; i < containers; i++) {
+        for (int i = 0; i < askedContainers; i++) {
             ContainerRequest containerAsk = new ContainerRequest(capability, null, null, priority);
             System.out.println("[AM] Making res-req " + i);
             rmClient.addContainerRequest(containerAsk);
