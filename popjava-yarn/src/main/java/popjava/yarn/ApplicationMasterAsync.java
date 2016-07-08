@@ -39,7 +39,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     private int numContainersToWaitFor;
     private Container mainContainer = null;
     private int lauchedContainers;
-    
+
     private final Map<Long, DaemonInfo> daemonInfo = new HashMap<>();
     private final Random rnd = new SecureRandom();
     private final String exitPassword;
@@ -69,7 +69,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     public ApplicationMasterAsync() {
         exitPassword = generatePassword();
-        
+
         configuration = new YarnConfiguration();
         nmClient = NMClient.createNMClient();
         nmClient.init(configuration);
@@ -83,31 +83,33 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     @Override
     public void onContainersAllocated(List<Container> containers) {
         // already allocated
-        if(daemonInfo.size() != containers.size()) {
+        if (daemonInfo.size() != containers.size()) {
             // assign to vagabond containers
-            for(Container cont : containers) {
+            for (Container cont : containers) {
                 long id = cont.getId().getContainerId();
-                if(!daemonInfo.containsKey(id)) {                    
+                if (!daemonInfo.containsKey(id)) {
                     DaemonInfo di = new DaemonInfo(cont.getNodeId().getHost(), generatePassword(), ++lastPort, id);
                     daemonInfo.put(id, di);
-                    
+
                     // check for last container
-                    if(daemonInfo.size() == this.askedContainers)
+                    if (daemonInfo.size() == this.askedContainers) {
                         mainContainer = cont;
+                    }
                 }
             }
         }
-        
-        for (Container container : containers) {            
+
+        for (Container container : containers) {
             DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
-            
+
             String mainStarter = "";
             // master container, who will start the main
-            if (container == mainContainer) {                
+            if (container == mainContainer) {
                 String daemons = "";
-                for(DaemonInfo info : daemonInfo.values())
+                for (DaemonInfo info : daemonInfo.values()) {
                     daemons += " -daemon " + info.toString();
-                
+                }
+
                 mainStarter = " -main "
                         + " " + daemons
                         + " -mainClass " + main + " " + args;
@@ -135,7 +137,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             );
             System.out.println("[AM] Executing: " + Arrays.toString(script.toArray(new String[0])));
             ctx.setCommands(script);
-            
+
             //LocalResource popJar = Records.newRecord(LocalResource.class);
             //LocalResource appJar = Records.newRecord(LocalResource.class);
             //try {
@@ -146,7 +148,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             //resources.put("pop-app.jar", popJar);
             //resources.put("yarn-app.jar", appJar);
             //ctx.setLocalResources(resources);
-            
             System.out.println("[AM] Launching container " + container.getId());
             try {
                 nmClient.startContainer(container, ctx);
@@ -176,6 +177,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public void onError(Throwable t) {
+        t.printStackTrace();
     }
 
     public float getProgress() {
@@ -192,7 +194,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     public void runMainLoop() throws Exception {
         startContainerListener();
-        
+
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
         rmClient.start();
