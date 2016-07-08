@@ -98,6 +98,6 @@ public class YARNContainer {
     }
     
     private String env(String var) {
-        return System.getProperty(var);
+        return System.getenv(var);
     }
 }
