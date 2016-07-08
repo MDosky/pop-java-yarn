@@ -82,7 +82,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     @Override
     public void onContainersAllocated(List<Container> containers) {
         // wait for all containers
-        if(containers.size() != this.numContainersToWaitFor)
+        System.out.println("onContainersAllocated " + containers.size());
+        if(containers.size() != this.containers)
             return;
         
         // already allocated
