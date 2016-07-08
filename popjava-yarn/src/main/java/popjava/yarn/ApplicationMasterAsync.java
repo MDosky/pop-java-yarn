@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,27 +117,24 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             // Launch container by create ContainerLaunchContext
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
-            ctx.setCommands(
-                Lists.newArrayList(
-                        "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
-                        "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
-                        "$JAVA_HOME/bin/java"
-                        + " -cp popjava.jar"
-                        + " popjava.yarn.YARNContainer"
-                        + " -myDaemon " + di.toString()
-                        + " " + mainStarter
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";"
-                        
-                )
+            List script = Lists.newArrayList(
+                "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
+                + ";",
+                "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
+                + ";",
+                "sleep 10"
+                + ";",
+                "$JAVA_HOME/bin/java"
+                + " -cp popjava.jar"
+                + " popjava.yarn.YARNContainer"
+                + " -myDaemon " + di.toString()
+                + " " + mainStarter
+                + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                + ";"
             );
+            System.out.println("[AM] Executing: " + Arrays.toString(script.toArray(new String[0])));
+            ctx.setCommands(script);
             
             //LocalResource popJar = Records.newRecord(LocalResource.class);
             //LocalResource appJar = Records.newRecord(LocalResource.class);
