@@ -1,41 +1,34 @@
 package popjava.yarn;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import popjava.service.DaemonInfo;
 import popjava.service.POPJavaDeamon;
-import popjava.system.POPSystem;
-import popjava.yarn.command.ContainerClient;
 
 /**
- *
+ * Start the POP-Java daemon
  * @author Dosky
  */
 public class DaemonService {
     
     private POPJavaDeamon daemon;
-    
-    @Parameter(names = "-pwd", required = true)
-    private String password;
-    @Parameter(names = "-port", required = true)
-    private int port;
-    @Parameter(names = "-master", required = true)
-    private String masterHost;
+    private DaemonInfo di;
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * Start a standalone java daemon
+     * @param args The first parameter should be the string value of a DaemonInfo
+     */
+    public static void main(String[] args) {
         //POPSystem.setStarted();
-        DaemonService mainService = new DaemonService();
-        new JCommander(mainService, args);
+        DaemonService mainService = new DaemonService(args);
         mainService.start();
     }
 
-    private DaemonService() {
+    private DaemonService(String... args) {
+        di = new DaemonInfo(args[0]);
     }
 
     private void start() {
-        daemon = new POPJavaDeamon(password, port);
+        daemon = new POPJavaDeamon(di.getPassword(), di.getPort());
 
         // start daemon thread
         Thread thread = new Thread(daemon);

@@ -100,30 +100,19 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         for (Container container : containers) {            
             DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
             
-            String mainStarter = "echo ";
-            String background = "";
+            String mainStarter = "";
             // master container, who will start the main
             if (mainContainer == null || container == mainContainer) {
                 // keep track of container
                 mainContainer = container;
-                background = "&";
                 
-                mainStarter =    "sleep 5"
-                        + ";"
-                        + "$JAVA_HOME/bin/java"
-                        + " -javaagent:`readlink -e popjava.jar`"
-                        + " -cp `readlink -e popjava.jar`:`readlink -e pop-app.jar`"
-                        + " " + mainStarter + " " + args
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";"
-                        + "sleep 2"
-                        + ";"
-                        + "$JAVA_HOME/bin/java -cp popjava.jar"
-                        + " popjava.yarn.command.ContainerExit " + hostname +" " + exitPassword
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";";
+                String daemons = "";
+                for(DaemonInfo info : daemonInfo.values())
+                    daemons += " -daemon " + info.toString();
+                
+                mainStarter = " -main "
+                        + " " + daemons
+                        + " -mainClass " + main + " " + args;
             }
 
             System.out.println("[AM] Starting client");
@@ -132,10 +121,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                     = Records.newRecord(ContainerLaunchContext.class);
             ctx.setCommands(
                 Lists.newArrayList(
-                        "echo " + container.getNodeId().getHost()
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
                         "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
@@ -144,20 +129,15 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
-                        "ls -lh"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
                         "$JAVA_HOME/bin/java"
-                        + " -javaagent:`readlink -e popjava.jar`"
-                        + " -cp `readlink -e popjava.jar`:`readlink -e pop-app.jar`"
-                        + " popjava.yarn.DaemonService"
-                        + " -pwd " + di.getPassword() + " -port " + di.getPort()
-                        + " -master " + hostname
+                        + " -cp popjava.jar"
+                        + " popjava.yarn.YARNContainer"
+                        + " -myDaemon " + di.toString()
+                        + " " + mainStarter
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + " " + background + ";",
-                        mainStarter
+                        + ";"
+                        
                 )
             );
             
