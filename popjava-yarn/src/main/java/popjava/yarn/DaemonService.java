@@ -25,7 +25,7 @@ public class DaemonService {
     private String masterHost;
 
     public static void main(String[] args) throws IOException {
-        POPSystem.initialize(args);
+        //POPSystem.setStarted();
         DaemonService mainService = new DaemonService();
         new JCommander(mainService, args);
         mainService.start();
