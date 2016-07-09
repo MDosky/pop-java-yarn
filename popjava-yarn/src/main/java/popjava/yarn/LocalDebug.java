@@ -22,17 +22,18 @@ public class LocalDebug {
         
         POPSystem.initialize();
         jobManager = PopJava.newActive(POPJavaJobManager.class);
-//        taskServer = PopJava.newActive(TaskServer.class);
+        POPSystem.jobService = jobManager.getAccessPoint();
+        taskServer = PopJava.newActive(TaskServer.class);
         
-//        taskServer.setJobManager(jobManager.getAccessPoint());
-//        // server status, waiting
-//        taskServer.setStatus(POPAppStatus.WAITING);
-//        
-//        System.out.println(taskServer.getAccessPoint());
-//        
-//        Thread.sleep(30000);
-//        
-//        taskServer.setStatus(POPAppStatus.FINISHED);
+        taskServer.setJobManager(jobManager.getAccessPoint());
+        // server status, waiting
+        taskServer.setStatus(POPAppStatus.WAITING);
+        
+        System.out.println(taskServer.getAccessPoint());
+        
+        Thread.sleep(30000);
+        
+        taskServer.setStatus(POPAppStatus.FINISHED);
         
         Thread.sleep(10000);
         
