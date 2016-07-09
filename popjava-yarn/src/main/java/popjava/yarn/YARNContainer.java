@@ -7,10 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import popjava.service.DaemonInfo;
-import popjava.util.ClassUtil;
 import popjava.util.SystemUtil;
 
 /**
@@ -23,10 +20,8 @@ public class YARNContainer {
     private boolean main;
     @Parameter(names = "-mainClass")
     private String mainClass;
-    @Parameter(names = "-daemon")
-    private List<String> daemons;
-    @Parameter(names = "-myDaemon", required = true)
-    private String myDaemon;
+    @Parameter(names = "-taskServer", required = true)
+    private String taskServerAP;
     @Parameter
     private List<String> args;
 
@@ -37,7 +32,6 @@ public class YARNContainer {
     }
 
     private YARNContainer() {
-        daemons = new ArrayList<>();
         args = new ArrayList<>();
     }
 
@@ -58,15 +52,14 @@ public class YARNContainer {
      * Start the POP-Java Daemon process
      */
     private void startDaemon() {
-        DaemonInfo di = new DaemonInfo(myDaemon);
         // start in parallel if it's the main class
         if (main) {
             String daemonCmd = javaHome() + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
-            runCmd(String.format(daemonCmd, di.toString()));
+            runCmd(String.format(daemonCmd, taskServerAP));
         } 
         // start in the thread if there is only a single daemon
         else {
-            startMainClass("popjava.yarn.DaemonService", myDaemon);
+            DaemonService.main(taskServerAP);
         }
     }
 
@@ -74,10 +67,10 @@ public class YARNContainer {
      * Start the JobManager and then the POP Main class
      */
     private void startMainContainer() {
-        String popjava = javaHome() + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s";
+//        String popjava = javaHome() + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s";
 
         // start JM
-        runCmd(String.format(popjava, "popjava.jobmanager.POPJavaJobManager", groupList(daemons)));
+//        runCmd(String.format(popjava, "popjava.jobmanager.POPJavaJobManager"));
 
         // give it time to start
         try {
@@ -86,7 +79,15 @@ public class YARNContainer {
         }
 
         // start the given main class
-        startMainClass(mainClass, args.toArray(new String[0]));
+        try {
+            Class clazz = Class.forName(mainClass);
+            Method method = clazz.getMethod("main", String[].class);
+            method.invoke(null, args.toArray(new String[0]));
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Main class not found.");
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            System.out.println("main method not found in Main class.");
+        }
     }
 
     /**
@@ -97,38 +98,6 @@ public class YARNContainer {
     private void runCmd(String cmd) {
         List<String> cmdList = Arrays.asList(cmd.split(" "));
         SystemUtil.runCmd(cmdList);
-    }
-
-    /**
-     * Take a list of object and turn it into a String to use as parameter
-     *
-     * @param args [ E1, E2, ... ]
-     * @return E1.toString E2.toString ...
-     */
-    private String groupList(List args) {
-        StringBuilder out = new StringBuilder();
-        for (Object arg : args) {
-            out.append(arg.toString()).append(" ");
-        }
-
-        return out.toString();
-    }
-
-    /**
-     * Start a main method in the same thread as this one
-     * @param clazz The class name
-     * @param argsString The arguments to pass to it
-     */
-    private void startMainClass(String clazz, String... argsString) {
-        try {
-            Class clazt = Class.forName(clazz);
-            Method method = clazt.getDeclaredMethod("main", String[].class);
-            method.invoke(null, argsString);
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Main class not found.");
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            System.out.println("main method not found in Main class.");
-        }
     }
 
     /**

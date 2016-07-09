@@ -47,18 +47,18 @@ public class YARNClient {
         YarnClientApplication app = yarnClient.createApplication();
 
         StringBuilder argsString = new StringBuilder();
-        for(String s : args) {
+        for (String s : args) {
             argsString.append(s).append(" ");
         }
-        
+
         // Set up the container launch context for the application master
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
         amContainer.setCommands(
                 Collections.singletonList(
                         "$JAVA_HOME/bin/java"
+                        + " -javaagent:popjava.jar"
                         + " popjava.yarn.ApplicationMasterAsync"
-                        + " --master `hostname`"
                         + " --dir " + hdfs_dir
                         + " --vcores " + vcores
                         + " --memory " + memory
@@ -72,8 +72,13 @@ public class YARNClient {
 
         // Setup jar for ApplicationMaster
         LocalResource appMasterJar = Records.newRecord(LocalResource.class);
+        LocalResource appJar = Records.newRecord(LocalResource.class);
         setupAppMasterJar(new Path(hdfs_dir + "/popjava.jar"), appMasterJar);
-        amContainer.setLocalResources(Collections.singletonMap("popjava.jar", appMasterJar));
+        setupAppMasterJar(new Path(hdfs_dir + "/pop-app.jar"), appJar);
+        Map<String, LocalResource> resources = new HashMap<>();
+        resources.put("pop-app.jar", appJar);
+        resources.put("popjava.jar", appMasterJar);
+        amContainer.setLocalResources(resources);
 
         // Setup CLASSPATH for ApplicationMaster
         Map<String, String> appMasterEnv = new HashMap<String, String>();
@@ -88,10 +93,10 @@ public class YARNClient {
         // Finally, set-up ApplicationSubmissionContext for the application
         ApplicationSubmissionContext appContext
                 = app.getApplicationSubmissionContext();
-        appContext.setApplicationName("POP-Java " + main); // application name
+        appContext.setApplicationName("POP-Java: " + main);
         appContext.setAMContainerSpec(amContainer);
         appContext.setResource(capability);
-        appContext.setQueue("default"); // queue 
+        appContext.setQueue("default");
 
         // Submit application
         ApplicationId appId = appContext.getApplicationId();
@@ -129,11 +134,11 @@ public class YARNClient {
                 YarnConfiguration.YARN_APPLICATION_CLASSPATH,
                 YarnConfiguration.DEFAULT_YARN_APPLICATION_CLASSPATH)) {
             Apps.addToEnvironment(appMasterEnv, Environment.CLASSPATH.name(),
-                    c.trim());
+                    c.trim(), ":");
         }
         Apps.addToEnvironment(appMasterEnv,
                 Environment.CLASSPATH.name(),
-                Environment.PWD.$() + File.separator + "*");
+                Environment.PWD.$() + File.separator + "*", ":");
     }
 
     @Parameter(names = "--dir", required = true)
