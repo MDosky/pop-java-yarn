@@ -2,10 +2,15 @@ package popjava.yarn;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import popjava.service.DaemonInfo;
+import popjava.util.ClassUtil;
 import popjava.util.SystemUtil;
 
 /**
@@ -13,7 +18,7 @@ import popjava.util.SystemUtil;
  * @author Dosky
  */
 public class YARNContainer {
-    
+
     @Parameter(names = "-main")
     private boolean main;
     @Parameter(names = "-mainClass")
@@ -24,7 +29,7 @@ public class YARNContainer {
     private String myDaemon;
     @Parameter
     private List<String> args;
-    
+
     public static void main(String[] args) {
         YARNContainer container = new YARNContainer();
         new JCommander(container, args);
@@ -35,17 +40,18 @@ public class YARNContainer {
         daemons = new ArrayList<>();
         args = new ArrayList<>();
     }
-    
+
     /**
      * Actual start of the program
      */
     private void start() {
         // start daemon on every container
         startDaemon();
-        
+
         // start JM and the main if is the main container
-        if(main)
+        if (main) {
             startMainContainer();
+        }
     }
 
     /**
@@ -53,7 +59,7 @@ public class YARNContainer {
      */
     private void startDaemon() {
         DaemonInfo di = new DaemonInfo(myDaemon);
-        String daemonCmd = prop("java.home") + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
+        String daemonCmd = javaHome() + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
         runCmd(String.format(daemonCmd, di.toString()));
     }
 
@@ -61,43 +67,54 @@ public class YARNContainer {
      * Start the JobManager and then the POP Main class
      */
     private void startMainContainer() {
-        String popjava = prop("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s";
-        
+        String popjava = javaHome() + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s";
+
         // start JM
         runCmd(String.format(popjava, "popjava.jobmanager.POPJavaJobManager", groupList(daemons)));
-        
+
         // give it time to start
         try {
             Thread.sleep(5000);
-        } catch (InterruptedException ex) { }
-        
-        // start main class
-        runCmd(String.format(popjava, mainClass, groupList(args)));
+        } catch (InterruptedException ex) {
+        }
+
+        try {
+            Class clazz = Class.forName(mainClass);
+            Method method = clazz.getDeclaredMethod("main", String[].class);
+            method.invoke(null, args);
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Main class not found.");
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            System.out.println("main method not found in Main class.");
+        }
     }
-    
+
     /**
      * Run a given command string
+     *
      * @param cmd A linux command
      */
     private void runCmd(String cmd) {
         List<String> cmdList = Arrays.asList(cmd.split(" "));
         SystemUtil.runCmd(cmdList);
     }
-    
+
     /**
      * Take a list of object and turn it into a String to use as parameter
+     *
      * @param args [ E1, E2, ... ]
      * @return E1.toString E2.toString ...
      */
     private String groupList(List args) {
         StringBuilder out = new StringBuilder();
-        for(Object arg : args)
+        for (Object arg : args) {
             out.append(arg.toString()).append(" ");
-        
+        }
+
         return out.toString();
     }
-    
-    private String prop(String var) {
-        return System.getProperty(var);
+
+    private String javaHome() {
+        return System.getenv("JAVA_HOME");
     }
 }

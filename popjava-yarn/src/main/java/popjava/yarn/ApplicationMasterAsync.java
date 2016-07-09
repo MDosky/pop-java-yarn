@@ -121,10 +121,11 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 + ";",
                 "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
                 + ";",
-                "sleep 10"
+                "sleep 5"
                 + ";",
                 "$JAVA_HOME/bin/java"
-                + " -cp popjava.jar"
+                + " -javaagent:popjava.jar"
+                + " -cp popjava.jar:pop-app.jar"
                 + " popjava.yarn.YARNContainer"
                 + " -myDaemon " + di.toString()
                 + " " + mainStarter
