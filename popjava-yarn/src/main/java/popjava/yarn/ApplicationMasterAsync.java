@@ -23,6 +23,7 @@ import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest;
 import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
+import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
 import popjava.service.POPJavaDeamon;
@@ -150,12 +151,13 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             try {
                 nmClient.startContainer(container, ctx);
                 lauchedContainers++;
-            } catch (Exception ex) {
+            } catch (YarnException | IOException ex) {
                 System.err.println("[AM] Error launching container " + container.getId() + " " + ex);
             }
         }
     }
 
+    @Override
     public void onContainersCompleted(List<ContainerStatus> statuses) {
         for (ContainerStatus status : statuses) {
             System.out.println("[AM] Completed container " + status.getContainerId());
@@ -165,19 +167,20 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         }
     }
 
+    @Override
     public void onNodesUpdated(List<NodeReport> updated) {
     }
 
-    public void onReboot() {
-    }
-
+    @Override
     public void onShutdownRequest() {
     }
 
+    @Override
     public void onError(Throwable t) {
         t.printStackTrace();
     }
 
+    @Override
     public float getProgress() {
         return lauchedContainers / (float) askedContainers;
     }
@@ -230,14 +233,14 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         System.out.println("[AM] unregisterApplicationMaster 1");
     }
 
-    private void setupClientJar(org.apache.hadoop.fs.Path jarPath, LocalResource clientJar) throws IOException {
-        FileStatus jarStat = FileSystem.get(configuration).getFileStatus(jarPath);
-        clientJar.setResource(ConverterUtils.getYarnUrlFromPath(jarPath));
-        clientJar.setSize(jarStat.getLen());
-        clientJar.setTimestamp(jarStat.getModificationTime());
-        clientJar.setType(LocalResourceType.FILE);
-        clientJar.setVisibility(LocalResourceVisibility.PUBLIC);
-    }
+//    private void setupClientJar(org.apache.hadoop.fs.Path jarPath, LocalResource clientJar) throws IOException {
+//        FileStatus jarStat = FileSystem.get(configuration).getFileStatus(jarPath);
+//        clientJar.setResource(ConverterUtils.getYarnUrlFromPath(jarPath));
+//        clientJar.setSize(jarStat.getLen());
+//        clientJar.setTimestamp(jarStat.getModificationTime());
+//        clientJar.setType(LocalResourceType.FILE);
+//        clientJar.setVisibility(LocalResourceVisibility.PUBLIC);
+//    }
 
     private String generatePassword() {
         return new BigInteger(256, rnd).toString(Character.MAX_RADIX);

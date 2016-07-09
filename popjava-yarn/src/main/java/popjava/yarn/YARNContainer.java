@@ -59,8 +59,15 @@ public class YARNContainer {
      */
     private void startDaemon() {
         DaemonInfo di = new DaemonInfo(myDaemon);
-        String daemonCmd = javaHome() + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
-        runCmd(String.format(daemonCmd, di.toString()));
+        // start in parallel if it's the main class
+        if (main) {
+            String daemonCmd = javaHome() + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
+            runCmd(String.format(daemonCmd, di.toString()));
+        } 
+        // start in the thread if there is only a single daemon
+        else {
+            startMainClass("popjava.yarn.DaemonService", myDaemon);
+        }
     }
 
     /**
@@ -78,15 +85,8 @@ public class YARNContainer {
         } catch (InterruptedException ex) {
         }
 
-        try {
-            Class clazz = Class.forName(mainClass);
-            Method method = clazz.getDeclaredMethod("main", String[].class);
-            method.invoke(null, args);
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Main class not found.");
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            System.out.println("main method not found in Main class.");
-        }
+        // start the given main class
+        startMainClass(mainClass, args.toArray(new String[0]));
     }
 
     /**
@@ -114,6 +114,28 @@ public class YARNContainer {
         return out.toString();
     }
 
+    /**
+     * Start a main method in the same thread as this one
+     * @param clazz The class name
+     * @param argsString The arguments to pass to it
+     */
+    private void startMainClass(String clazz, String... argsString) {
+        try {
+            Class clazt = Class.forName(clazz);
+            Method method = clazt.getDeclaredMethod("main", String[].class);
+            method.invoke(null, argsString);
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Main class not found.");
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            System.out.println("main method not found in Main class.");
+        }
+    }
+
+    /**
+     * Java home location
+     *
+     * @return
+     */
     private String javaHome() {
         return System.getenv("JAVA_HOME");
     }
