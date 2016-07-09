@@ -17,7 +17,7 @@ public class AppRoutine {
         this.server = PopJava.newActive(TaskServer.class, new POPAccessPoint(arg));
     }
     
-    public void registerDaemon(DaemonInfo di) {
+    public void registerDaemon(String di) {
         server.registerDaemon(di);
     }
     

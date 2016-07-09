@@ -34,8 +34,8 @@ public class TaskServer extends POPObject {
     }
     
     @POPSyncSeq
-    public void registerDaemon(@POPParameter(POPParameter.Direction.IN) DaemonInfo di) {
-        jm.addDaemon(di);
+    public void registerDaemon(String di) {
+        jm.registerDaemon(di);
     }
     
     @POPSyncSeq

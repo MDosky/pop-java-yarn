@@ -31,7 +31,7 @@ public class DaemonService {
         POPSystem.initialize();
         // server address
         AppRoutine appRoutine = new AppRoutine(args[0]);
-        appRoutine.registerDaemon(mainService.di);
+        appRoutine.registerDaemon(mainService.di.toString());
         appRoutine.startSyncRun();
     }
 
