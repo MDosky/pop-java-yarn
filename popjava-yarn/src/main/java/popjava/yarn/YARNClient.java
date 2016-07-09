@@ -46,13 +46,17 @@ public class YARNClient {
         // Create application via yarnClient
         YarnClientApplication app = yarnClient.createApplication();
 
+        StringBuilder argsString = new StringBuilder();
+        for(String s : args) {
+            argsString.append(s).append(" ");
+        }
+        
         // Set up the container launch context for the application master
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
         amContainer.setCommands(
                 Collections.singletonList(
                         "$JAVA_HOME/bin/java"
-                        + " -Xmx256M"
                         + " popjava.yarn.ApplicationMasterAsync"
                         + " --master `hostname`"
                         + " --dir " + hdfs_dir
@@ -60,7 +64,7 @@ public class YARNClient {
                         + " --memory " + memory
                         + " --containers " + containers
                         + " --main " + main
-                        + " " + args
+                        + " " + argsString.toString()
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                 )
