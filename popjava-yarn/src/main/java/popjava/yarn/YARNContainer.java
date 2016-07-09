@@ -85,6 +85,7 @@ public class YARNContainer {
             method.invoke(null, args.toArray(new String[0]));
         } catch (ClassNotFoundException ex) {
             System.out.println("Main class not found.");
+            ex.printStackTrace();
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             System.out.println("main method not found in Main class.");
             ex.printStackTrace();
