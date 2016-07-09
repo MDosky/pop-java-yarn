@@ -4,6 +4,7 @@ import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPAsyncMutex;
 import popjava.annotation.POPClass;
+import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPParameter;
 import popjava.annotation.POPSyncMutex;
 import popjava.annotation.POPSyncSeq;
@@ -21,6 +22,11 @@ public class TaskServer extends POPObject {
     
     private POPAppStatus status = POPAppStatus.WAITING;
     private POPJavaJobManager jm;
+
+    
+    @POPObjectDescription(url = "localhost")
+    public TaskServer() {
+    }
     
     @POPSyncSeq
     public void setJobManager(POPAccessPoint pap) {
