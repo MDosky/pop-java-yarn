@@ -22,7 +22,7 @@ public class TaskServer extends POPObject {
     private POPAppStatus status = POPAppStatus.WAITING;
     private POPJavaJobManager jm;
     
-    @POPSyncMutex
+    @POPSyncSeq
     public void setJobManager(POPAccessPoint pap) {
         jm = PopJava.newActive(POPJavaJobManager.class, pap);
     }
@@ -32,7 +32,7 @@ public class TaskServer extends POPObject {
         jm.addDaemon(di);
     }
     
-    @POPSyncMutex
+    @POPSyncSeq
     public void setStatus(@POPParameter(POPParameter.Direction.IN) POPAppStatus status) {
         this.status = status;
     }
