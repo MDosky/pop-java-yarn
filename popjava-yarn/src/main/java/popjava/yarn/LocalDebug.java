@@ -30,6 +30,7 @@ public class LocalDebug {
         taskServer.setStatus(POPAppStatus.WAITING);
         
         System.out.println(taskServer.getAccessPoint());
+        System.out.println(jobManager.getAccessPoint());
         
         Thread.sleep(30000);
         
