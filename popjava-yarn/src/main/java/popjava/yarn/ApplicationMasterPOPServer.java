@@ -16,7 +16,7 @@ import popjava.yarn.command.TaskServer;
  *
  * @author Dosky
  */
-public class LocalDebug {
+public class ApplicationMasterPOPServer {
     public static void main(String[] args) throws InterruptedException {
         TaskServer taskServer;
         POPJavaJobManager jobManager;

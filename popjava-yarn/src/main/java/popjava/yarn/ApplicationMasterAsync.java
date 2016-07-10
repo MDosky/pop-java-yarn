@@ -3,8 +3,10 @@ package popjava.yarn;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import org.apache.hadoop.yarn.util.Records;
 import popjava.PopJava;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
+import popjava.util.SystemUtil;
 import popjava.yarn.command.POPAppStatus;
 import popjava.yarn.command.TaskServer;
 
@@ -49,8 +52,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 //    private final String exitPassword;
 //    private int lastPort = POPJavaDeamon.POP_JAVA_DEAMON_PORT;
     
-    private TaskServer taskServer;
-    private POPJavaJobManager jobManager;
+    private String taskServer;
+    private String jobManager;
 
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
@@ -112,8 +115,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 "$JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
                 + " popjava.yarn.YARNContainer"
-                + " -taskserver " + taskServer.getAccessPoint().toString()
-                + " -jobmanager " + jobManager.getAccessPoint().toString()
+                + " -taskserver " + taskServer
+                + " -jobmanager " + jobManager
                 + " " + mainStarter
                 + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                 + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
@@ -219,9 +222,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             System.out.println("[AM] Making res-req " + i);
             rmClient.addContainerRequest(containerAsk);
         }
-
-        // server status, accepted
-        taskServer.setStatus(POPAppStatus.ACCEPTED);
         
         System.out.println("[AM] waiting for containers to finish");
         while (!doneWithContainers()) {
@@ -230,8 +230,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
         System.out.println("[AM] unregisterApplicationMaster 0");
         // Un-register with ResourceManager
-        rmClient.unregisterApplicationMaster(
-                FinalApplicationStatus.SUCCEEDED, "", "");
+        rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
         System.out.println("[AM] unregisterApplicationMaster 1");
         
         // quit pop java
@@ -247,17 +246,19 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         clientJar.setVisibility(LocalResourceVisibility.PUBLIC);
     }
 
-//    private String generatePassword() {
-//        return new BigInteger(256, rnd).toString(Character.MAX_RADIX);
-//    }
-
-    private void startCentralServers() {
-        POPSystem.initialize();
-        taskServer = PopJava.newActive(TaskServer.class);
-        jobManager = PopJava.newActive(POPJavaJobManager.class);
+    private void startCentralServers() throws IOException {
+        List<String> popServer = Lists.newArrayList(
+            System.getProperty("java.home") + "/bin/java",
+                "-javaagent:popjava.jar", 
+                "-cp", "popjava.jar:pop-app.jar",
+                "popjava.yarn.ApplicationMasterPOPServer"
+        );
         
-        taskServer.setJobManager(jobManager.getAccessPoint());
-        // server status, waiting
-        taskServer.setStatus(POPAppStatus.WAITING);
+        ProcessBuilder pb = new ProcessBuilder(popServer);
+        Process process = pb.start();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            taskServer = reader.readLine();
+            jobManager = reader.readLine();
+        }
     }
 }
