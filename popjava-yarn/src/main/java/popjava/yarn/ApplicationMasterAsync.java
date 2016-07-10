@@ -1,19 +1,15 @@
 package popjava.yarn;
 
-import popjava.service.DaemonInfo;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -31,7 +27,6 @@ import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
 import popjava.PopJava;
 import popjava.jobmanager.POPJavaJobManager;
-import popjava.service.POPJavaDeamon;
 import popjava.system.POPSystem;
 import popjava.yarn.command.POPAppStatus;
 import popjava.yarn.command.TaskServer;
@@ -140,7 +135,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 "$JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
                 + " popjava.yarn.YARNContainer"
-                + " -taskServer " + taskServer.getAccessPoint().toString()
+                + " -taskserver " + taskServer.getAccessPoint().toString()
+                + " -jobmanager " + jobManager.getAccessPoint().toString()
 //                + " -myDaemon " + di.toString()
                 + " " + mainStarter
                 + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"

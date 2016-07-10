@@ -22,6 +22,8 @@ public class YARNContainer {
     private String mainClass;
     @Parameter(names = "-taskServer", required = true)
     private String taskServerAP;
+    @Parameter(names = "-jobmanager", required = true)
+    private String jobManagerAP;
     @Parameter
     private List<String> args;
 
@@ -81,8 +83,9 @@ public class YARNContainer {
         // start the given main class
         try {
             // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
-            final Object[] refArgs = new Object[1];
+            final Object[] refArgs = new Object[2];
             refArgs[0] = args.toArray(new String[0]);
+            refArgs[1] = new String[] { "-jobservice=" +  jobManagerAP };
             
             final Class clazz = Class.forName(mainClass);
             final Method method = clazz.getMethod("main", String[].class);
