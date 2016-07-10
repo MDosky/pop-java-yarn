@@ -80,7 +80,7 @@ public class YARNContainer {
 
         // start the given main class
         try {
-            Class clazz = Class.forName(mainClass.replace(".", "/"));
+            Class clazz = Class.forName("L" + mainClass);
             Method method = clazz.getMethod("main", String[].class);
             method.invoke(null, args.toArray(new String[0]));
         } catch (ClassNotFoundException ex) {
