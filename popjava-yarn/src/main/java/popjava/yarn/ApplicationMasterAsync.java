@@ -101,7 +101,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 mainStarter = " -main "
                         + " -mainClass " + main + " " + args;
                 // server status, running
-                taskServer.setStatus(POPAppStatus.RUNNING);
+                //taskServer.setStatus(POPAppStatus.RUNNING);
             }
 
             System.out.println("[AM] Starting client");
