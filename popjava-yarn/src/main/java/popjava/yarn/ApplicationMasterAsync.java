@@ -89,34 +89,17 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     public void onContainersAllocated(List<Container> containers) {
         // look for last container for main
         for (Container cont : containers) {
-//            long id = cont.getId().getContainerId();
-//            if (!daemonInfo.containsKey(id)) {
-//                DaemonInfo di = new DaemonInfo(cont.getNodeId().getHost(), generatePassword(), ++lastPort, id);
-//                daemonInfo.put(id, di);
-//
-//                // check for last container
-//                if (daemonInfo.size() == this.askedContainers) {
-                if(++allocatedContainers == askedContainers)
-                    mainContainer = cont;
-//                }
-//            }
+            if(++allocatedContainers == askedContainers)
+                mainContainer = cont;
         }
 
         for (Container container : containers) {
-//            DaemonInfo di = daemonInfo.get(container.getId().getContainerId());
 
             String mainStarter = "";
             // master container, who will start the main
             if (container == mainContainer) {
-//                String daemons = "";
-//                for (DaemonInfo info : daemonInfo.values()) {
-//                    daemons += " -daemon " + info.toString();
-//                }
-
                 mainStarter = " -main "
-//                        + " " + daemons
                         + " -mainClass " + main + " " + args;
-                
                 // server status, running
                 taskServer.setStatus(POPAppStatus.RUNNING);
             }
@@ -126,18 +109,11 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
-//                "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
-//                + ";",
-//                "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
-//                + ";",
-//                "sleep 5"
-//                + ";",
                 "$JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
                 + " popjava.yarn.YARNContainer"
                 + " -taskserver " + taskServer.getAccessPoint().toString()
                 + " -jobmanager " + jobManager.getAccessPoint().toString()
-//                + " -myDaemon " + di.toString()
                 + " " + mainStarter
                 + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                 + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
@@ -217,7 +193,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public void runMainLoop() throws Exception {
-        startContainerListener();
+        startCentralServers();
 
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
@@ -256,8 +232,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         // Un-register with ResourceManager
         rmClient.unregisterApplicationMaster(
                 FinalApplicationStatus.SUCCEEDED, "", "");
-        // server status, finished
-        taskServer.setStatus(POPAppStatus.FINISHED);
         System.out.println("[AM] unregisterApplicationMaster 1");
         
         // quit pop java
@@ -277,7 +251,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 //        return new BigInteger(256, rnd).toString(Character.MAX_RADIX);
 //    }
 
-    private void startContainerListener() {
+    private void startCentralServers() {
         POPSystem.initialize();
         taskServer = PopJava.newActive(TaskServer.class);
         jobManager = PopJava.newActive(POPJavaJobManager.class);
