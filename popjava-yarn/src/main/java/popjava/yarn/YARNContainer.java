@@ -83,9 +83,12 @@ public class YARNContainer {
         // start the given main class
         try {
             // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
-            final Object[] refArgs = new Object[2];
-            refArgs[0] = args.toArray(new String[0]);
-            refArgs[1] = new String[] { "-jobservice=" +  jobManagerAP };
+            final Object[] refArgs = new Object[1];
+            String[] argsWjm = new String[args.size() + 1];
+            for(int i = 0; i < args.size(); i++)
+                argsWjm[i+1] = args.get(i);
+            argsWjm[0] = "-jobservice=" +  jobManagerAP;
+            refArgs[0] = argsWjm;
             
             final Class clazz = Class.forName(mainClass);
             final Method method = clazz.getMethod("main", String[].class);
