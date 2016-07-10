@@ -40,7 +40,7 @@ public class DaemonService {
     }
 
     private void start() {
-        daemon = new POPJavaDeamon(di.getPassword(), di.getPort());
+        daemon = new POPJavaDeamon(di);
 
         // start daemon thread
         Thread thread = new Thread(daemon);
