@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import popjava.service.DaemonInfo;
+import popjava.system.POPSystem;
 import popjava.util.SystemUtil;
 import popjava.yarn.command.AppRoutine;
 
@@ -79,7 +80,7 @@ public class YARNContainer {
         }
 
         // start the given main class
-        AppRoutine appRoutine = new AppRoutine(taskServerAP);
+        AppRoutine appRoutine;
         try {
             // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
             final Object[] refArgs = new Object[1];
@@ -93,12 +94,15 @@ public class YARNContainer {
             final Class clazz = Class.forName(mainClass);
             final Method method = clazz.getMethod("main", String[].class);
             method.invoke(null, refArgs);
+            appRoutine = new AppRoutine(taskServerAP);
             appRoutine.finish();
         } catch (ClassNotFoundException ex) {
             System.out.println("Main class not found.");
+            appRoutine = new AppRoutine(taskServerAP);
             appRoutine.fail();
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             System.out.println("main method not found in Main class.");
+            appRoutine = new AppRoutine(taskServerAP);
             appRoutine.fail();
         } finally {
             try {
@@ -106,6 +110,7 @@ public class YARNContainer {
             } catch (InterruptedException ex) { }
             
             // tell everyone to finish their tasks
+            appRoutine = new AppRoutine(taskServerAP);
             appRoutine.waitAndQuit();
         }
     }
