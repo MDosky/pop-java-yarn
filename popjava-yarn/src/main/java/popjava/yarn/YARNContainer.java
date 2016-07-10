@@ -80,7 +80,7 @@ public class YARNContainer {
 
         // start the given main class
         try {
-            String[] refArgs = (String[]) args.toArray();
+            String[] refArgs = args.toArray(new String[0]);
             Class clazz = Class.forName(mainClass);
             Method method = clazz.getMethod("main", String[].class);
             method.invoke(null, refArgs);
