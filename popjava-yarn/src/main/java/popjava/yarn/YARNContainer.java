@@ -80,9 +80,10 @@ public class YARNContainer {
 
         // start the given main class
         try {
+            String[] refArgs = (String[]) args.toArray();
             Class clazz = Class.forName(mainClass);
             Method method = clazz.getMethod("main", String[].class);
-            method.invoke(null, args.toArray(new String[0]));
+            method.invoke(null, refArgs);
         } catch (ClassNotFoundException ex) {
             System.out.println("Main class not found.");
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
