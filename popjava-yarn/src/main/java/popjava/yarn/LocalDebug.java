@@ -8,6 +8,7 @@ package popjava.yarn;
 import popjava.PopJava;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
+import popjava.yarn.command.AppRoutine;
 import popjava.yarn.command.POPAppStatus;
 import popjava.yarn.command.TaskServer;
 
@@ -32,9 +33,8 @@ public class LocalDebug {
         System.out.println(taskServer.getAccessPoint());
         System.out.println(jobManager.getAccessPoint());
         
-        Thread.sleep(30000);
-        
-        taskServer.setStatus(POPAppStatus.FINISHED);
+        AppRoutine appRoutine = new AppRoutine(taskServer.getAccessPoint().toString());
+        appRoutine.waitAndQuit();
         
         Thread.sleep(10000);
         

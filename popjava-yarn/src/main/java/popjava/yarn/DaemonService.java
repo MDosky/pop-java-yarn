@@ -32,7 +32,7 @@ public class DaemonService {
         // server address
         AppRoutine appRoutine = new AppRoutine(args[0]);
         appRoutine.registerDaemon(mainService.di.toString());
-        appRoutine.startSyncRun();
+        appRoutine.waitAndQuit();
     }
 
     private DaemonService() {

@@ -13,8 +13,8 @@ public class AppRoutine {
     
     private final TaskServer server;
 
-    public AppRoutine(String arg) {
-        this.server = PopJava.newActive(TaskServer.class, new POPAccessPoint(arg));
+    public AppRoutine(String taskAP) {
+        this.server = PopJava.newActive(TaskServer.class, new POPAccessPoint(taskAP));
     }
     
     public void registerDaemon(String di) {
@@ -22,7 +22,7 @@ public class AppRoutine {
         server.registerDaemon(di);
     }
     
-    public void startSyncRun() {
+    public void waitAndQuit() {
         int killStatus = -1;
         while(true) {
             POPAppStatus status = server.getStatus();
@@ -49,5 +49,13 @@ public class AppRoutine {
             } catch (InterruptedException ex) {
             }
         }
+    }
+
+    public void finish() {
+        server.setStatus(POPAppStatus.FINISHED);
+    }
+
+    public void fail() {
+        server.setStatus(POPAppStatus.FAILED);
     }
 }
