@@ -18,6 +18,7 @@ public class AppRoutine {
     }
     
     public void registerDaemon(String di) {
+        System.out.println("AppRoutine registerDaemon " + di);
         server.registerDaemon(di);
     }
     

@@ -56,7 +56,7 @@ public class YARNContainer {
     private void startDaemon() {
         // start in parallel if it's the main class
         if (main) {
-            String daemonCmd = javaHome() + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
+            String daemonCmd = System.getenv("JAVA_HOME") + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
             runCmd(String.format(daemonCmd, taskServerAP));
         } 
         // start in the thread if there is only a single daemon
@@ -111,12 +111,4 @@ public class YARNContainer {
         SystemUtil.runCmd(cmdList);
     }
 
-    /**
-     * Java home location
-     *
-     * @return
-     */
-    private String javaHome() {
-        return System.getenv("JAVA_HOME");
-    }
 }
