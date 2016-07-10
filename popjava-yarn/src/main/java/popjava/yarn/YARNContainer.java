@@ -80,9 +80,12 @@ public class YARNContainer {
 
         // start the given main class
         try {
-            Object[] refArgs = args.toArray();
-            Class clazz = Class.forName(mainClass);
-            Method method = clazz.getMethod("main", String[].class);
+            // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
+            final Object[] refArgs = new Object[1];
+            refArgs[0] = args.toArray(new String[0]);
+            
+            final Class clazz = Class.forName(mainClass);
+            final Method method = clazz.getMethod("main", String[].class);
             method.invoke(null, refArgs);
         } catch (ClassNotFoundException ex) {
             System.out.println("Main class not found.");
