@@ -2,7 +2,6 @@ package popjava.yarn.command;
 
 import popjava.PopJava;
 import popjava.baseobject.POPAccessPoint;
-import popjava.service.DaemonInfo;
 import popjava.system.POPSystem;
 
 /**
@@ -11,7 +10,7 @@ import popjava.system.POPSystem;
  */
 public class AppRoutine {
     
-    private final TaskServer server;
+    public final TaskServer server;
 
     public AppRoutine(String taskAP) {
         this.server = PopJava.newActive(TaskServer.class, new POPAccessPoint(taskAP));

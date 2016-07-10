@@ -93,6 +93,7 @@ public class YARNContainer {
             final Class clazz = Class.forName(mainClass);
             final Method method = clazz.getMethod("main", String[].class);
             method.invoke(null, refArgs);
+            appRoutine.finish();
         } catch (ClassNotFoundException ex) {
             System.out.println("Main class not found.");
             appRoutine.fail();
@@ -105,7 +106,6 @@ public class YARNContainer {
             } catch (InterruptedException ex) { }
             
             // tell everyone to finish their tasks
-            appRoutine.finish();
             appRoutine.waitAndQuit();
         }
     }

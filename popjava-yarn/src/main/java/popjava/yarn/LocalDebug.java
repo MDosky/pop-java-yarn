@@ -34,10 +34,11 @@ public class LocalDebug {
         System.out.println(jobManager.getAccessPoint());
         
         AppRoutine appRoutine = new AppRoutine(taskServer.getAccessPoint().toString());
-        appRoutine.waitAndQuit();
         
+        while(!appRoutine.server.getStatus().isKill())
+            Thread.sleep(1000);
         Thread.sleep(10000);
-        
         POPSystem.end();
+        System.exit(0);
     }
 }
