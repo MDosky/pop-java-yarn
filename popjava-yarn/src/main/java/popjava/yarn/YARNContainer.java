@@ -83,7 +83,8 @@ public class YARNContainer {
         try {
             String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s -jobservice=%s %s";
             String mainCmd = String.format(mainCmdFormat, mainClass, jobManagerAP, groupList(args));
-            ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(mainCmdFormat));
+            ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(mainCmd));
+            pb.inheritIO();
             System.out.println(System.currentTimeMillis() + " start main");
             Process popProcess = pb.start();
             appRoutine.running();
