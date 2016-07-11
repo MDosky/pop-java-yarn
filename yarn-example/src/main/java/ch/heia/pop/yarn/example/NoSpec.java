@@ -19,28 +19,35 @@ public class NoSpec {
         
         //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
         
+        System.out.println("Starting pop java app");
         AAA aaa;
         
+        System.out.println("first");
         aaa = PopJava.newActive(AAA.class);
         System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
+        System.out.println("second");
         aaa = PopJava.newActive(AAA.class);
         System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
+        System.out.println("third");
         aaa = PopJava.newActive(AAA.class);
         System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
+        System.out.println("forth");
         aaa = PopJava.newActive(AAA.class);
         System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
+        System.out.println("fifth");
         aaa = PopJava.newActive(AAA.class);
         System.out.println(aaa.aaa());
         aaa.exit();
         
+        System.out.println("end app");
         POPSystem.end();
     }
 
