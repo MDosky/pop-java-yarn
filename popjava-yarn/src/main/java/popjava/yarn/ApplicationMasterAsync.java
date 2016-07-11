@@ -22,6 +22,7 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
+import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
 
 /**
@@ -218,6 +219,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
             taskServer = reader.readLine();
             jobManager = reader.readLine();
+            POPSystem.jobService = new POPAccessPoint(jobManager);
         }
     }
 }
