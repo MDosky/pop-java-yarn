@@ -28,7 +28,7 @@ public class DaemonService {
         DaemonService mainService = new DaemonService();
         mainService.start();
         
-        POPSystem.initialize();
+        POPSystem.initialize(args);
         // server address
         AppRoutine appRoutine = new AppRoutine(args[0]);
         appRoutine.registerDaemon(mainService.di.toString());
