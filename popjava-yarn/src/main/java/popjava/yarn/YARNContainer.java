@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import popjava.system.POPSystem;
 import popjava.util.SystemUtil;
 import popjava.yarn.command.AppRoutine;
 
@@ -75,38 +76,30 @@ public class YARNContainer {
         } catch (InterruptedException ex) {
         }
 
+        // Init POP-Java
+        POPSystem.initialize("-jobservice=" + jobManagerAP);
         // start the given main class
-        AppRoutine appRoutine;
+        AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
             // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
             final Object[] refArgs = new Object[1];
-            String[] argsWjm = new String[args.size() + 1];
-            for(int i = 0; i < args.size(); i++)
-                argsWjm[i+1] = args.get(i);
-            argsWjm[0] = "-jobservice=" +  jobManagerAP;
-            refArgs[0] = argsWjm;
+            refArgs[0] = args.toArray(new String[0]);
             
             // call main with reflection in this thread
             final Class clazz = Class.forName(mainClass);
             final Method method = clazz.getDeclaredMethod("main", String[].class);
             method.invoke(null, refArgs);
-            appRoutine = new AppRoutine(taskServerAP);
-            appRoutine.finish();
         } catch (ClassNotFoundException ex) {
             System.out.println("Main class not found.");
-            appRoutine = new AppRoutine(taskServerAP);
-            appRoutine.fail();
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             System.out.println("main method not found in Main class.");
-            appRoutine = new AppRoutine(taskServerAP);
-            appRoutine.fail();
         } finally {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException ex) { }
-            
-            // tell everyone to finish their tasks
             appRoutine = new AppRoutine(taskServerAP);
+            appRoutine.finish();
+            // tell everyone to finish their tasks
             appRoutine.waitAndQuit();
         }
     }
