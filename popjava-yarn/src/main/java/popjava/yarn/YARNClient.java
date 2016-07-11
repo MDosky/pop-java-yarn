@@ -46,9 +46,9 @@ public class YARNClient {
         // Create application via yarnClient
         YarnClientApplication app = yarnClient.createApplication();
 
-        StringBuilder argsString = new StringBuilder();
+        String argsString = "";
         for (String s : args) {
-            argsString.append(s).append(" ");
+            argsString += s + " ";
         }
 
         // Set up the container launch context for the application master
