@@ -113,7 +113,11 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
-                "echo $JAVA_HOME/bin/java"
+                  "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
+                + ";",
+                  "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
+                + ";",
+                  "echo $JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
                 + " -cp popjava.jar:pop-app.jar"
                 + " popjava.yarn.YARNContainer"
@@ -126,18 +130,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             );
             System.out.println("[AM] Executing: " + Arrays.toString(script.toArray(new String[0])));
             ctx.setCommands(script);
-
-            // resources
-            LocalResource popJar = Records.newRecord(LocalResource.class);
-            LocalResource appJar = Records.newRecord(LocalResource.class);
-            try {
-                setupClientJar(new Path(hdfs_dir + "/pop-app.jar"), popJar);
-                setupClientJar(new Path(hdfs_dir + "/yarn-app.jar"), popJar);
-            } catch (IOException ex) {}
-            Map<String, LocalResource> resources = new HashMap<>();
-            resources.put("pop-app.jar", popJar);
-            resources.put("yarn-app.jar", appJar);
-            ctx.setLocalResources(resources);
             
             System.out.println("[AM] Launching container " + container.getId());
             try {
