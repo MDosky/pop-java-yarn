@@ -4,6 +4,7 @@ import java.util.Arrays;
 import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
+import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
 import popjava.system.POPSystem;
 
@@ -52,7 +53,7 @@ public class NoSpec {
         public AAA() {
         }
         
-        @POPAsyncConc
+        @POPSyncSeq
         public long aaa() {
             return System.currentTimeMillis();
         }
