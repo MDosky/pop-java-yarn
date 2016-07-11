@@ -123,6 +123,7 @@ public class YARNContainer {
      */
     private void runCmd(String cmd) throws IOException {
         cmd = "/bin/bash -c " + cmd;
+        System.out.println(cmd);
         ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
         pb.environment().putAll(System.getenv());
         pb.inheritIO();
