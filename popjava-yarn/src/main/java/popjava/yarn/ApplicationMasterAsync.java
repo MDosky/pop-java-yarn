@@ -121,7 +121,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 + " -javaagent:popjava.jar"
                 + " -cp popjava.jar:pop-app.jar"
                 + " popjava.yarn.YARNContainer"
-                + " -taskserver " + taskServer
+                + " -taskServer " + taskServer
                 + " -jobmanager " + jobManager
                 + " " + mainStarter
                 + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
