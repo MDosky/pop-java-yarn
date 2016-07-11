@@ -117,7 +117,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 + ";",
                   "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
                 + ";",
-                  "echo $JAVA_HOME/bin/java"
+                  "$JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
                 + " -cp popjava.jar:pop-app.jar"
                 + " popjava.yarn.YARNContainer"
@@ -179,7 +179,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public void runMainLoop() throws Exception {
-        //startCentralServers();
+        startCentralServers();
 
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
