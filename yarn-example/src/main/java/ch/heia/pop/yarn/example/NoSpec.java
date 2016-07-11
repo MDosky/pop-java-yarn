@@ -21,23 +21,23 @@ public class NoSpec {
         AAA aaa;
         
         aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
+        System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
         aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
+        System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
         aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
+        System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
         aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
+        System.out.println(aaa.aaa());
         aaa.exit();
         Thread.sleep(5000);
         aaa = PopJava.newActive(AAA.class);
-        aaa.aaa();
+        System.out.println(aaa.aaa());
         aaa.exit();
         
         POPSystem.end();
@@ -53,8 +53,8 @@ public class NoSpec {
         }
         
         @POPAsyncConc
-        public void aaa() {
-            System.out.println(System.currentTimeMillis());
+        public long aaa() {
+            return System.currentTimeMillis();
         }
     }
     
