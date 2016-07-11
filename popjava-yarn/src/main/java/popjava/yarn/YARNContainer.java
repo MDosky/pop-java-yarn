@@ -86,6 +86,7 @@ public class YARNContainer {
         try {
             String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:$PWD/popjava.jar -cp $PWD/popjava.jar:$PWD/pop-app.jar %s %s %s";
             String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
+            System.err.println(System.currentTimeMillis() + " 123a");
             runCmd(mainCmd);
             appRoutine.finish();
         } catch (Exception ex) {
@@ -122,9 +123,7 @@ public class YARNContainer {
      * @param cmd A linux command
      */
     private void runCmd(String cmd) throws IOException {
-        cmd = "/bin/bash -c " + cmd;
         ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
-        pb.environment().putAll(System.getenv());
         pb.inheritIO();
         Process popProcess = pb.start();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
