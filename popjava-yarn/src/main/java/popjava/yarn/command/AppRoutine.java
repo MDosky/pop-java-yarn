@@ -48,6 +48,10 @@ public class AppRoutine {
             }
         }
     }
+    
+    public void running() {
+        server.setStatus(POPAppStatus.RUNNING);
+    }
 
     public void finish() {
         server.setStatus(POPAppStatus.FINISHED);
