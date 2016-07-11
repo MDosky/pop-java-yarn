@@ -4,19 +4,15 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest;
@@ -24,15 +20,9 @@ import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
-import org.apache.hadoop.yarn.util.Apps;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
-import popjava.PopJava;
-import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
-import popjava.util.SystemUtil;
-import popjava.yarn.command.POPAppStatus;
-import popjava.yarn.command.TaskServer;
 
 /**
  * This class implements a simple async app master.
@@ -47,11 +37,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     private int lauchedContainers;
     private int allocatedContainers;
 
-//    private final Map<Long, DaemonInfo> daemonInfo = new HashMap<>();
-//    private final Random rnd = new SecureRandom();
-//    private final String exitPassword;
-//    private int lastPort = POPJavaDeamon.POP_JAVA_DEAMON_PORT;
-    
     private Process popProcess;
     private String taskServer;
     private String jobManager;
@@ -219,16 +204,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         // quit pop java
         POPSystem.end();
     }
-
-    private void setupClientJar(org.apache.hadoop.fs.Path jarPath, LocalResource clientJar) throws IOException {
-        FileStatus jarStat = FileSystem.get(configuration).getFileStatus(jarPath);
-        clientJar.setResource(ConverterUtils.getYarnUrlFromPath(jarPath));
-        clientJar.setSize(jarStat.getLen());
-        clientJar.setTimestamp(jarStat.getModificationTime());
-        clientJar.setType(LocalResourceType.FILE);
-        clientJar.setVisibility(LocalResourceVisibility.PUBLIC);
-    }
-
+    
     private void startCentralServers() throws IOException {
         List<String> popServer = Lists.newArrayList(
             System.getProperty("java.home") + "/bin/java",

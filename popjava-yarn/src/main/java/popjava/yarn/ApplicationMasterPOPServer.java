@@ -39,6 +39,5 @@ public class ApplicationMasterPOPServer {
             Thread.sleep(1000);
         Thread.sleep(10000);
         POPSystem.end();
-        System.exit(0);
     }
 }

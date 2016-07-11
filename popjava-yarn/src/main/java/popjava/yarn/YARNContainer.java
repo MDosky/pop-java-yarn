@@ -7,10 +7,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import popjava.service.DaemonInfo;
-import popjava.system.POPSystem;
 import popjava.util.SystemUtil;
 import popjava.yarn.command.AppRoutine;
 
