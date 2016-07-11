@@ -1,8 +1,6 @@
 package ch.heia.pop.yarn.example;
 
-import java.util.Arrays;
 import popjava.PopJava;
-import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
@@ -16,7 +14,10 @@ public class NoSpec {
    
     public static void main(String[] args) throws InterruptedException {
         System.out.println(POPSystem.jobService);
+        System.out.println("1 " + POPSystem.initialized);
         POPSystem.initialize(args);
+        POPSystem.start();
+        System.out.println("2 " + POPSystem.initialized);
         System.out.println(POPSystem.jobService);
         
         //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
