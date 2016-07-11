@@ -16,7 +16,9 @@ public class NoSpec {
    
     public static void main(String[] args) throws InterruptedException {
         System.out.println(POPSystem.jobService);
+        System.out.println("9 " + POPSystem.initialized);
         POPSystem.initialize(args);
+        System.out.println("10" + POPSystem.initialized);
         System.out.println(POPSystem.jobService);
         
         //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);

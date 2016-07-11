@@ -43,7 +43,9 @@ public class YARNContainer {
      */
     private void start() {
         // start daemon on every container
+        System.out.println("1 " + POPSystem.initialized);
         startDaemon();
+        System.out.println("2 " + POPSystem.initialized);
 
         // start JM and the main if is the main container
         if (main) {
@@ -59,13 +61,17 @@ public class YARNContainer {
         if (main) {
             String daemonCmd = System.getProperty("java.home") + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
             try {
+        System.out.println("3 " + POPSystem.initialized);
                 runCmd(String.format(daemonCmd, taskServerAP, "-jobservice=" + jobManagerAP));
+        System.out.println("4 " + POPSystem.initialized);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         } // start in the thread if there is only a single daemon
         else {
+        System.out.println("5 " + POPSystem.initialized);
             DaemonService.main(taskServerAP, "-jobservice=" + jobManagerAP);
+        System.out.println("6 " + POPSystem.initialized);
         }
     }
 
@@ -80,7 +86,9 @@ public class YARNContainer {
         }
 
         // Init POP-Java
+        System.out.println("7 " + POPSystem.initialized);
         POPSystem.initialize("-jobservice=" + jobManagerAP);
+        System.out.println("8 " + POPSystem.initialized);
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
