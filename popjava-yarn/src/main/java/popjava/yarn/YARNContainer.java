@@ -122,7 +122,7 @@ public class YARNContainer {
      * @param cmd A linux command
      */
     private void runCmd(String cmd) throws IOException {
-        cmd = "/bin/bash -c " + cmd;
+        cmd = "/bin/bash -c \"" + cmd + "\"";
         System.out.println(cmd);
         ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
         pb.environment().putAll(System.getenv());
