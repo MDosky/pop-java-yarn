@@ -52,6 +52,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 //    private final String exitPassword;
 //    private int lastPort = POPJavaDeamon.POP_JAVA_DEAMON_PORT;
     
+    private Process popProcess;
     private String taskServer;
     private String jobManager;
 
@@ -175,6 +176,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
 
     @Override
     public void onShutdownRequest() {
+        popProcess.destroy();
     }
 
     @Override
@@ -255,8 +257,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         );
         
         ProcessBuilder pb = new ProcessBuilder(popServer);
-        Process process = pb.start();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        popProcess = pb.start();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
             taskServer = reader.readLine();
             jobManager = reader.readLine();
         }
