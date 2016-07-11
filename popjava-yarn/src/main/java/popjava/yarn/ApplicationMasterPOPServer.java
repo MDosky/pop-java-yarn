@@ -30,6 +30,7 @@ public class ApplicationMasterPOPServer {
         // server status, waiting
         taskServer.setStatus(POPAppStatus.WAITING);
         
+        // printout to share
         System.out.println(taskServer.getAccessPoint());
         System.out.println(jobManager.getAccessPoint());
         

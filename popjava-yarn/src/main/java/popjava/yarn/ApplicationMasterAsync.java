@@ -219,7 +219,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
             taskServer = reader.readLine();
             jobManager = reader.readLine();
-            POPSystem.jobService = new POPAccessPoint(jobManager);
         }
     }
 }

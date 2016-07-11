@@ -27,11 +27,13 @@ public class TaskServer extends POPObject {
     @POPSyncSeq
     public void setJobManager(POPAccessPoint pap) {
         jm = PopJava.newActive(POPJavaJobManager.class, pap);
+        System.out.println("Setting up JM " + pap);
     }
     
     @POPSyncSeq
     public void registerDaemon(String di) {
         jm.registerDaemon(di);
+        System.out.println("Registerning daemon " + di);
     }
     
     @POPSyncSeq
