@@ -109,7 +109,8 @@ public class YARNContainer {
 //            System.out.println("Main class not found.");
 //        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 //            System.out.println("main method not found in Main class.");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             try {
                 Thread.sleep(10000);
