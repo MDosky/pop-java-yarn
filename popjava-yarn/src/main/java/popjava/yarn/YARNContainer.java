@@ -88,6 +88,9 @@ public class YARNContainer {
             Process popProcess = pb.start();
             appRoutine.running();
             status = popProcess.waitFor();
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException ex) { }
             System.out.println(System.currentTimeMillis() + " end main");
 
 //            // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
