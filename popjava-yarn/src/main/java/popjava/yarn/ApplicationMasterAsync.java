@@ -113,7 +113,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
-                "$JAVA_HOME/bin/java"
+                "echo $JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
                 + " popjava.yarn.YARNContainer"
                 + " -taskserver " + taskServer
