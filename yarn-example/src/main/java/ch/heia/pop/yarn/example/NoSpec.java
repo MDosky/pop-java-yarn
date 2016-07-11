@@ -13,14 +13,7 @@ import popjava.system.POPSystem;
 public class NoSpec {
    
     public static void main(String[] args) throws InterruptedException {
-        System.out.println(POPSystem.jobService);
-        System.out.println("1 " + POPSystem.initialized);
         POPSystem.initialize(args);
-        POPSystem.start();
-        System.out.println("2 " + POPSystem.initialized);
-        System.out.println(POPSystem.jobService);
-        
-        //POPJavaJobManager popJm = PopJava.newActive(POPJavaJobManager.class);
         
         System.out.println("Starting pop java app");
         AAA aaa;

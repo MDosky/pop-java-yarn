@@ -84,12 +84,11 @@ public class YARNContainer {
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
-            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:./popjava.jar -cp ./popjava.jar:./pop-app.jar %s %s %s";
+            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:$PWD/popjava.jar -cp $PWD/popjava.jar:$PWD/pop-app.jar %s %s %s";
             String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
-            System.out.println(System.currentTimeMillis() + " start main");
+            System.err.println(System.currentTimeMillis() + " 123a");
             runCmd(mainCmd);
             appRoutine.finish();
-            System.out.println(System.currentTimeMillis() + " end main");
         } catch (Exception ex) {
             ex.printStackTrace();
             appRoutine.fail();
