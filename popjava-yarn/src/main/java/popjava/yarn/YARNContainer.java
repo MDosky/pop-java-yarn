@@ -92,7 +92,7 @@ public class YARNContainer {
             
             // call main with reflection in this thread
             final Class clazz = Class.forName(mainClass);
-            final Method method = clazz.getMethod("main", String[].class);
+            final Method method = clazz.getDeclaredMethod("main", String[].class);
             method.invoke(null, refArgs);
             appRoutine = new AppRoutine(taskServerAP);
             appRoutine.finish();

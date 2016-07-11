@@ -47,6 +47,7 @@ public class DaemonService {
         thread.setName("POP-Java Daemon");
         
         thread.start();
+        System.out.println("Started POP Daemon on " + di.toString());
     }
 
     public void stop() {
