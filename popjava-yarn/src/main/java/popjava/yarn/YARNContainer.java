@@ -6,10 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import popjava.system.POPSystem;
-import popjava.util.SystemUtil;
 import popjava.util.Util;
 import popjava.yarn.command.AppRoutine;
 
@@ -60,7 +58,11 @@ public class YARNContainer {
         // start in parallel if it's the main class
         if (main) {
             String daemonCmd = System.getProperty("java.home") + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s";
-            runCmd(String.format(daemonCmd, taskServerAP));
+            try {
+                runCmd(String.format(daemonCmd, taskServerAP));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } // start in the thread if there is only a single daemon
         else {
             DaemonService.main(taskServerAP);
@@ -81,45 +83,21 @@ public class YARNContainer {
         POPSystem.initialize("-jobservice=" + jobManagerAP);
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
-        int status = -1;
         try {
             String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s -jobservice=%s %s";
             String mainCmd = String.format(mainCmdFormat, mainClass, jobManagerAP, groupList(args));
-            ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(mainCmd));
-            pb.inheritIO();
             System.out.println(System.currentTimeMillis() + " start main");
-            Process popProcess = pb.start();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-                String line;
-                while((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
-            }
+            runCmd(mainCmd);
+            appRoutine.finish();
             System.out.println(System.currentTimeMillis() + " end main");
-
-//            // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
-//            final Object[] refArgs = new Object[1];
-//            refArgs[0] = args.toArray(new String[0]);
-//            
-//            // call main with reflection in this thread
-//            final Class clazz = Class.forName(mainClass);
-//            final Method method = clazz.getDeclaredMethod("main", String[].class);
-//            method.invoke(null, refArgs);
-//        } catch (ClassNotFoundException ex) {
-//            System.out.println("Main class not found.");
-//        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-//            System.out.println("main method not found in Main class.");
         } catch (Exception ex) {
             ex.printStackTrace();
+            appRoutine.fail();
         } finally {
             try {
                 Thread.sleep(10000);
-            } catch (InterruptedException ex) { }
-            appRoutine = new AppRoutine(taskServerAP);
-            if(status == 0)
-                appRoutine.finish();
-            else
-                appRoutine.fail();
+            } catch (InterruptedException ex) {
+            }
             // tell everyone to finish their tasks
             appRoutine.waitAndQuit();
         }
@@ -145,9 +123,16 @@ public class YARNContainer {
      *
      * @param cmd A linux command
      */
-    private void runCmd(String cmd) {
-        List<String> cmdList = Arrays.asList(cmd.split(" "));
-        SystemUtil.runCmd(cmdList);
+    private void runCmd(String cmd) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
+        pb.inheritIO();
+        Process popProcess = pb.start();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
     }
 
 }
