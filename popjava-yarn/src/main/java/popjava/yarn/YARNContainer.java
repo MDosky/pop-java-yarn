@@ -57,7 +57,7 @@ public class YARNContainer {
     private void startDaemon() {
         // start in parallel if it's the main class
         if (main) {
-            String daemonCmd = System.getProperty("java.home") + "/bin/java -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
+            String daemonCmd = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
             try {
                 runCmd(String.format(daemonCmd, taskServerAP, "-jobservice=" + jobManagerAP));
             } catch (IOException ex) {
@@ -84,7 +84,7 @@ public class YARNContainer {
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
-            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:$PWD/popjava.jar -cp $PWD/popjava.jar:$PWD/pop-app.jar %s %s %s";
+            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s %s";
             String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
             System.err.println(System.currentTimeMillis() + " 123a");
             runCmd(mainCmd);
