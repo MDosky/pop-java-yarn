@@ -168,7 +168,7 @@ hdfs dfs -copyFromLocal "$jar" "${TMP_DIR}/pop-app.jar"
 hdfs dfs -copyFromLocal "$popjava" "${TMP_DIR}/popjava.jar"
 
 # Start YARN client
-yarn jar "$popjava" popjava.yarn.YARNClient --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
+yarn jar "$popjava" --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
 
 # Cleanup by removing temp dir
 hdfs dfs -rm -R "$TMP_DIR"
