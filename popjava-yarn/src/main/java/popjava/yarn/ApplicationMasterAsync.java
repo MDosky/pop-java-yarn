@@ -198,7 +198,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public void runMainLoop() throws Exception {
-        startCentralServers();
+        //startCentralServers();
 
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
