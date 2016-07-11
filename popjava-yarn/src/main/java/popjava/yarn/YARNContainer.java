@@ -2,7 +2,9 @@ package popjava.yarn;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -87,8 +89,12 @@ public class YARNContainer {
             pb.inheritIO();
             System.out.println(System.currentTimeMillis() + " start main");
             Process popProcess = pb.start();
-            appRoutine.running();
-            status = popProcess.waitFor();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+                String line;
+                while((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
             System.out.println(System.currentTimeMillis() + " end main");
 
 //            // http://stackoverflow.com/questions/15582476/how-to-call-main-method-of-a-class-using-reflection-in-java
@@ -103,7 +109,7 @@ public class YARNContainer {
 //            System.out.println("Main class not found.");
 //        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 //            System.out.println("main method not found in Main class.");
-        } catch (IOException | InterruptedException ex) {
+        } catch (IOException ex) {
         } finally {
             try {
                 Thread.sleep(10000);
