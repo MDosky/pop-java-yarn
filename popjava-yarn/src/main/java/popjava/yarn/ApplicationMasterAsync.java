@@ -115,6 +115,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             List script = Lists.newArrayList(
                 "echo $JAVA_HOME/bin/java"
                 + " -javaagent:popjava.jar"
+                + " -cp popjava.jar:pop-app.jar"
                 + " popjava.yarn.YARNContainer"
                 + " -taskserver " + taskServer
                 + " -jobmanager " + jobManager
@@ -137,18 +138,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             resources.put("pop-app.jar", popJar);
             resources.put("yarn-app.jar", appJar);
             ctx.setLocalResources(resources);
-            
-            // env variables
-            Map<String, String> appEnv = new HashMap<String, String>();
-            for (String c : configuration.getStrings(
-                    YarnConfiguration.YARN_APPLICATION_CLASSPATH,
-                    YarnConfiguration.DEFAULT_YARN_APPLICATION_CLASSPATH)) {
-                Apps.addToEnvironment(appEnv, ApplicationConstants.Environment.CLASSPATH.name(),
-                        c.trim(), ":");
-            }
-            Apps.addToEnvironment(appEnv,
-                    ApplicationConstants.Environment.CLASSPATH.name(),
-                    ApplicationConstants.Environment.PWD.$() + File.separator + "*", ":");
             
             System.out.println("[AM] Launching container " + container.getId());
             try {
