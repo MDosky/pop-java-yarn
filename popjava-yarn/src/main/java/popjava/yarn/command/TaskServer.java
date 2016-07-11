@@ -31,7 +31,6 @@ public class TaskServer extends POPObject {
     
     @POPSyncSeq
     public void registerDaemon(String di) {
-        System.out.println("TaskServer registerDaemon " + di);
         jm.registerDaemon(di);
     }
     
