@@ -1,5 +1,6 @@
 package ch.heia.pop.yarn.example;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -25,7 +26,7 @@ public class NoSpec {
                 System.out.println(s);
             
             //POPSystem.initialize(args);
-            List<String> argsList = Arrays.asList(args);
+            List<String> argsList = new ArrayList<>(Arrays.asList(args));
             String jm = Util.removeStringFromList(argsList, "-jobservice=");
 
             POPSystem.jobService = new POPAccessPoint(jm);
