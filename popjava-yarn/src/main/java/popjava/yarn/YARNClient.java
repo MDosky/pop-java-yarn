@@ -34,6 +34,25 @@ import org.apache.hadoop.yarn.util.Records;
 
 public class YARNClient {
 
+    @Parameter(names = "--dir", required = true)
+    private String hdfs_dir;
+    @Parameter(names = "--vcores", required = true)
+    private int vcores;
+    @Parameter(names = "--memory", required = true)
+    private int memory;
+    @Parameter(names = "--containers", required = true)
+    private int containers;
+    @Parameter(names = "--main", required = true)
+    private String main;
+    @Parameter
+    private List<String> args = new ArrayList<>();
+
+    public static void main(String... args) throws Exception {
+        YARNClient c = new YARNClient();
+        new JCommander(c, args);
+        c.run();
+    }
+
     private Configuration conf;
 
     public void run() throws Exception {
@@ -86,8 +105,8 @@ public class YARNClient {
 
         // Set up resource type requirements for ApplicationMaster
         Resource capability = Records.newRecord(Resource.class);
-        capability.setMemory(5120);
-        capability.setVirtualCores(1);
+        capability.setMemory(memory);
+        capability.setVirtualCores(vcores);
 
         // Finally, set-up ApplicationSubmissionContext for the application
         ApplicationSubmissionContext appContext
@@ -138,24 +157,5 @@ public class YARNClient {
         Apps.addToEnvironment(appMasterEnv,
                 Environment.CLASSPATH.name(),
                 Environment.PWD.$() + File.separator + "*", ":");
-    }
-
-    @Parameter(names = "--dir", required = true)
-    private String hdfs_dir;
-    @Parameter(names = "--vcores", required = true)
-    private int vcores;
-    @Parameter(names = "--memory", required = true)
-    private int memory;
-    @Parameter(names = "--containers", required = true)
-    private int containers;
-    @Parameter(names = "--main", required = true)
-    private String main;
-    @Parameter
-    private List<String> args = new ArrayList<>();
-
-    public static void main(String... args) throws Exception {
-        YARNClient c = new YARNClient();
-        new JCommander(c, args);
-        c.run();
     }
 }
