@@ -91,7 +91,6 @@ public class YARNContainer {
             String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
             System.err.println(System.currentTimeMillis() + " 123a");
             runCmd(mainCmd);
-            Thread.sleep(60000);
             appRoutine.finish();
         } catch (Exception ex) {
             ex.printStackTrace();
