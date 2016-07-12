@@ -15,25 +15,26 @@ import popjava.util.Util;
  *
  * @author Dosky
  */
+@POPClass(isDistributable = false)
 public class MultiNode {
 
     public static void main(String[] args) {
-            POPSystem.initialize(args);
+//            POPSystem.initialize(args);
 //        List<String> argsList = new ArrayList<>(Arrays.asList(args));
 //        String jm = Util.removeStringFromList(argsList, "-jobservice=");
 //
 //        POPSystem.jobService = new POPAccessPoint(jm);
 //        POPSystem.setStarted();
 
-        RemoteNode rn = PopJava.newActive(RemoteNode.class, 10);
-        int res = PopJava.newActive(RemoteNode.class, rn.getAccessPoint()).doCreate();
+        RemoteNode rn = new RemoteNode(10);
+        int res = rn.doCreate();
         System.out.println(res);
         
         POPSystem.end();
     }
     
     @POPClass
-    public static class RemoteNode extends POPObject {
+    public static class RemoteNode {
 
         private final int remaining;
 
@@ -49,7 +50,7 @@ public class MultiNode {
         public int doCreate() {
             if(remaining <= 0)
                 return 0;
-            RemoteNode rn = PopJava.newActive(RemoteNode.class, remaining - 1);
+            RemoteNode rn = new RemoteNode(remaining - 1);
             return remaining + rn.doCreate();
         }
     }

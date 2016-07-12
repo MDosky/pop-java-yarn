@@ -18,11 +18,12 @@ import popjava.util.Util;
  *
  * @author Dosky
  */
+@POPClass(isDistributable = false)
 public class NoSpec {
 
     public static void main(String[] args) {
         try {
-            POPSystem.initialize(args);
+            //POPSystem.initialize(args);
 //            List<String> argsList = new ArrayList<>(Arrays.asList(args));
 //            String jm = Util.removeStringFromList(argsList, "-jobservice=");
 //
@@ -33,33 +34,28 @@ public class NoSpec {
             AAA aaa;
 
             System.out.println("first");
-            aaa = PopJava.newActive(AAA.class);
+            aaa = new AAA();
             System.out.println(aaa.aaa());
-            aaa.exit();
             Thread.sleep(5000);
             
             System.out.println("second");
-            aaa = PopJava.newActive(AAA.class);
+            aaa = new AAA();
             System.out.println(aaa.aaa());
-            aaa.exit();
             Thread.sleep(5000);
             
             System.out.println("third");
-            aaa = PopJava.newActive(AAA.class);
+            aaa = new AAA();
             System.out.println(aaa.aaa());
-            aaa.exit();
             Thread.sleep(5000);
             
             System.out.println("forth");
-            aaa = PopJava.newActive(AAA.class);
+            aaa = new AAA();
             System.out.println(aaa.aaa());
-            aaa.exit();
             Thread.sleep(5000);
             
             System.out.println("fifth");
-            aaa = PopJava.newActive(AAA.class);
+            aaa = new AAA();
             System.out.println(aaa.aaa());
-            aaa.exit();
 
             System.out.println("end app");
             POPSystem.end();
@@ -69,7 +65,7 @@ public class NoSpec {
     }
 
     @POPClass
-    public static class AAA extends POPObject {
+    public static class AAA {
 
         static int aAa = 1000;
 
