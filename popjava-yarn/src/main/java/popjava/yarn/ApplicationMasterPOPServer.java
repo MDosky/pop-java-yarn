@@ -18,8 +18,8 @@ import popjava.yarn.command.TaskServer;
  * @author Dosky
  */
 public class ApplicationMasterPOPServer {
-    public static final String TASK = Util.generateRandomString(10) + "=";
-    public static final String JOBM = Util.generateRandomString(10) + "=";
+    public static final String TASK = "TASK_SERVER_AP=";
+    public static final String JOBM = "JOBM_SERVER_AP=";
     
     public static void main(String[] args) throws InterruptedException {
         TaskServer taskServer;
