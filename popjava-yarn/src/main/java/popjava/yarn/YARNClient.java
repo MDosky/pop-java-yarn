@@ -57,6 +57,7 @@ public class YARNClient {
         amContainer.setCommands(
                 Collections.singletonList(
                         "$JAVA_HOME/bin/java"
+                        + " -javaagent:popjava.jar"
                         + " popjava.yarn.ApplicationMasterAsync"
                         + " --dir " + hdfs_dir
                         + " --vcores " + vcores
