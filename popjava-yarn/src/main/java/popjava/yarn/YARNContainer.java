@@ -98,16 +98,10 @@ public class YARNContainer {
             Class clazz = Class.forName(mainClass);
             Method main = clazz.getDeclaredMethod("main", String[].class);
             
-            for(Method m : clazz.getDeclaredMethods()) {
-                System.out.println(m.getName());
-                System.out.print("  ");
-                System.out.println(Arrays.toString(m.getParameterTypes()));
-            }
-            
             final Object[] refArgs = new Object[1];
-            String[] argsWjm = new String[args.size() + 1];
+            String[] argsWjm = new String[args.size()];
             for(int i = 0; i < args.size(); i++)
-                argsWjm[i+1] = args.get(i);
+                argsWjm[i] = args.get(i);
             refArgs[0] = argsWjm;
 
             main.invoke(null, refArgs);
