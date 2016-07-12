@@ -127,7 +127,6 @@ public class YARNContainer {
      */
     private void runCmd(String cmd) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
-        pb.inheritIO();
         Process popProcess = pb.start();
         try {
             popProcess.waitFor();
