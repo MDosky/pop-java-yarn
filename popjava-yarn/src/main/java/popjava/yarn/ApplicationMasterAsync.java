@@ -24,12 +24,8 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
-import popjava.PopJava;
 import popjava.baseobject.POPAccessPoint;
-import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
-import popjava.yarn.command.POPAppStatus;
-import popjava.yarn.command.TaskServer;
 
 /**
  * This class implements a simple async app master.
@@ -45,8 +41,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     private int allocatedContainers;
 
     private Process popProcess;
-    private String taskServerAP;
-    private String jobManagerAP;
+    private String taskServer;
+    private String jobManager;
 
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
@@ -113,8 +109,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 + " -javaagent:popjava.jar"
                 + " -cp popjava.jar:pop-app.jar"
                 + " popjava.yarn.YARNContainer"
-                + " -taskServer " + taskServerAP
-                + " -jobmanager " + jobManagerAP
+                + " -taskServer " + taskServer
+                + " -jobmanager " + jobManager
                 + " " + mainStarter
                 + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                 + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
@@ -213,19 +209,35 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
     
     private void startCentralServers() throws IOException {
-        TaskServer taskServer;
-        POPJavaJobManager jobManager;
+        List<String> popServer = Lists.newArrayList(
+            System.getProperty("java.home") + "/bin/java",
+                "-javaagent:popjava.jar", 
+                "-cp", "popjava.jar:pop-app.jar",
+                "popjava.yarn.ApplicationMasterPOPServer"
+        );
         
-        jobManager = PopJava.newActive(POPJavaJobManager.class);
-        POPSystem.jobService = jobManager.getAccessPoint();
-        taskServer = PopJava.newActive(TaskServer.class);
+        ProcessBuilder pb = new ProcessBuilder(popServer);
+        popProcess = pb.start();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+        }
         
-        taskServer.setJobManager(jobManager.getAccessPoint());
-        // server status, waiting
-        taskServer.setStatus(POPAppStatus.WAITING);
-        
-        // printout to share
-        taskServerAP = taskServer.getAccessPoint().toString();
-        jobManagerAP = jobManager.getAccessPoint().toString();
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()));
+            taskServer = reader.readLine();
+            jobManager = reader.readLine();
+            
+            new Thread(() -> {
+                try {
+                    String line;
+                    while((line = reader.readLine()) != null)
+                        System.out.println(line);
+                } catch (IOException ex) {
+                    System.err.println(ex.getMessage());
+                }
+
+            }).start();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
     }
 }
