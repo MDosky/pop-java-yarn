@@ -208,7 +208,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         );
         
         ProcessBuilder pb = new ProcessBuilder(popServer);
-        pb.inheritIO();
         
         try {
             popProcess = pb.start();
