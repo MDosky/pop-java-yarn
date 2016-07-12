@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import popjava.system.POPSystem;
 import popjava.util.Util;
 import popjava.yarn.command.AppRoutine;
@@ -127,11 +129,18 @@ public class YARNContainer {
         ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
         pb.inheritIO();
         Process popProcess = pb.start();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
+        try {
+            popProcess.waitFor();
+//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                System.out.println(line);
+//            }
+//        } finally {
+//            System.out.println(new Date() + " Process has ended");
+//        }
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         } finally {
             System.out.println(new Date() + " Process has ended");
         }
