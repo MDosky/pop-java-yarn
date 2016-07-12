@@ -77,9 +77,9 @@ _EOF_
 trap "signal_exit TERM" TERM HUP
 trap "signal_exit INT"  INT
 
-containers=5
+containers=4
 vcpu=1
-memory=256
+memory=2048
 
 args=
 
