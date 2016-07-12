@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -95,6 +96,12 @@ public class YARNContainer {
 //            runCmd(mainCmd);
             Class clazz = Class.forName(mainClass);
             Method main = clazz.getDeclaredMethod("main", String[].class);
+            
+            for(Method m : clazz.getDeclaredMethods()) {
+                System.out.println(m.getName());
+                System.out.print("  ");
+                System.out.println(Arrays.toString(m.getParameterTypes()));
+            }
             
             final Object[] refArgs = new Object[1];
             String[] argsWjm = new String[args.size() + 1];
