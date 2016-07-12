@@ -161,7 +161,8 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             startCentralServers();
         }).start();
         
-        Thread.sleep(1000);
+        // time to start server
+        Thread.sleep(5000);
 
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
@@ -214,9 +215,9 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 String out;
                 while(!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
-                taskServer = taskServer.substring(taskServer.indexOf("=") + 1);
+                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
                 while(!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
-                jobManager = jobManager.substring(jobManager.indexOf("=") + 1);
+                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
                 
                 while((out = reader.readLine()) != null)
                     System.out.println(out);
