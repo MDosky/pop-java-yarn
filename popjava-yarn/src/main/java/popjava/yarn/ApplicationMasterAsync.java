@@ -167,7 +167,11 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public void runMainLoop() throws Exception {
-        startCentralServers();
+        new Thread(() -> {
+            startCentralServers();
+        }).start();
+        
+        Thread.sleep(1000);
 
         AMRMClientAsync<ContainerRequest> rmClient = AMRMClientAsync.createAMRMClientAsync(100, this);
         rmClient.init(getConfiguration());
@@ -208,7 +212,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         POPSystem.end();
     }
     
-    private void startCentralServers() throws IOException {
+    private void startCentralServers() {
         List<String> popServer = Lists.newArrayList(
             System.getProperty("java.home") + "/bin/java",
                 "-javaagent:popjava.jar", 
@@ -217,27 +221,18 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         );
         
         ProcessBuilder pb = new ProcessBuilder(popServer);
-        popProcess = pb.start();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-        }
-        
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()));
-            taskServer = reader.readLine();
-            jobManager = reader.readLine();
-            
-            new Thread(() -> {
-                try {
-                    String line;
-                    while((line = reader.readLine()) != null)
-                        System.out.println(line);
-                } catch (IOException ex) {
-                    System.err.println(ex.getMessage());
-                }
-
-            }).start();
+            popProcess = pb.start();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+                taskServer = reader.readLine();
+                jobManager = reader.readLine();
+                
+                String line;
+                while((line = reader.readLine()) != null)
+                    System.out.println(line);
+            } 
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }
