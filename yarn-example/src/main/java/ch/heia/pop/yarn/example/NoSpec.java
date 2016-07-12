@@ -21,17 +21,12 @@ public class NoSpec {
 
     public static void main(String[] args) {
         try {
+            for(String s : args)
+                System.out.println(s);
+            
             //POPSystem.initialize(args);
             List<String> argsList = Arrays.asList(args);
-            String jm = null;
-            for (int index = 0; index < argsList.size(); index++) {
-                String str = argsList.get(index);
-                if (str.startsWith("-jobservice=")) {
-                    jm = str.substring("-jobservice=".length());
-                    argsList.remove(index);
-                    break;
-                }
-            }
+            String jm = Util.removeStringFromList(argsList, "-jobservice=");
 
             POPSystem.jobService = new POPAccessPoint(jm);
             POPSystem.setStarted();
