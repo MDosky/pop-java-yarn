@@ -24,7 +24,7 @@ public class MultiNode {
         POPSystem.setStarted();
 
         RemoteNode rn = PopJava.newActive(RemoteNode.class, 10);
-        int res = rn.doCreate();
+        int res = PopJava.getThis(rn).doCreate();
         System.out.println(res);
         
         POPSystem.end();
