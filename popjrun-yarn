@@ -65,7 +65,7 @@ help_message() {
   -m, --main       * The main class of the POP-Java application.
   -c, --containers   How many containers should be deployed on the cluster.
   -t, --vcores       How many vCores should each container have.
-  -m, --memory       How much Memory should each container have.
+  -M, --memory       How much Memory should each container have.
 
   Extra arguments will be passed to the main class.
 

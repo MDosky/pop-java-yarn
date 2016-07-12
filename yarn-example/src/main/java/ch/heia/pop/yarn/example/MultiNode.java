@@ -1,15 +1,8 @@
 package ch.heia.pop.yarn.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
-import popjava.base.POPObject;
-import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
-import popjava.util.Util;
 
 /**
  *
@@ -19,13 +12,6 @@ import popjava.util.Util;
 public class MultiNode {
 
     public static void main(String[] args) {
-//            POPSystem.initialize(args);
-//        List<String> argsList = new ArrayList<>(Arrays.asList(args));
-//        String jm = Util.removeStringFromList(argsList, "-jobservice=");
-//
-//        POPSystem.jobService = new POPAccessPoint(jm);
-//        POPSystem.setStarted();
-
         RemoteNode rn = new RemoteNode(10);
         int res = rn.doCreate();
         System.out.println(res);
