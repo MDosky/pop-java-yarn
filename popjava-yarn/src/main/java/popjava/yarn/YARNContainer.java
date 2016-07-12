@@ -5,11 +5,13 @@ import com.beust.jcommander.Parameter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
 import popjava.util.Util;
 import popjava.yarn.command.AppRoutine;
@@ -83,14 +85,29 @@ public class YARNContainer {
         }
 
         // Init POP-Java
-        POPSystem.initialize("-jobservice=" + jobManagerAP);
+        POPSystem.jobService = new POPAccessPoint(jobManagerAP);
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
-            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s %s";
-            String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
-            System.err.println(System.currentTimeMillis() + " 123a");
-            runCmd(mainCmd);
+//            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s %s";
+//            String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
+//            System.err.println(System.currentTimeMillis() + " 123a");
+//            runCmd(mainCmd);
+            Class clazz = Class.forName(mainClass);
+            Method main = null;
+            for(Method m : clazz.getMethods())
+                if(m.getName().equals("main")) {
+                    main = m;
+                    break;
+                }
+            
+            final Object[] refArgs = new Object[1];
+            String[] argsWjm = new String[args.size() + 1];
+            for(int i = 0; i < args.size(); i++)
+                argsWjm[i+1] = args.get(i);
+
+            main.invoke(null, refArgs);
+            
             appRoutine.finish();
         } catch (Exception ex) {
             ex.printStackTrace();
