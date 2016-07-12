@@ -9,12 +9,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest;
@@ -22,10 +18,7 @@ import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
-import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.Records;
-import popjava.baseobject.POPAccessPoint;
-import popjava.system.POPSystem;
 
 /**
  * This class implements a simple async app master.
@@ -65,8 +58,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     }
 
     public ApplicationMasterAsync() {
-//        exitPassword = generatePassword();
-
         configuration = new YarnConfiguration();
         nmClient = NMClient.createNMClient();
         nmClient.init(configuration);
@@ -93,7 +84,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
                 mainStarter = " -main "
                         + " -mainClass " + main + " " + args;
                 // server status, running
-                //taskServer.setStatus(POPAppStatus.RUNNING);
             }
 
             System.out.println("[AM] Starting client");
@@ -207,9 +197,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         // Un-register with ResourceManager
         rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
         System.out.println("[AM] unregisterApplicationMaster 1");
-        
-        // quit pop java
-        POPSystem.end();
     }
     
     private void startCentralServers() {
