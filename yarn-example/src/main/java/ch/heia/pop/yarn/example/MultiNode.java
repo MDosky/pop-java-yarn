@@ -17,14 +17,15 @@ import popjava.util.Util;
 public class MultiNode {
 
     public static void main(String[] args) {
-        List<String> argsList = new ArrayList<>(Arrays.asList(args));
-        String jm = Util.removeStringFromList(argsList, "-jobservice=");
-
-        POPSystem.jobService = new POPAccessPoint(jm);
-        POPSystem.setStarted();
+            POPSystem.initialize(args);
+//        List<String> argsList = new ArrayList<>(Arrays.asList(args));
+//        String jm = Util.removeStringFromList(argsList, "-jobservice=");
+//
+//        POPSystem.jobService = new POPAccessPoint(jm);
+//        POPSystem.setStarted();
 
         RemoteNode rn = PopJava.newActive(RemoteNode.class, 10);
-        int res = PopJava.getThis(rn).doCreate();
+        int res = PopJava.newActive(RemoteNode.class, PopJava.getAccessPoint(rn)).doCreate();
         System.out.println(res);
         
         POPSystem.end();
