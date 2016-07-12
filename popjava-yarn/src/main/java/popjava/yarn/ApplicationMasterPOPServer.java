@@ -8,6 +8,7 @@ package popjava.yarn;
 import popjava.PopJava;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
+import popjava.util.Util;
 import popjava.yarn.command.AppRoutine;
 import popjava.yarn.command.POPAppStatus;
 import popjava.yarn.command.TaskServer;
@@ -17,6 +18,9 @@ import popjava.yarn.command.TaskServer;
  * @author Dosky
  */
 public class ApplicationMasterPOPServer {
+    public static final String TASK = Util.generateRandomString(10) + "=";
+    public static final String JOBM = Util.generateRandomString(10) + "=";
+    
     public static void main(String[] args) throws InterruptedException {
         TaskServer taskServer;
         POPJavaJobManager jobManager;
@@ -30,8 +34,8 @@ public class ApplicationMasterPOPServer {
         taskServer.setStatus(POPAppStatus.WAITING);
         
         // printout to share
-        System.out.println(taskServer.getAccessPoint());
-        System.out.println(jobManager.getAccessPoint());
+        System.out.println(TASK + taskServer.getAccessPoint());
+        System.out.println(JOBM + jobManager.getAccessPoint());
         
         AppRoutine appRoutine = new AppRoutine(taskServer.getAccessPoint().toString());
         

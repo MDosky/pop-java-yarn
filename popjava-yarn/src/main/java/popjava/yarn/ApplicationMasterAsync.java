@@ -212,10 +212,12 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         try {
             popProcess = pb.start();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-                taskServer = reader.readLine();
-                jobManager = reader.readLine();
-                
                 String out;
+                while(!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
+                taskServer = taskServer.substring(taskServer.indexOf("=") + 1);
+                while(!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
+                jobManager = jobManager.substring(jobManager.indexOf("=") + 1);
+                
                 while((out = reader.readLine()) != null)
                     System.out.println(out);
             } 
