@@ -22,12 +22,12 @@ public class NoSpec {
 
     public static void main(String[] args) {
         try {
-            //POPSystem.initialize(args);
-            List<String> argsList = new ArrayList<>(Arrays.asList(args));
-            String jm = Util.removeStringFromList(argsList, "-jobservice=");
-
-            POPSystem.jobService = new POPAccessPoint(jm);
-            POPSystem.setStarted();
+            POPSystem.initialize(args);
+//            List<String> argsList = new ArrayList<>(Arrays.asList(args));
+//            String jm = Util.removeStringFromList(argsList, "-jobservice=");
+//
+//            POPSystem.jobService = new POPAccessPoint(jm);
+//            POPSystem.setStarted();
 
             System.out.println("Starting pop java app");
             AAA aaa;
