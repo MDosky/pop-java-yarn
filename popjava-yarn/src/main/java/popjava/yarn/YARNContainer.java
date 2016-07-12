@@ -107,6 +107,7 @@ public class YARNContainer {
             String[] argsWjm = new String[args.size() + 1];
             for(int i = 0; i < args.size(); i++)
                 argsWjm[i+1] = args.get(i);
+            refArgs[0] = argsWjm;
 
             main.invoke(null, refArgs);
             
