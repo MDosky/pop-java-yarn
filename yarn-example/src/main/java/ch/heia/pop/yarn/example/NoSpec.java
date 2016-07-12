@@ -16,7 +16,7 @@ public class NoSpec {
    
     public static void main(String[] args) {
         try {
-            //POPSystem.initialize(args);
+            POPSystem.initialize(args);
             
             System.out.println("Starting pop java app");
             AAA aaa;
@@ -48,7 +48,6 @@ public class NoSpec {
             
             System.out.println("end app");
             POPSystem.end();
-            System.exit(0);
         } catch (InterruptedException ex) {
             Logger.getLogger(NoSpec.class.getName()).log(Level.SEVERE, null, ex);
         }
