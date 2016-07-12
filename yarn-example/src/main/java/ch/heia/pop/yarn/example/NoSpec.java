@@ -1,12 +1,17 @@
 package ch.heia.pop.yarn.example;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
+import popjava.baseobject.POPAccessPoint;
+import popjava.broker.Broker;
 import popjava.system.POPSystem;
+import popjava.util.Util;
 
 /**
  *
@@ -16,7 +21,11 @@ public class NoSpec {
    
     public static void main(String[] args) {
         try {
-            POPSystem.initialize(args);
+            //POPSystem.initialize(args);
+            List argsList = Arrays.asList(args);
+            String jm = Util.removeStringFromList(argsList, "-jobservice=");
+            POPSystem.jobService = new POPAccessPoint(jm);
+            POPSystem.setStarted();
             
             System.out.println("Starting pop java app");
             AAA aaa;
