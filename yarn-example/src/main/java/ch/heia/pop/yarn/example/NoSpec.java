@@ -23,7 +23,7 @@ public class NoSpec {
         try {
             //POPSystem.initialize(args);
             List<String> argsList = Arrays.asList(args);
-            String jm;
+            String jm = null;
             for (int index = 0; index < argsList.size(); index++) {
                 String str = argsList.get(index);
                 if (str.startsWith("-jobservice=")) {
