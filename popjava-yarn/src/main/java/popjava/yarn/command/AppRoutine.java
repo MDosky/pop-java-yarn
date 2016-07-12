@@ -33,7 +33,7 @@ public class AppRoutine {
                         killStatus = 11;
                         break;
                     case KILLED:
-                        killStatus = 100;
+                        killStatus = 50;
                         break;
                 }
                 
@@ -43,7 +43,8 @@ public class AppRoutine {
                 }
             }
             try {
-                Thread.sleep(3000);
+                System.out.println(status);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
             }
         }
