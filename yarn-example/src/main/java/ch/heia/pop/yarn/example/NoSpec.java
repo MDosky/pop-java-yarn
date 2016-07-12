@@ -37,21 +37,25 @@ public class NoSpec {
             System.out.println(aaa.aaa());
             aaa.exit();
             Thread.sleep(5000);
+            
             System.out.println("second");
             aaa = PopJava.newActive(AAA.class);
             System.out.println(aaa.aaa());
             aaa.exit();
             Thread.sleep(5000);
+            
             System.out.println("third");
             aaa = PopJava.newActive(AAA.class);
             System.out.println(aaa.aaa());
             aaa.exit();
             Thread.sleep(5000);
+            
             System.out.println("forth");
             aaa = PopJava.newActive(AAA.class);
             System.out.println(aaa.aaa());
             aaa.exit();
             Thread.sleep(5000);
+            
             System.out.println("fifth");
             aaa = PopJava.newActive(AAA.class);
             System.out.println(aaa.aaa());
@@ -74,6 +78,7 @@ public class NoSpec {
 
         @POPSyncSeq
         public long aaa() {
+            System.out.println("aaa write aaa");
             return System.currentTimeMillis();
         }
     }
