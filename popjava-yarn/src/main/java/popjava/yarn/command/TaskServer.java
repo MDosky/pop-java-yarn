@@ -36,8 +36,8 @@ public class TaskServer extends POPObject {
     }
     
     @POPSyncSeq
-    public void setStatus(@POPParameter(POPParameter.Direction.IN) POPAppStatus status) {
-        this.status = POPAppStatus.valueOf(status.toString());
+    public void setStatus(POPAppStatus status) {
+        this.status = status;
     }
     
     @POPSyncSeq
