@@ -99,9 +99,10 @@ public class YARNContainer {
             Method main = clazz.getDeclaredMethod("main", String[].class);
             
             final Object[] refArgs = new Object[1];
-            String[] argsWjm = new String[args.size()];
+            String[] argsWjm = new String[args.size() + 1];
             for(int i = 0; i < args.size(); i++)
-                argsWjm[i] = args.get(i);
+                argsWjm[i+1] = args.get(i);
+            argsWjm[0] = "-jobservice=" + jobManagerAP;
             refArgs[0] = argsWjm;
 
             main.invoke(null, refArgs);
