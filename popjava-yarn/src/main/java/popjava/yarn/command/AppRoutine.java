@@ -43,7 +43,6 @@ public class AppRoutine {
                 }
             }
             try {
-                System.out.println(status);
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
             }

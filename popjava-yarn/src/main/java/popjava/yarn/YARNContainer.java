@@ -63,12 +63,12 @@ public class YARNContainer {
     private void startDaemon() {
         // start in parallel if it's the main class
         if (main) {
-//            String daemonCmd = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
-//            try {
-//                runCmd(String.format(daemonCmd, taskServerAP, "-jobservice=" + jobManagerAP));
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
+            String daemonCmd = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
+            try {
+                runCmd(String.format(daemonCmd, taskServerAP, "-jobservice=" + jobManagerAP));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } // start in the thread if there is only a single daemon
         else {
             DaemonService.main(taskServerAP, "-jobservice=" + jobManagerAP);
@@ -91,10 +91,6 @@ public class YARNContainer {
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
-//            String mainCmdFormat = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s %s";
-//            String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
-//            System.err.println(System.currentTimeMillis() + " 123a");
-//            runCmd(mainCmd);
             Class clazz = Class.forName(mainClass);
             Method main = clazz.getDeclaredMethod("main", String[].class);
             
@@ -144,21 +140,6 @@ public class YARNContainer {
     private void runCmd(String cmd) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
         Process popProcess = pb.start();
-//        try {
-//            //popProcess.waitFor();
-////        try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-////            String line;
-////            while ((line = reader.readLine()) != null) {
-////                System.out.println(line);
-////            }
-////        } finally {
-////            System.out.println(new Date() + " Process has ended");
-////        }
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//        } finally {
-//            System.out.println(new Date() + " Process has ended");
-//        }
     }
 
 }

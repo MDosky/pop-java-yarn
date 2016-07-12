@@ -54,7 +54,7 @@ public class DaemonService {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {}
-        System.out.println("Started POP Daemon on " + di.toString());
+        System.out.println("[DM] Started POP Daemon on " + di.toString());
     }
 
     public void stop() {
