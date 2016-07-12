@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
+import popjava.baseobject.POPAccessPoint;
 import popjava.service.DaemonInfo;
 import popjava.service.POPJavaDeamon;
 import popjava.system.POPSystem;
@@ -25,10 +26,13 @@ public class DaemonService {
      * @param args The first parameter should be the string value of a DaemonInfo
      */
     public static void main(String... args) {
+        if(args.length != 2)
+            throw new IllegalArgumentException("Expected: TaskServer AP, JM AP");
+        
+        POPSystem.jobService = new POPAccessPoint(args[1]);
+        
         DaemonService mainService = new DaemonService();
         mainService.start();
-        
-        POPSystem.initialize(args);
         // server address
         AppRoutine appRoutine = new AppRoutine(args[0]);
         appRoutine.registerDaemon(mainService.di.toString());

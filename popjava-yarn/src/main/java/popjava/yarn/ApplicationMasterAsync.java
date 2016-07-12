@@ -208,15 +208,16 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         );
         
         ProcessBuilder pb = new ProcessBuilder(popServer);
+        pb.inheritIO();
         try {
             popProcess = pb.start();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 taskServer = reader.readLine();
                 jobManager = reader.readLine();
                 
-                String line;
-                while((line = reader.readLine()) != null)
-                    System.out.println(line);
+                String out;
+                while((out = reader.readLine()) != null)
+                    System.out.println(out);
             } 
         } catch (IOException ex) {
             ex.printStackTrace();
