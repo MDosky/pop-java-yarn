@@ -45,6 +45,7 @@ public class NoSpec {
         
         System.out.println("end app");
         POPSystem.end();
+        System.exit(0);
     }
 
     
