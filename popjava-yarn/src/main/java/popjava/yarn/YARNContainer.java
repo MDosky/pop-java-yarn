@@ -59,17 +59,17 @@ public class YARNContainer {
      */
     private void startDaemon() {
         // start in parallel if it's the main class
-//        if (main) {
-            String daemonCmd = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
-            try {
-                runCmd(String.format(daemonCmd, taskServerAP, "-jobservice=" + jobManagerAP));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-//        } // start in the thread if there is only a single daemon
-//        else {
-//            DaemonService.main(taskServerAP, "-jobservice=" + jobManagerAP);
-//        }
+        if (main) {
+//            String daemonCmd = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar popjava.yarn.DaemonService %s %s";
+//            try {
+//                runCmd(String.format(daemonCmd, taskServerAP, "-jobservice=" + jobManagerAP));
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+        } // start in the thread if there is only a single daemon
+        else {
+            DaemonService.main(taskServerAP, "-jobservice=" + jobManagerAP);
+        }
     }
 
     /**
