@@ -6,6 +6,7 @@ import java.util.List;
 import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
+import popjava.base.POPObject;
 import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
 import popjava.util.Util;
@@ -25,14 +26,14 @@ public class MultiNode {
 //        POPSystem.setStarted();
 
         RemoteNode rn = PopJava.newActive(RemoteNode.class, 10);
-        int res = PopJava.newActive(RemoteNode.class, PopJava.getAccessPoint(rn)).doCreate();
+        int res = PopJava.newActive(RemoteNode.class, rn.getAccessPoint()).doCreate();
         System.out.println(res);
         
         POPSystem.end();
     }
     
     @POPClass
-    public static class RemoteNode {
+    public static class RemoteNode extends POPObject {
 
         private final int remaining;
 
