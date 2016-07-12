@@ -94,12 +94,7 @@ public class YARNContainer {
 //            System.err.println(System.currentTimeMillis() + " 123a");
 //            runCmd(mainCmd);
             Class clazz = Class.forName(mainClass);
-            Method main = null;
-            for(Method m : clazz.getMethods())
-                if(m.getName().equals("main")) {
-                    main = m;
-                    break;
-                }
+            Method main = clazz.getDeclaredMethod("main", String[].class);
             
             final Object[] refArgs = new Object[1];
             String[] argsWjm = new String[args.size() + 1];
