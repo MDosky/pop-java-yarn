@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -220,5 +222,14 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             taskServer = reader.readLine();
             jobManager = reader.readLine();
         }
+        
+        new Thread(() -> {
+            String line;
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()));
+                while((line = reader.readLine()) != null)
+                    System.out.println(line);
+            } catch (IOException ex) {}
+        }).start();
     }
 }
