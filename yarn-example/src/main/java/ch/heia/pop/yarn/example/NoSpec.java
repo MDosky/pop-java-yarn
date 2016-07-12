@@ -43,7 +43,6 @@ public class NoSpec {
             System.out.println(aaa.aaa());
 
             System.out.println("end app");
-            POPSystem.end();
         } catch (InterruptedException ex) {
             Logger.getLogger(NoSpec.class.getName()).log(Level.SEVERE, null, ex);
         }

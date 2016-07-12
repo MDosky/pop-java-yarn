@@ -15,8 +15,6 @@ public class MultiNode {
         RemoteNode rn = new RemoteNode(10);
         int res = rn.doCreate();
         System.out.println(res);
-        
-        POPSystem.end();
     }
     
     @POPClass
