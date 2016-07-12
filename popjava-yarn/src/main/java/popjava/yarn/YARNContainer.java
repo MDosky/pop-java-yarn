@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import popjava.system.POPSystem;
 import popjava.util.Util;
@@ -88,7 +89,6 @@ public class YARNContainer {
             String mainCmd = String.format(mainCmdFormat, mainClass, "-jobservice=" + jobManagerAP, groupList(args));
             System.err.println(System.currentTimeMillis() + " 123a");
             runCmd(mainCmd);
-            appRoutine.finish();
         } catch (Exception ex) {
             ex.printStackTrace();
             appRoutine.fail();
@@ -97,6 +97,7 @@ public class YARNContainer {
                 Thread.sleep(10000);
             } catch (InterruptedException ex) {
             }
+            appRoutine.finish();
             // tell everyone to finish their tasks
             appRoutine.waitAndQuit();
         }
@@ -131,6 +132,8 @@ public class YARNContainer {
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
+        } finally {
+            System.out.println(new Date() + " Process has ended");
         }
     }
 
