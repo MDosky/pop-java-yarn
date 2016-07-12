@@ -18,18 +18,27 @@ import popjava.util.Util;
  * @author Dosky
  */
 public class NoSpec {
-   
+
     public static void main(String[] args) {
         try {
             //POPSystem.initialize(args);
-            List argsList = Arrays.asList(args);
-            String jm = Util.removeStringFromList(argsList, "-jobservice=");
+            List<String> argsList = Arrays.asList(args);
+            String jm;
+            for (int index = 0; index < argsList.size(); index++) {
+                String str = argsList.get(index);
+                if (str.startsWith("-jobservice=")) {
+                    jm = str.substring("-jobservice=".length());
+                    argsList.remove(index);
+                    break;
+                }
+            }
+
             POPSystem.jobService = new POPAccessPoint(jm);
             POPSystem.setStarted();
-            
+
             System.out.println("Starting pop java app");
             AAA aaa;
-            
+
             System.out.println("first");
             aaa = PopJava.newActive(AAA.class);
             System.out.println(aaa.aaa());
@@ -54,7 +63,7 @@ public class NoSpec {
             aaa = PopJava.newActive(AAA.class);
             System.out.println(aaa.aaa());
             aaa.exit();
-            
+
             System.out.println("end app");
             POPSystem.end();
         } catch (InterruptedException ex) {
@@ -62,19 +71,18 @@ public class NoSpec {
         }
     }
 
-    
     @POPClass
     public static class AAA extends POPObject {
 
         static int aAa = 1000;
-        
+
         public AAA() {
         }
-        
+
         @POPSyncSeq
         public long aaa() {
             return System.currentTimeMillis();
         }
     }
-    
+
 }
