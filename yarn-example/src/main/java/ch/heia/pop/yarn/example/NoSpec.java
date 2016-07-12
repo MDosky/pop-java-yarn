@@ -16,7 +16,7 @@ public class NoSpec {
    
     public static void main(String[] args) {
         try {
-            POPSystem.initialize(args);
+            //POPSystem.initialize(args);
             
             System.out.println("Starting pop java app");
             AAA aaa;
