@@ -2,16 +2,11 @@ package popjava.yarn;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import popjava.annotation.POPClass;
 import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
 import popjava.util.Util;
@@ -21,6 +16,7 @@ import popjava.yarn.command.AppRoutine;
  *
  * @author Dosky
  */
+@POPClass(isDistributable = false)
 public class YARNContainer {
 
     @Parameter(names = "-main")
@@ -29,7 +25,7 @@ public class YARNContainer {
     private String mainClass;
     @Parameter(names = "-taskServer", required = true)
     private String taskServerAP;
-    @Parameter(names = "-jobmanager", required = true)
+    @Parameter(names = "-jobservice", required = true)
     private String jobManagerAP;
     @Parameter
     private List<String> args;
@@ -86,8 +82,8 @@ public class YARNContainer {
         }
 
         // Init POP-Java
-        POPSystem.jobService = new POPAccessPoint(jobManagerAP);
-        POPSystem.setStarted();
+//        POPSystem.jobService = new POPAccessPoint(jobManagerAP);
+//        POPSystem.setStarted();
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);
         try {
@@ -109,7 +105,7 @@ public class YARNContainer {
             appRoutine.fail();
         } finally {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
             }
             // tell everyone to finish their tasks
