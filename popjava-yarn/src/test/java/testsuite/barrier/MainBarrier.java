@@ -18,18 +18,19 @@ public class MainBarrier {
         }
 
         Barrier b = new Barrier(nbWorkers);
-        POPAccessPoint[] pa = new POPAccessPoint[nbWorkers];
+        Worker[] pa = new Worker[nbWorkers];
         for (int i = 0; i < nbWorkers; i++) {
             Worker w = new Worker();
-            pa[i] = PopJava.getAccessPoint(w);
+            pa[i] = w;
             w.setNo(i);
             w.work(b);
         }
+
         //Give time to worker to finish their job
-        Thread.sleep(2000);
+        Thread.sleep(5000);
 
         for (int i = 0; i < pa.length; i++) {
-            Worker w = (Worker) PopJava.newActive(Worker.class, pa[i]);
+            Worker w = pa[i];
             if (w.getNo() != i + 10) {
                 System.out.println("Barrier Test failed");
                 return;
