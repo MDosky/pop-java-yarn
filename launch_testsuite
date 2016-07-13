@@ -96,12 +96,12 @@ while [[ -n $1 ]]; do
   shift
 done
 
-if [ -e "$popjava" ]
+if [ ! -e "$popjava" ]
 then
   error_exit "-p|-pop option is required"
 fi
 
-if [ -e "$testjar" ]
+if [ ! -e "$testjar" ]
 then
   error_exit "-j|-testjar option is required"
 fi
