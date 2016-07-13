@@ -1,7 +1,9 @@
 package testsuite.matrix;
 
+import popjava.annotation.POPClass;
 import popjava.system.POPSystem;
 
+@POPClass(isDistributable = false)
 public class MatrixMain {
 
     public static void main(String... argvs) {
