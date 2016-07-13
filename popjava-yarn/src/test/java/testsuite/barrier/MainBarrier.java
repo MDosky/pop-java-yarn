@@ -34,7 +34,7 @@ public class MainBarrier {
         int count;
         while((count = b.getCurrentCounter()) != 0 && timeout-- > 0) {
             System.out.println(String.format("Counter at %s, Timeout at %d", count, timeout));
-            Thread.sleep(1000);
+            Thread.sleep(10);
         }
         System.out.println(new Date());
 
