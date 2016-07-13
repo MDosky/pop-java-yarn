@@ -115,7 +115,7 @@ echo "########################################"
 
 CP="$popjava:$testjar"
 POP="$popjava"
-SCRIPT="$(dirname $0)/popjrun-yarn"
+SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
 
 exec_yarn() {
     echo Executing $SCRIPT -p "$popjava" -j "$testjar" -t 1 -M 4096 -c 5 -m $1 7
