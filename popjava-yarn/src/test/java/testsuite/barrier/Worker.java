@@ -27,16 +27,16 @@ public class Worker {
         //Job before synchronization
         b.activate();
         //Job after synchronization 
-        this.myNo += 10;
+        myNo += 10;
     }
 
     @POPSyncSeq
     public void setNo(int no) {
-        this.myNo = no;
+        myNo = no;
     }
 
     @POPSyncSeq
     public int getNo() {
-        return this.myNo;
+        return myNo;
     }
 }
