@@ -5,7 +5,7 @@
 # Copyright 2016
 # All rights reserved.
 #
-# Usage: launch_testsuite [-h|--help] [-p|--popjava]
+# Usage: launch_testsuite [-h|--help] [-t|--testjar]
 #
 # Revision history:
 # 2016-07-12 Created by script
@@ -42,7 +42,7 @@ signal_exit() { # Handle trapped signals
 }
 
 usage() {
-  echo -e "Usage: $PROGNAME [-h|--help] [-p|--popjava] [-j|--jar]"
+  echo -e "Usage: $PROGNAME [-h|--help] [-p|--popjava] [-t|--testjar]"
 }
 
 help_message() {
@@ -75,7 +75,16 @@ while [[ -n $1 ]]; do
       then
         popjava="$1"
       else
-        error_exit "The popjava jar file can't be found"
+        error_exit "The popjava jar file can't be found."
+      fi
+      ;;
+    -t | --testjar)
+      shift
+      if [ -e "$1" ]
+      then
+        testjar="$1"
+      else
+        error_exit "The test jar file can't be found."
       fi
       ;;
     -* | --*)
@@ -99,7 +108,11 @@ POP="$popjava"
 SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
 
 exec_yarn() {
-    $SCRIPT -p $popjava -j $popjava -t 1 -M 4096 -c 5 -m $1 5
+    echo Executing $SCRIPT -p "$popjava" -j "$testjar" -t 1 -M 4096 -c 5 -m $1 7
+    output=`$SCRIPT -p "$popjava" -j "$testjar" -t 1 -M 4096 -c 5 -m $1 7`
+    appId=`grep application_ | sed -r 's/.*(application_[0-9]+_[0-9]+).*/\1/' | head -n 1`
+    echo Logs at
+    echo yarn logs -applicationId `$appId`
 }
 
 N_TEST=6
