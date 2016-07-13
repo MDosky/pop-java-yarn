@@ -28,7 +28,7 @@ public class Barrier {
     public void setBarier(int n) throws IOException {
         try (BufferedWriter out = new BufferedWriter(new FileWriter("/tmp/barrier" + rnd, true))) {
             counter.set(n);
-            out.write("Barrier closed for " + counter + "\n");
+            System.out.println("Barrier closed for " + counter + "\n");
         }
         System.out.println("The barrier is closed for " + counter + " workers");
     }
@@ -38,16 +38,13 @@ public class Barrier {
         lock.lock();
         try {
             //TODO: Find Bugs throws an error in this method. the lock is not always unlocked in all codepaths
-            BufferedWriter out = new BufferedWriter(new FileWriter("/tmp/barrier" + rnd, true));
             counter.decrementAndGet();
-            out.write("Counter = " + counter + "\n");
+            System.out.println("Counter = " + counter + "\n");
             if (counter.get() == 0) {
-                out.write("Barrier open\n");
-                out.close();
+                System.out.println("Barrier open\n");
                 event.signalAll();
             } else {
-                out.write("Wait\n");
-                out.close();
+                System.out.println("Wait\n");
                 event.await();//TODO: Should be in a loop
             }
         } finally {
