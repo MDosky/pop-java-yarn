@@ -152,6 +152,16 @@ then
   error_exit "-m|-main option is required"
 fi
 
+if [ -e "$pop" ]
+then
+  error_exit "-p|-pop option is required"
+fi
+
+if [ -e "$jar" ]
+then
+  error_exit "-j|-jar option is required"
+fi
+
 # Main logic
 
 # Temp dir on HDFS

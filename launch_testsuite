@@ -5,7 +5,7 @@
 # Copyright 2016
 # All rights reserved.
 #
-# Usage: launch_testsuite [-h|--help] [-t|--testjar]
+# Usage: launch_testsuite [-h|--help] [-p|--pop] [-j|--testjar]
 #
 # Revision history:
 # 2016-07-12 Created by script
@@ -42,7 +42,7 @@ signal_exit() { # Handle trapped signals
 }
 
 usage() {
-  echo -e "Usage: $PROGNAME [-h|--help] [-p|--popjava] [-t|--testjar]"
+  echo -e "Usage: $PROGNAME [-h|--help] [-p|--pop] [-j|--testjar]"
 }
 
 help_message() {
@@ -69,7 +69,7 @@ while [[ -n $1 ]]; do
   case $1 in
     -h | --help)
       help_message; graceful_exit ;;
-    -p | --popjava)
+    -p | --pop)
       shift
       if [ -e "$1" ]
       then
@@ -78,7 +78,7 @@ while [[ -n $1 ]]; do
         error_exit "The popjava jar file can't be found."
       fi
       ;;
-    -t | --testjar)
+    -j | --testjar)
       shift
       if [ -e "$1" ]
       then
@@ -96,6 +96,16 @@ while [[ -n $1 ]]; do
   shift
 done
 
+if [ -e "$popjava" ]
+then
+  error_exit "-p|-pop option is required"
+fi
+
+if [ -e "$testjar" ]
+then
+  error_exit "-j|-testjar option is required"
+fi
+
 # Main logic
 
 #POP-Java test suite launch script
@@ -103,7 +113,7 @@ echo "########################################"
 echo "#   POP-Java 1.1 Test Suite started    #"
 echo "########################################"
 
-CP="$popjava"
+CP="$popjava:$testjar"
 POP="$popjava"
 SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
 
