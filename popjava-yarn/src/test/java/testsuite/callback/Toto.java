@@ -22,8 +22,8 @@ public class Toto extends POPObject {
 
     @POPSyncConc
     public int getIdent() throws POPException {
-        Titi t = PopJava.newActive(Titi.class);
-        setIdent(222);
+        Titi t = new Titi();
+        this.setIdent(222);
         t.computeIdent(this);
         return identity;
     }
