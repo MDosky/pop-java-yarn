@@ -29,10 +29,6 @@ graceful_exit() {
   exit
 }
 
-exec_yarn() {
-    $SCRIPT -p $popjava -j $popjava -t 1 -M 4096 -c 5 -m $1
-}
-
 signal_exit() { # Handle trapped signals
   case $1 in
     INT)
@@ -102,6 +98,10 @@ CP="$popjava"
 POP="$popjava"
 SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
 
+exec_yarn() {
+    $SCRIPT -p $popjava -j $popjava -t 1 -M 4096 -c 5 -m $1 5
+}
+
 N_TEST=6
 
 echo "##############################"
@@ -112,7 +112,7 @@ echo "Starting POP-Java test suite"
 echo "########################################"
 echo "Launching passing arguments test (test 1/$N_TEST)... "
 echo "########################################"
-echo "exec_yarn testsuite.arg.MainArgTest"
+echo exec_yarn testsuite.arg.MainArgTest
 exec_yarn testsuite.arg.MainArgTest
 echo "Passing arguments test is finished ... "
 
@@ -143,7 +143,7 @@ echo "Integer test is finished... "
 echo "########################################"
 echo "Launching Demo POP-Java test (test 6/$N_TEST)... "
 echo "########################################"
-# java -javaagent:$POP -cp $CP testsuite.demo.DemoMain 4 127.0.0.1
+exec_yarn  testsuite.demo.DemoMain
 echo "Demo POP-Java test is finished... "
 
 
