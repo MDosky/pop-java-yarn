@@ -81,6 +81,7 @@ while [[ -n $1 ]]; do
       else
         error_exit "The popjava jar file can't be found"
       fi
+      ;;
     -* | --*)
       usage
       error_exit "Unknown option $1" ;;
