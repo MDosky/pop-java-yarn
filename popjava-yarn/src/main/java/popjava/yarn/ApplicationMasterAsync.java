@@ -72,8 +72,14 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
     public void onContainersAllocated(List<Container> containers) {
         // look for last container for main
         for (Container cont : containers) {
-            if(++allocatedContainers == askedContainers)
+            if (++allocatedContainers == askedContainers) {
                 mainContainer = cont;
+            }
+        }
+        
+        String argsString = "";
+        for (String s : args) {
+            argsString += s + " ";
         }
 
         for (Container container : containers) {
@@ -82,7 +88,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             // master container, who will start the main
             if (container == mainContainer) {
                 mainStarter = " -main "
-                        + " -mainClass " + main + " " + args;
+                        + " -mainClass " + main + " " + argsString;
                 // server status, running
             }
 
@@ -91,24 +97,24 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
-                  "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
-                + ";",
-                  "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
-                + ";",
-                  "$JAVA_HOME/bin/java"
-                + " -javaagent:popjava.jar"
-                + " -cp popjava.jar:pop-app.jar"
-                + " popjava.yarn.YARNContainer"
-                + " -taskServer " + taskServer
-                + " -jobmanager " + jobManager
-                + " " + mainStarter
-                + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                + ";"
+                    "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
+                    + ";",
+                    "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
+                    + ";",
+                    "$JAVA_HOME/bin/java"
+                    + " -javaagent:popjava.jar"
+                    + " -cp popjava.jar:pop-app.jar"
+                    + " popjava.yarn.YARNContainer"
+                    + " -taskServer " + taskServer
+                    + " -jobmanager " + jobManager
+                    + " " + mainStarter
+                    + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
+                    + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                    + ";"
             );
             System.out.println("[AM] Executing: " + Arrays.toString(script.toArray(new String[0])));
             ctx.setCommands(script);
-            
+
             System.out.println("[AM] Launching container " + container.getId());
             try {
                 nmClient.startContainer(container, ctx);
@@ -160,7 +166,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         new Thread(() -> {
             startCentralServers();
         }).start();
-        
+
         // time to start server
         Thread.sleep(5000);
 
@@ -188,7 +194,7 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             System.out.println("[AM] Making res-req " + i);
             rmClient.addContainerRequest(containerAsk);
         }
-        
+
         System.out.println("[AM] waiting for containers to finish");
         while (!doneWithContainers()) {
             Thread.sleep(100);
@@ -199,29 +205,30 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
         rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
         System.out.println("[AM] unregisterApplicationMaster 1");
     }
-    
+
     private void startCentralServers() {
         List<String> popServer = Lists.newArrayList(
-            System.getProperty("java.home") + "/bin/java",
-                "-javaagent:popjava.jar", 
+                System.getProperty("java.home") + "/bin/java",
+                "-javaagent:popjava.jar",
                 "-cp", "popjava.jar:pop-app.jar",
                 "popjava.yarn.ApplicationMasterPOPServer"
         );
-        
+
         ProcessBuilder pb = new ProcessBuilder(popServer);
-        
+
         try {
             popProcess = pb.start();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 String out;
-                while(!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
+                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
                 taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
-                while(!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
+                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
                 jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
-                
-                while((out = reader.readLine()) != null)
+
+                while ((out = reader.readLine()) != null) {
                     System.out.println(out);
-            } 
+                }
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

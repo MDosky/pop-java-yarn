@@ -82,7 +82,7 @@ public class YARNClient {
                         + " --memory " + memory
                         + " --containers " + containers
                         + " --main " + main
-                        + " " + argsString.toString()
+                        + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                 )
