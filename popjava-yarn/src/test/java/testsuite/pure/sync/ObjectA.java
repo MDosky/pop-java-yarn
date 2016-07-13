@@ -1,4 +1,4 @@
-package testsuite.yarn.pure.sync;
+package testsuite.pure.sync;
 
 import java.util.concurrent.Semaphore;
 
@@ -10,21 +10,21 @@ import popjava.annotation.POPSyncMutex;
 
 @POPClass
 public class ObjectA {
-    
+
     //TODO: this should work better without semaphores
     public static final int SLEEP = 1000;
-    
+
     private Semaphore sem = new Semaphore(0);
-    
+
     private Semaphore sem2 = new Semaphore(0);
     private int calls = 0;
-    
-    public ObjectA(){
-        
+
+    public ObjectA() {
+
     }
 
     @POPAsyncConc
-    public void getA(){
+    public void getA() {
         System.out.println("getA() - A");
         calls++;
         try {
@@ -35,10 +35,10 @@ public class ObjectA {
         System.out.println("getA() - B");
         sem.release();
     }
-    
+
     @POPAsyncConc
-    public void getB(){
-        System.out.println("getB() - A"); 
+    public void getB() {
+        System.out.println("getB() - A");
         try {
             Thread.sleep(SLEEP);
         } catch (InterruptedException e) {
@@ -48,10 +48,9 @@ public class ObjectA {
         System.out.println("getB() - B");
         sem.release();
     }
-    
-    
+
     @POPSyncMutex
-    public int getC(){
+    public int getC() {
         System.out.println("getC() - A");
         try {
             sem.acquire();
@@ -62,13 +61,13 @@ public class ObjectA {
         }
         return calls;
     }
-    
+
     @POPSyncConc
-    public void testSelfCall(){
+    public void testSelfCall() {
         this.concSleep();
         this.concSleep();
         this.concSleep();
-        
+
         try {
             sem2.acquire();
             sem2.acquire();
@@ -78,9 +77,9 @@ public class ObjectA {
             e.printStackTrace();
         }
     }
-    
+
     @POPSyncConc
-    public void concSleep(){
+    public void concSleep() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

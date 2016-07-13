@@ -1,17 +1,17 @@
-package testsuite.yarn.multiobj;
+package testsuite.multiobj;
 
 import popjava.*;
 import popjava.annotation.POPClass;
 
 @POPClass(isDistributable = false)
 public class Mutliobj {
-    
-	public static void main(String... argvs){
-	    MyObj1 o1 = (MyObj1)PopJava.newActive(MyObj1.class);
+
+    public static void main(String... argvs) {
+        MyObj1 o1 = (MyObj1) PopJava.newActive(MyObj1.class);
         o1.set(0);
 
         System.out.println("Result is : " + o1.get());
-        
+
         System.out.println("Multiobjet test finished ...");
-	}
+    }
 }

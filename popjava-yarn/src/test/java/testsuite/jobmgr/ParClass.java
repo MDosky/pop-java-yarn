@@ -4,10 +4,9 @@ import popjava.annotation.POPClass;
 import popjava.base.POPObject;
 
 @POPClass
-public class ParClass{
-	
-	
-	public ParClass(){
-	}
+public class ParClass {
+
+    public ParClass() {
+    }
 
 }
