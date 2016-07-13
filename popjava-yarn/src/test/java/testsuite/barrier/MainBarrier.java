@@ -28,7 +28,7 @@ public class MainBarrier {
         }
 
         //Give time to worker to finish their job
-        Thread.sleep(10000);
+        Thread.sleep(20000);
 
         for (int i = 0; i < pa.length; i++) {
             Worker w = pa[i];
