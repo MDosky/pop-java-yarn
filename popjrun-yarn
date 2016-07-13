@@ -94,7 +94,7 @@ while [[ -n $1 ]]; do
       then
         jar="$1"
       else
-        error_exit "Can't find the application har file"
+        error_exit "Can't find the application jar file"
       fi
       ;;
     -m | --main)
@@ -115,7 +115,7 @@ while [[ -n $1 ]]; do
       then
         vcpu="$1"
       else
-        error_exit "vCPU should be numeric"
+        error_exit "vCores should be numeric"
       fi
       ;;
     -M | --memory)
@@ -146,10 +146,6 @@ while [[ -n $1 ]]; do
 done
 
 # Check required arguments
-if [ -z "$jar" ]
-then
-  error_exit "-j|-jar option is required"
-fi
 
 if [ -z "$main" ]
 then

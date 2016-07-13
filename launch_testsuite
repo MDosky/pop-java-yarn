@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# launch_testsuite - Launch the scripts to test POP-Java on a Hadoop cluster.
+#
+# Copyright 2016
+# All rights reserved.
+#
+# Usage: launch_testsuite [-h|--help] [-p|--popjava]
+#
+# Revision history:
+# 2016-07-12 Created by script
+# ---------------------------------------------------------------------------
+
+PROGNAME=${0##*/}
+VERSION="1.1"
+
+clean_up() { # Perform pre-exit housekeeping
+  return
+}
+
+error_exit() {
+  echo -e "${PROGNAME}: ${1:-"Unknown Error"}" >&2
+  clean_up
+  exit 1
+}
+
+graceful_exit() {
+  clean_up
+  exit
+}
+
+exec_yarn() {
+    $SCRIPT -p $popjava -j $popjava -t 1 -M 4096 -c 5 -m $1
+}
+
+signal_exit() { # Handle trapped signals
+  case $1 in
+    INT)
+      error_exit "Program interrupted by user" ;;
+    TERM)
+      echo -e "\n$PROGNAME: Program terminated" >&2
+      graceful_exit ;;
+    *)
+      error_exit "$PROGNAME: Terminating on unknown signal" ;;
+  esac
+}
+
+usage() {
+  echo -e "Usage: $PROGNAME [-h|--help] [-p|--popjava] [-j|--jar]"
+}
+
+help_message() {
+  cat <<- _EOF_
+  $PROGNAME ver. $VERSION
+  Launch the scripts to test POP-Java on a Hadoop cluster.
+
+  $(usage)
+
+  Options:
+  -h, --help  Display this help message and exit.
+  -p, --popjava  The POP-Java + YARN Jar file.
+
+_EOF_
+  return
+}
+
+# Trap signals
+trap "signal_exit TERM" TERM HUP
+trap "signal_exit INT"  INT
+
+# Parse command-line
+while [[ -n $1 ]]; do
+  case $1 in
+    -h | --help)
+      help_message; graceful_exit ;;
+    -p | --popjava)
+      shift
+      if [ -e "$1" ]
+      then
+        popjava="$1"
+      else
+        error_exit "The popjava jar file can't be found"
+      fi
+    -* | --*)
+      usage
+      error_exit "Unknown option $1" ;;
+    *)
+      echo "Argument $1 to process..." ;;
+  esac
+  shift
+done
+
+# Main logic
+
+#POP-Java test suite launch script
+echo "########################################"
+echo "#   POP-Java 1.1 Test Suite started    #"
+echo "########################################"
+
+CP="$popjava"
+POP="$popjava"
+SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
+
+N_TEST=6
+
+echo "##############################"
+echo "#   POP-Java standard test   #"
+echo "##############################"
+
+echo "Starting POP-Java test suite"
+echo "########################################"
+echo "Launching passing arguments test (test 1/$N_TEST)... "
+echo "########################################"
+echo "exec_yarn testsuite.arg.MainArgTest"
+jexec_yarn testsuite.arg.MainArgTest
+echo "Passing arguments test is finished ... "
+
+echo "########################################"
+echo "Launching multi parallel object test (test 2/$N_TEST)... "
+echo "########################################"
+jexec_yarn testsuite.yarn.multiobj.Mutliobj
+echo "Multi parallel object test is finished... "
+
+echo "########################################"
+echo "Launching callback test (test 3/$N_TEST)... "
+echo "########################################"
+exec_yarn testsuite.callback.CallBackMain
+echo "Callback test is finished... "
+
+echo "########################################"
+echo "Launching barrier test (test 4/$N_TEST)... "
+echo "########################################"
+exec_yarn testsuite.barrier.MainBarrier
+echo "Barrier test is finished... "
+
+echo "########################################"
+echo "Launching integer test (test 5/$N_TEST)... "
+echo "########################################"
+exec_yarn testsuite.yarn.integer.TestInteger
+echo "Integer test is finished... "
+
+echo "########################################"
+echo "Launching Demo POP-Java test (test 6/$N_TEST)... "
+echo "########################################"
+# java -javaagent:$POP -cp $CP testsuite.demo.DemoMain 4 127.0.0.1
+echo "Demo POP-Java test is finished... "
+
+
+
+graceful_exit
