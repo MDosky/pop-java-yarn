@@ -49,5 +49,10 @@ public class Barrier {
             lock.unlock();
         }
     }
+    
+    @POPSyncConc
+    public int getCurrentCounter() {
+        return counter.get();
+    }
 
 }
