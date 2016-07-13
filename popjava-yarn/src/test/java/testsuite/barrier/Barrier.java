@@ -22,17 +22,17 @@ public class Barrier {
 
     public Barrier() throws IOException {
         counter = new AtomicInteger();
+        System.out.println("Init " + this.toString() + " empty with couter = " + counter.get());
     }
 
-    @POPSyncSeq
-    public void setBarier(int n) throws IOException {
-        counter.set(n);
-        System.out.println("Barrier closed for " + counter);
-        System.out.println("The barrier is closed for " + counter + " workers");
+    public Barrier(int n) throws IOException {
+        counter = new AtomicInteger(n);
+        System.out.println("Init " + this.toString() + " with couter = " + counter.get());
     }
 
     @POPSyncConc
     public void activate() throws InterruptedException, IOException {
+        System.out.println("Using " + this.toString() + " with  couter = " + counter.get());
         lock.lock();
         try {
             //TODO: Find Bugs throws an error in this method. the lock is not always unlocked in all codepaths

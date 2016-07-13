@@ -17,8 +17,7 @@ public class MainBarrier {
             nbWorkers = Integer.parseInt(argvs[0]);
         }
 
-        Barrier b = new Barrier();
-        b.setBarier(nbWorkers);
+        Barrier b = new Barrier(nbWorkers);
         Worker[] pa = new Worker[nbWorkers];
         for (int i = 0; i < nbWorkers; i++) {
             Worker w = new Worker();
