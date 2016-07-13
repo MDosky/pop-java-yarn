@@ -17,7 +17,8 @@ public class MainBarrier {
             nbWorkers = Integer.parseInt(argvs[0]);
         }
 
-        Barrier b = new Barrier(nbWorkers);
+        Barrier b = new Barrier();
+        b.setBarier(nbWorkers);
         Worker[] pa = new Worker[nbWorkers];
         for (int i = 0; i < nbWorkers; i++) {
             Worker w = new Worker();
@@ -27,7 +28,7 @@ public class MainBarrier {
         }
 
         //Give time to worker to finish their job
-        Thread.sleep(5000);
+        Thread.sleep(10000);
 
         for (int i = 0; i < pa.length; i++) {
             Worker w = pa[i];

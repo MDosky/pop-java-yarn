@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncConc;
+import popjava.annotation.POPSyncSeq;
 
 @POPClass
 public class Barrier {
@@ -20,12 +21,13 @@ public class Barrier {
     protected final double rnd = Math.random();
 
     public Barrier() throws IOException {
-        this(15);
+        counter = new AtomicInteger();
     }
 
-    public Barrier(int n) throws IOException {
+    @POPSyncSeq
+    public void setBarier(int n) throws IOException {
         try (BufferedWriter out = new BufferedWriter(new FileWriter("/tmp/barrier" + rnd, true))) {
-            counter = new AtomicInteger(n);
+            counter.set(n);
             out.write("Barrier closed for " + counter + "\n");
         }
         System.out.println("The barrier is closed for " + counter + " workers");
