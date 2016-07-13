@@ -113,14 +113,14 @@ echo "########################################"
 echo "#   POP-Java 1.1 Test Suite started    #"
 echo "########################################"
 
-CP="$popjava:$testjar"
-POP="$popjava"
+export POP="$popjava"
+export TEST="$testjar"
 SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
 
 exec_yarn() {
-    echo Executing $SCRIPT -p "$popjava" -j "$testjar" -t 1 -M 4096 -c 5 -m $1 7
-    output=`$SCRIPT -p "$popjava" -j "$testjar" -t 1 -M 4096 -c 5 -m $1 7`
-    appId=`grep application_ | sed -r 's/.*(application_[0-9]+_[0-9]+).*/\1/' | head -n 1`
+    echo Executing $SCRIPT -p "$POP" -j "$TEST" -t 1 -M 4096 -c 5 -m $1 7
+    output="`$SCRIPT -p "$POP" -j "$TEST" -t 1 -M 4096 -c 5 -m $1 7`"
+    appId=`echo -e "$output" | grep application_ | sed -r 's/.*(application_[0-9]+_[0-9]+).*/\1/' | head -n 1`
     echo Logs at
     echo yarn logs -applicationId `$appId`
 }
