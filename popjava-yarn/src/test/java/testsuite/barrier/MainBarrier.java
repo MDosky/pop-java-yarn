@@ -18,17 +18,19 @@ public class MainBarrier {
             nbWorkers = Integer.parseInt(argvs[0]);
         }
 
-        System.out.println(new Date());
+        System.out.println("Creating workers " + new Date());
         Barrier b = new Barrier(nbWorkers);
         Worker[] pa = new Worker[nbWorkers];
         for (int i = 0; i < nbWorkers; i++) {
             Worker w = new Worker();
             pa[i] = w;
             w.setNo(i);
-            w.work(b);
         }
 
-        System.out.println(new Date());
+        System.out.println("Starting workers " + new Date());
+        for (int i = 0; i < nbWorkers; i++)
+            pa[i].work(b);
+        System.out.println("Workers started " + new Date());
         //Give time to worker to finish their job
         int timeout = 120;
         int count;
@@ -36,7 +38,8 @@ public class MainBarrier {
             System.out.println(String.format("Counter at %s, Timeout at %d", count, timeout));
             Thread.sleep(10);
         }
-        System.out.println(new Date());
+        System.out.println("Done " + new Date());
+        System.out.println(String.format("Counter at %s, Timeout at %d", count, timeout));
 
         for (int i = 0; i < pa.length; i++) {
             Worker w = pa[i];
