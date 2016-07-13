@@ -113,13 +113,13 @@ echo "########################################"
 echo "Launching passing arguments test (test 1/$N_TEST)... "
 echo "########################################"
 echo "exec_yarn testsuite.arg.MainArgTest"
-jexec_yarn testsuite.arg.MainArgTest
+exec_yarn testsuite.arg.MainArgTest
 echo "Passing arguments test is finished ... "
 
 echo "########################################"
 echo "Launching multi parallel object test (test 2/$N_TEST)... "
 echo "########################################"
-jexec_yarn testsuite.yarn.multiobj.Mutliobj
+exec_yarn testsuite.yarn.multiobj.Mutliobj
 echo "Multi parallel object test is finished... "
 
 echo "########################################"
