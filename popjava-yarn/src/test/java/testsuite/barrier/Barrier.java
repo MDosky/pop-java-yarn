@@ -33,7 +33,7 @@ public class Barrier {
     public void activate() throws InterruptedException, IOException {
         //TODO: Find Bugs throws an error in this method. the lock is not always unlocked in all codepaths
         lock.lock();
-        BufferedWriter out = new BufferedWriter(new FileWriter("/tmp/barrier", true));
+        BufferedWriter out = new BufferedWriter(new FileWriter("/tmp/barrier" + Math.random(), true));
         counter--;
         out.write("Counter = " + counter + "\n");
 
