@@ -152,7 +152,7 @@ then
   error_exit "-m|-main option is required"
 fi
 
-if [ ! -e "$pop" ]
+if [ ! -e "$popjava" ]
 then
   error_exit "-p|-pop option is required"
 fi
