@@ -161,6 +161,8 @@ public class MainArgTest {
 
             //TODO: this is wrong. As setMyType is async, we can not be sure, that it is executed before getMyType
             pop.setMyType(mt);
+            // sleep and leave some time
+            Thread.sleep(1000);
             MyType mt2 = pop.getMyType();
             if (!((mt2.getInt() == mt.getInt()) && (mt2.getString().equals(mt.getString())))) {
                 throw new Exception("Test failed for IPOPBase arguments");

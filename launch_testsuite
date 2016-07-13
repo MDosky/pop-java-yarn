@@ -119,7 +119,7 @@ echo "Passing arguments test is finished ... "
 echo "########################################"
 echo "Launching multi parallel object test (test 2/$N_TEST)... "
 echo "########################################"
-exec_yarn testsuite.yarn.multiobj.Mutliobj
+exec_yarn testsuite.multiobj.Mutliobj
 echo "Multi parallel object test is finished... "
 
 echo "########################################"
@@ -137,7 +137,7 @@ echo "Barrier test is finished... "
 echo "########################################"
 echo "Launching integer test (test 5/$N_TEST)... "
 echo "########################################"
-exec_yarn testsuite.yarn.integer.TestInteger
+exec_yarn testsuite.integer.TestInteger
 echo "Integer test is finished... "
 
 echo "########################################"
