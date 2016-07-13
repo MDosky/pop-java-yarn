@@ -89,7 +89,6 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             if (container == mainContainer) {
                 mainStarter = " -main "
                         + " -mainClass " + main + " " + argsString;
-                // server status, running
             }
 
             System.out.println("[AM] Starting client");
@@ -194,6 +193,22 @@ public class ApplicationMasterAsync implements AMRMClientAsync.CallbackHandler {
             System.out.println("[AM] Making res-req " + i);
             rmClient.addContainerRequest(containerAsk);
         }
+        
+        new Thread(() -> {
+            try {
+                Thread.sleep(40000);
+            } catch (InterruptedException ex) {
+            }
+            
+            Resource capability2 = Records.newRecord(Resource.class);
+            capability2.setMemory(10240);
+            capability2.setVirtualCores(3);
+            Priority priority2 = Records.newRecord(Priority.class);
+            priority2.setPriority(0);
+            ContainerRequest containerAsk = new ContainerRequest(capability2, null, null, priority2);
+            System.out.println("[AM] Making async request");
+            rmClient.addContainerRequest(containerAsk);
+        }).start();
 
         System.out.println("[AM] waiting for containers to finish");
         while (!doneWithContainers()) {
