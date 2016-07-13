@@ -119,10 +119,10 @@ SCRIPT="`readlink -e $(dirname $0)`/popjrun-yarn"
 
 exec_yarn() {
     echo Executing $SCRIPT -p "$POP" -j "$TEST" -t 1 -M 4096 -c 5 -m $1 7
-    output="`$SCRIPT -p "$POP" -j "$TEST" -t 1 -M 4096 -c 5 -m $1 7`"
+    output="$(`$SCRIPT -p "$POP" -j "$TEST" -t 1 -M 4096 -c 5 -m $1 7` 3>&2 2>&1 1>&3) 2>/del/null"
     appId=`echo -e "$output" | grep application_ | sed -r 's/.*(application_[0-9]+_[0-9]+).*/\1/' | head -n 1`
     echo Logs at
-    echo yarn logs -applicationId `$appId`
+    echo yarn logs -applicationId $appId
 }
 
 N_TEST=6
