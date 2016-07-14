@@ -23,13 +23,14 @@ import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
+import popjava.base.POPObject;
 
 /**
  *
  * @author Dosky
  */
-@POPClass(classId = 3000)
-public class ApplicationMasterPOP {
+@POPClass
+public class ApplicationMasterPOP extends POPObject {
 
     private Configuration configuration;
     private NMClient nmClient;
