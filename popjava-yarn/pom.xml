@@ -58,7 +58,7 @@
                     <archive>
                         <index>true</index>
                         <manifest>
-                            <mainClass>popjava.yarn.YARNClient</mainClass>
+                            <mainClass>yarn.popjava.YARNClient</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Premain-Class>popjava.javaagent.POPJavaAgent</Premain-Class>
