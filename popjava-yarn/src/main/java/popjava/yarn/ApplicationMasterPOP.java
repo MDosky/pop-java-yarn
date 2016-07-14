@@ -19,6 +19,7 @@ import org.apache.hadoop.yarn.util.Records;
 import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
+import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
 
@@ -54,7 +55,7 @@ public class ApplicationMasterPOP {
     @Parameter
     private final List<String> args = new ArrayList<>();
     
-    
+    @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP() {
     }
 
