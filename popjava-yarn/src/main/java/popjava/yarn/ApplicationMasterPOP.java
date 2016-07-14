@@ -30,7 +30,7 @@ import popjava.base.POPObject;
  * @author Dosky
  */
 @POPClass
-public class ApplicationMasterPOP extends POPObject {
+public class ApplicationMasterPOP {
 
     private Configuration configuration;
     private NMClient nmClient;
@@ -59,7 +59,6 @@ public class ApplicationMasterPOP extends POPObject {
     
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP() {
-        this("");
     }
     
     @POPObjectDescription(url = "localhost")
