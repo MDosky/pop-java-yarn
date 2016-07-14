@@ -36,14 +36,14 @@ public class ApplicationMasterPOP {
 
     private Configuration configuration;
     private NMClient nmClient;
-
+    
     private ApplicationMasterRMCallback rmCallback;
     private AMRMClientAsync<AMRMClient.ContainerRequest> rmClient;
 
     private Process popProcess;
     private String taskServer;
     private String jobManager;
-
+    
     private int requestedContainers;
 
     @Parameter(names = "--dir", required = true)
@@ -58,11 +58,11 @@ public class ApplicationMasterPOP {
     private String main;
     @Parameter
     private final List<String> args = new ArrayList<>();
-
+    
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP() {
     }
-
+    
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP(String... args) {
         new JCommander(this, args);
@@ -71,38 +71,38 @@ public class ApplicationMasterPOP {
     @POPSyncSeq
     public void setup() {
         configuration = new YarnConfiguration();
-
+        
         nmClient = NMClient.createNMClient();
         nmClient.init(configuration);
         nmClient.start();
-
+        
         rmCallback = new ApplicationMasterRMCallback(nmClient, hdfs_dir, askedContainers, main, args);
-
+        
         rmClient = AMRMClientAsync.createAMRMClientAsync(100, rmCallback);
         rmClient.init(configuration);
         rmClient.start();
-
+        
         // start as thread
         PopJava.getThis(this).startCentralServers();
     }
 
     @POPSyncSeq
     public void runMainLoop() {
-        try {
+        try {            
             // Register with ResourceManager
             System.out.println("[AM] registerApplicationMaster 0");
             rmClient.registerApplicationMaster("", 0, "");
             System.out.println("[AM] registerApplicationMaster 1");
-
+            
             for (int i = 0; i < askedContainers; i++) {
                 PopJava.getThis(this).requestContainer(memory, vcores);
             }
-
+            
             System.out.println("[AM] waiting for containers to finish");
             while (!rmCallback.doneWithContainers()) {
                 Thread.sleep(100);
             }
-
+            
             System.out.println("[AM] unregisterApplicationMaster 0");
             // Un-register with ResourceManager
             rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
@@ -111,12 +111,11 @@ public class ApplicationMasterPOP {
             ex.printStackTrace();
         }
     }
-
+    
     /**
      * Request a new container
-     *
      * @param memory
-     * @param vcores
+     * @param vcores 
      */
     @POPAsyncConc
     public void requestContainer(int memory, int vcores) {
@@ -134,7 +133,7 @@ public class ApplicationMasterPOP {
         System.out.println("[AM] Making reservation request " + requestedContainers++);
         rmClient.addContainerRequest(containerAsk);
     }
-
+    
     @POPSyncSeq
     public void setParams(String task, String jm) {
         this.taskServer = task;
@@ -145,40 +144,39 @@ public class ApplicationMasterPOP {
      * Start a clean version of POP-Java which will be used to create processes.
      * Using the same as the one the AM run on pollute the classpath.
      */
-    private void startCentralServers() {
-        new Thread(() -> {
-            List<String> popServer = Lists.newArrayList(
-                    System.getProperty("java.home") + "/bin/java",
-                    "-javaagent:popjava.jar",
-                    "-cp", "popjava.jar:pop-app.jar",
-                    ApplicationMasterPOPServer.class.getName()
-            );
+    @POPAsyncConc
+    public void startCentralServers() {
+        List<String> popServer = Lists.newArrayList(
+                System.getProperty("java.home") + "/bin/java",
+                "-javaagent:popjava.jar",
+                "-cp", "popjava.jar:pop-app.jar",
+                ApplicationMasterPOPServer.class.getName()
+        );
 
-            System.out.println("--- Creating Server");
-            ProcessBuilder pb = new ProcessBuilder(popServer);
+        System.out.println("--- Creating Server");
+        ProcessBuilder pb = new ProcessBuilder(popServer);
 
-            try {
-                System.out.println("--- Starting  Server");
-                popProcess = pb.start();
-                System.out.println("--- Started");
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-                    System.out.println("--- Reading output");
-                    String out;
-                    while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
-                    taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
-                    while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
-                    jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
+        try {
+        System.out.println("--- Starting  Server");
+            popProcess = pb.start();
+        System.out.println("--- Started");
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+        System.out.println("--- Reading output");
+                String out;
+                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
+                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
+                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
+                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
 
-                    setParams(taskServer, jobManager);
-
-                    System.out.println("--- Ended " + taskServer + "  " + jobManager);
-                    while ((out = reader.readLine()) != null) {
-                        System.err.println(out);
-                    }
+                setParams(taskServer, jobManager);
+                
+        System.out.println("--- Ended " + taskServer + "  " + jobManager);
+                while ((out = reader.readLine()) != null) {
+                    System.err.println(out);
                 }
-            } catch (IOException ex) {
-                ex.printStackTrace();
             }
-        }).start();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
