@@ -1,6 +1,5 @@
 package popjava.yarn;
 
-import com.beust.jcommander.JCommander;
 import popjava.annotation.POPClass;
 
 /**
