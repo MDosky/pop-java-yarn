@@ -77,7 +77,6 @@ public class YARNClient {
                 Collections.singletonList(
                         "$JAVA_HOME/bin/java"
                         + " -javaagent:popjava.jar"
-                        + " -cp popjava.jar:pop-app.jar"
                         + " popjava.yarn.ApplicationMasterAsync"
                         + " --dir " + hdfs_dir
                         + " --vcores " + vcores
