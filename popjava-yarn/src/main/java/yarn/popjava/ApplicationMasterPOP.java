@@ -86,11 +86,11 @@ public class ApplicationMasterPOP {
         PopJava.getThis(this).startCentralServers();
     }
 
-    @POPSyncConc
+    @POPSyncSeq
     public void runMainLoop() {
         try {
             // wait for Central Servers to be up
-            Thread.sleep(5000);
+            Thread.sleep(10000);
             
             // Register with ResourceManager
             System.out.println("[AM] registerApplicationMaster 0");
