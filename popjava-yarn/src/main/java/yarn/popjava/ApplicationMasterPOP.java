@@ -41,8 +41,8 @@ public class ApplicationMasterPOP {
     private AMRMClientAsync<AMRMClient.ContainerRequest> rmClient;
 
     private Process popProcess;
-    private String taskServer;
-    private String jobManager;
+    private StringBuilder taskServer = new StringBuilder();
+    private StringBuilder jobManager = new StringBuilder();
 
     private int requestedContainers;
 
@@ -137,8 +137,8 @@ public class ApplicationMasterPOP {
 
     @POPSyncSeq
     public void setParams(String task, String jm) {
-        this.taskServer = task;
-        this.jobManager = jm;
+        this.taskServer.append(task);
+        this.jobManager.append(jm);
     }
 
     /**
@@ -163,7 +163,7 @@ public class ApplicationMasterPOP {
                 System.out.println("--- Started");
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                     System.out.println("--- Reading output");
-                    String out;
+                    String out, taskServer, jobManager;
                     while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
                     taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
                     while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
