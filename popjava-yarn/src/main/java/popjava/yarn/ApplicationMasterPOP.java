@@ -81,8 +81,7 @@ public class ApplicationMasterPOP {
         rmClient.start();
         
         // start as thread
-        ApplicationMasterPOP aThis = PopJava.getThis(this);
-        aThis.startCentralServers();
+        PopJava.getThis(this).startCentralServers();
     }
 
     @POPSyncConc
