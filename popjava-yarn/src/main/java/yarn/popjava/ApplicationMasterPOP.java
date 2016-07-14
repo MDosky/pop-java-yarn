@@ -147,7 +147,7 @@ public class ApplicationMasterPOP {
                 System.getProperty("java.home") + "/bin/java",
                 "-javaagent:popjava.jar",
                 "-cp", "popjava.jar:pop-app.jar",
-                "popjava.yarn.ApplicationMasterPOPServer"
+                ApplicationMasterPOPServer.class.getName()
         );
 
         ProcessBuilder pb = new ProcessBuilder(popServer);

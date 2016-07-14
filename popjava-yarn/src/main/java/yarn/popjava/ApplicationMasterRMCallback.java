@@ -84,7 +84,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     "$JAVA_HOME/bin/java"
                     + " -javaagent:popjava.jar"
                     + " -cp popjava.jar:pop-app.jar"
-                    + " popjava.yarn.YARNContainer"
+                    + " " + YARNContainer.class.getName()
                     + " -taskServer " + taskServer
                     + " -jobmanager " + jobManager
                     + " " + mainStarter
