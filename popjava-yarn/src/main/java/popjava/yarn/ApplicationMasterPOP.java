@@ -75,7 +75,8 @@ public class ApplicationMasterPOP {
         rmCallback.setup(nmClient);
         
         // start as thread
-        PopJava.getThis(this).startCentralServers();
+        ApplicationMasterPOP aThis = PopJava.getThis(this);
+        aThis.startCentralServers();
     }
 
     @POPSyncConc
@@ -130,7 +131,7 @@ public class ApplicationMasterPOP {
      * Using the same as the one the AM run on pollute the classpath.
      */
     @POPAsyncConc
-    private void startCentralServers() {
+    public void startCentralServers() {
         List<String> popServer = Lists.newArrayList(
                 System.getProperty("java.home") + "/bin/java",
                 "-javaagent:popjava.jar",
