@@ -75,7 +75,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
-                    "hdfs -libjars " + hdfs_dir + "/pop-app.jar," + hdfs_dir + "/popjava.jar"
+                    "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
+                    + ";",
+                    "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
                     + ";",
                     "sleep 3"
                     + ";",
