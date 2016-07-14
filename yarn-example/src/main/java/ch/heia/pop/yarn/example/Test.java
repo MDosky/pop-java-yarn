@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package popjava.yarn;
+package ch.heia.pop.yarn.example;
 
 import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
