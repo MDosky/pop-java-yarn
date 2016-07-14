@@ -2,7 +2,6 @@ package popjava.yarn;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.internal.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,13 +74,10 @@ public class YARNClient {
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
         amContainer.setCommands(
-                Lists.newArrayList(
-                        "sleep 3"
-                        + ";",
-                        "ls -la"
-                        + ";",
+                Collections.singletonList(
                         "$JAVA_HOME/bin/java"
                         + " -javaagent:popjava.jar"
+                        + " -cp popjava.jar:pop-app.jar"
                         + " popjava.yarn.ApplicationMasterAsync"
                         + " --dir " + hdfs_dir
                         + " --vcores " + vcores
@@ -91,7 +87,6 @@ public class YARNClient {
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";"
                 )
         );
 
