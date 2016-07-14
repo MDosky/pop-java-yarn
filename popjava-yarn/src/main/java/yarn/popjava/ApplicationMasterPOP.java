@@ -135,6 +135,10 @@ public class ApplicationMasterPOP {
     }
     
     @POPSyncSeq
+    public void setParams(String task, String jm) {
+        this.taskServer = task;
+        this.jobManager = jm;
+    }
 
     /**
      * Start a clean version of POP-Java which will be used to create processes.
@@ -164,6 +168,8 @@ public class ApplicationMasterPOP {
                 while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
                 jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
 
+                setParams(taskServer, jobManager);
+                
         System.out.println("--- Ended " + taskServer + "  " + jobManager);
                 while ((out = reader.readLine()) != null) {
                     System.err.println(out);
