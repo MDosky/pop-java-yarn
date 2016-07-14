@@ -83,6 +83,7 @@ public class YARNClient {
                         + " --vcores " + vcores
                         + " --memory " + memory
                         + " --containers " + containers
+                                + " -jobservice=localhost:1234"
                         + " --main " + main
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
