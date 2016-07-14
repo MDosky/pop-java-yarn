@@ -134,7 +134,7 @@ public class ApplicationMasterPOP {
      * Start a clean version of POP-Java which will be used to create processes.
      * Using the same as the one the AM run on pollute the classpath.
      */
-    @POPSyncConc
+    @POPAsyncConc
     public void startCentralServers() {
         List<String> popServer = Lists.newArrayList(
                 System.getProperty("java.home") + "/bin/java",
