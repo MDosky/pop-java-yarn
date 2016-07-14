@@ -82,12 +82,16 @@ public class ApplicationMasterPOP {
         
         rmCallback.setup(nmClient);
         
-        // start server
-        PopJava.getThis(this).startCentralServers();
+        // start as thread
+        ApplicationMasterPOP aThis = PopJava.getThis(this);
+        aThis.startCentralServers();
     }
 
     @POPSyncConc
     public void runMainLoop() throws Exception {
+        // wait for Central Servers to be up
+        Thread.sleep(5000);
+
         // Register with ResourceManager
         System.out.println("[AM] registerApplicationMaster 0");
         rmClient.registerApplicationMaster("", 0, "");
@@ -134,7 +138,7 @@ public class ApplicationMasterPOP {
      * Start a clean version of POP-Java which will be used to create processes.
      * Using the same as the one the AM run on pollute the classpath.
      */
-    @POPSyncConc
+    @POPAsyncConc
     public void startCentralServers() {
         List<String> popServer = Lists.newArrayList(
                 System.getProperty("java.home") + "/bin/java",
