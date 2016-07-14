@@ -34,15 +34,12 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
 
     private NMClient nmClient;
 
-    public ApplicationMasterRMCallback(String hdfs_dir, int askedContainers, String main, List<String> args) {
+    public ApplicationMasterRMCallback(NMClient nmClient, String hdfs_dir, int askedContainers, String main, List<String> args) {
+        this.nmClient = nmClient;
         this.hdfs_dir = hdfs_dir;
         this.askedContainers = askedContainers;
         this.main = main;
         this.args = args;
-    }
-
-    void setup(NMClient nmClient) {
-        this.nmClient = nmClient;
     }
 
     @Override

@@ -70,17 +70,15 @@ public class ApplicationMasterPOP {
     public void setup() {
         configuration = new YarnConfiguration();
         
-        rmCallback = new ApplicationMasterRMCallback(hdfs_dir, askedContainers, main, args);
-        
         nmClient = NMClient.createNMClient();
         nmClient.init(configuration);
         nmClient.start();
         
+        rmCallback = new ApplicationMasterRMCallback(nmClient, hdfs_dir, askedContainers, main, args);
+        
         rmClient = AMRMClientAsync.createAMRMClientAsync(100, rmCallback);
         rmClient.init(configuration);
         rmClient.start();
-        
-        rmCallback.setup(nmClient);
         
         // start as thread
         ApplicationMasterPOP aThis = PopJava.getThis(this);
