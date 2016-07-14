@@ -1,4 +1,4 @@
-package popjava.yarn;
+package yarn.popjava;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -8,7 +8,7 @@ import popjava.baseobject.POPAccessPoint;
 import popjava.service.DaemonInfo;
 import popjava.service.POPJavaDeamon;
 import popjava.system.POPSystem;
-import popjava.yarn.command.AppRoutine;
+import yarn.popjava.command.AppRoutine;
 
 /**
  * Start the POP-Java daemon

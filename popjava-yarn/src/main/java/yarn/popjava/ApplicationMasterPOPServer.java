@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package popjava.yarn;
+package yarn.popjava;
 
 import popjava.PopJava;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
 import popjava.util.Util;
-import popjava.yarn.command.AppRoutine;
-import popjava.yarn.command.POPAppStatus;
-import popjava.yarn.command.TaskServer;
+import yarn.popjava.command.AppRoutine;
+import yarn.popjava.command.POPAppStatus;
+import yarn.popjava.command.TaskServer;
 
 /**
  *

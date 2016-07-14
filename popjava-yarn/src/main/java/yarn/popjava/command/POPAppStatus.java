@@ -1,4 +1,4 @@
-package popjava.yarn.command;
+package yarn.popjava.command;
 
 /**
  * To know the current status of the POP Application

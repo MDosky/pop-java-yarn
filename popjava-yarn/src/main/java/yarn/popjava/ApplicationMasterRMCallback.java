@@ -1,4 +1,4 @@
-package popjava.yarn;
+package yarn.popjava;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;

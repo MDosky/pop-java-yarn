@@ -1,4 +1,4 @@
-package popjava.yarn;
+package yarn.popjava;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -82,7 +82,6 @@ public class YARNClient {
                         + " --vcores " + vcores
                         + " --memory " + memory
                         + " --containers " + containers
-                                + " -jobservice=localhost:1234"
                         + " --main " + main
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"

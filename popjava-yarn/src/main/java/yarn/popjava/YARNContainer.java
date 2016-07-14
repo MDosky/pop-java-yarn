@@ -1,4 +1,4 @@
-package popjava.yarn;
+package yarn.popjava;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
 import popjava.util.Util;
-import popjava.yarn.command.AppRoutine;
+import yarn.popjava.command.AppRoutine;
 
 /**
  *

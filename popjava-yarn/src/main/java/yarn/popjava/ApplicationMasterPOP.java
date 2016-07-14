@@ -1,4 +1,4 @@
-package popjava.yarn;
+package yarn.popjava;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -26,7 +26,6 @@ import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
-import popjava.base.POPObject;
 
 /**
  *

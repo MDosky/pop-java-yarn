@@ -1,4 +1,4 @@
-package popjava.yarn.command;
+package yarn.popjava.command;
 
 import popjava.PopJava;
 import popjava.baseobject.POPAccessPoint;
