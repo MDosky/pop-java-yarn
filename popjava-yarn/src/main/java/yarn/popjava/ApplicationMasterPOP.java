@@ -88,7 +88,10 @@ public class ApplicationMasterPOP {
 
     @POPSyncSeq
     public void runMainLoop() {
-        try {            
+        try {
+            // wait for Central Servers to be up
+            Thread.sleep(10000);
+            
             // Register with ResourceManager
             System.out.println("[AM] registerApplicationMaster 0");
             rmClient.registerApplicationMaster("", 0, "");
@@ -133,8 +136,6 @@ public class ApplicationMasterPOP {
         System.out.println("[AM] Making reservation request " + requestedContainers++);
         rmClient.addContainerRequest(containerAsk);
     }
-    
-    @POPSyncSeq
 
     /**
      * Start a clean version of POP-Java which will be used to create processes.
