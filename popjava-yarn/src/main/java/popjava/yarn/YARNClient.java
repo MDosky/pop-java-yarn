@@ -79,8 +79,6 @@ public class YARNClient {
                         "sleep 3"
                         + ";",
                         "ls -la"
-                        + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                         "$JAVA_HOME/bin/java"
                         + " -javaagent:popjava.jar"
