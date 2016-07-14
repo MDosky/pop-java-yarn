@@ -92,6 +92,9 @@ public class ApplicationMasterPOP {
             // wait for Central Servers to be up
             Thread.sleep(5000);
             
+            // set servers
+            rmCallback.setServer(taskServer, jobManager);
+            
             // Register with ResourceManager
             System.out.println("[AM] registerApplicationMaster 0");
             rmClient.registerApplicationMaster("", 0, "");
@@ -150,22 +153,17 @@ public class ApplicationMasterPOP {
                 ApplicationMasterPOPServer.class.getName()
         );
 
-        System.out.println("--- Creating Server");
         ProcessBuilder pb = new ProcessBuilder(popServer);
 
         try {
-        System.out.println("--- Starting  Server");
             popProcess = pb.start();
-        System.out.println("--- Started");
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-        System.out.println("--- Reading output");
                 String out;
                 while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
                 taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
                 while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
                 jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
 
-        System.out.println("--- Ended " + taskServer + "  " + jobManager);
                 while ((out = reader.readLine()) != null) {
                     System.err.println(out);
                 }

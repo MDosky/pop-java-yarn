@@ -140,4 +140,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             return numContainersToWaitFor == 0;
         }
     }
+
+    void setServer(String taskServer, String jobManager) {
+        this.taskServer = taskServer;
+        this.jobManager = jobManager;
+    }
 }
