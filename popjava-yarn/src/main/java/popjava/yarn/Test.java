@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package popjava.yarn;
 
 import popjava.PopJava;
@@ -6,12 +11,11 @@ import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 
 /**
- * This class implements a simple async app master.
+ *
+ * @author Dosky
  */
-@POPClass(isDistributable = false)
-public class ApplicationMasterAsync {
-
-    public static void main(String[] args) throws InterruptedException {
+public class Test {
+        public static void main(String[] args) throws InterruptedException {
         for(String s : args)
             System.out.println(s);
 //        ApplicationMasterPOP master = new ApplicationMasterPOP(args);
