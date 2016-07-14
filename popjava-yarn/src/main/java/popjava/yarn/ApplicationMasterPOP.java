@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.Priority;
@@ -16,6 +18,7 @@ import org.apache.hadoop.yarn.client.api.AMRMClient;
 import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
+import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.Records;
 import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
@@ -85,28 +88,32 @@ public class ApplicationMasterPOP {
     }
 
     @POPSyncConc
-    public void runMainLoop() throws Exception {
-        // wait for Central Servers to be up
-        Thread.sleep(5000);
-
-        // Register with ResourceManager
-        System.out.println("[AM] registerApplicationMaster 0");
-        rmClient.registerApplicationMaster("", 0, "");
-        System.out.println("[AM] registerApplicationMaster 1");
-
-        for (int i = 0; i < askedContainers; i++) {
-            PopJava.getThis(this).requestContainer(memory, vcores);
+    public void runMainLoop() {
+        try {
+            // wait for Central Servers to be up
+            Thread.sleep(5000);
+            
+            // Register with ResourceManager
+            System.out.println("[AM] registerApplicationMaster 0");
+            rmClient.registerApplicationMaster("", 0, "");
+            System.out.println("[AM] registerApplicationMaster 1");
+            
+            for (int i = 0; i < askedContainers; i++) {
+                PopJava.getThis(this).requestContainer(memory, vcores);
+            }
+            
+            System.out.println("[AM] waiting for containers to finish");
+            while (!rmCallback.doneWithContainers()) {
+                Thread.sleep(100);
+            }
+            
+            System.out.println("[AM] unregisterApplicationMaster 0");
+            // Un-register with ResourceManager
+            rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
+            System.out.println("[AM] unregisterApplicationMaster 1");
+        } catch (InterruptedException | YarnException | IOException ex) {
+            ex.printStackTrace();
         }
-
-        System.out.println("[AM] waiting for containers to finish");
-        while (!rmCallback.doneWithContainers()) {
-            Thread.sleep(100);
-        }
-
-        System.out.println("[AM] unregisterApplicationMaster 0");
-        // Un-register with ResourceManager
-        rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
-        System.out.println("[AM] unregisterApplicationMaster 1");
     }
     
     /**
