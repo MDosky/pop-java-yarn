@@ -1,5 +1,6 @@
 package popjava.yarn;
 
+import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
@@ -18,7 +19,7 @@ public class ApplicationMasterAsync {
 //        master.setup();
 //        master.runMainLoop();
         A a = new A();
-        a.b();
+        PopJava.getThis(a).b();
         
         Thread.sleep(1000);
     }
