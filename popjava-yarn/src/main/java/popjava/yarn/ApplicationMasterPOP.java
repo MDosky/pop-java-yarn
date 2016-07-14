@@ -28,7 +28,7 @@ import popjava.annotation.POPSyncSeq;
  *
  * @author Dosky
  */
-@POPClass
+@POPClass(classId = 3000)
 public class ApplicationMasterPOP {
 
     private Configuration configuration;
