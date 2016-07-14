@@ -1,5 +1,6 @@
 package popjava.yarn;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
@@ -57,6 +58,12 @@ public class ApplicationMasterPOP {
     
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP() {
+        this("");
+    }
+    
+    @POPObjectDescription(url = "localhost")
+    public ApplicationMasterPOP(String... args) {
+        new JCommander(this, args);
     }
 
     @POPSyncSeq

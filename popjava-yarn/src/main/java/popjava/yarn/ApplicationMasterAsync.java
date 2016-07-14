@@ -10,8 +10,7 @@ import popjava.annotation.POPClass;
 public class ApplicationMasterAsync {
 
     public static void main(String... args) throws Exception {
-        ApplicationMasterPOP master = new ApplicationMasterPOP();
-        new JCommander(master, args);
+        ApplicationMasterPOP master = new ApplicationMasterPOP(args);
         master.setup();
         master.runMainLoop();
     }
