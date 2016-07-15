@@ -9,8 +9,6 @@ import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
-import popjava.util.Util;
-import yarn.popjava.command.AppRoutine;
 import yarn.popjava.command.POPAppStatus;
 import yarn.popjava.command.TaskServer;
 
@@ -38,9 +36,7 @@ public class ApplicationMasterPOPServer {
         System.out.println(TASK + taskServer.getAccessPoint());
         System.out.println(JOBM + jobManager.getAccessPoint());
         
-        AppRoutine appRoutine = new AppRoutine(taskServer.getAccessPoint().toString());
-        
-        while(!appRoutine.server.getStatus().isKill()) {
+        while(!taskServer.getStatus().isKill()) {
             Thread.sleep(1000);
         }
         Thread.sleep(10000);
