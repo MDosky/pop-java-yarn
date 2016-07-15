@@ -24,6 +24,7 @@ public class TaskServer extends POPObject {
 
     @POPObjectDescription(url = "localhost")
     public TaskServer(POPJavaJobManager jm) {
+        this.jm = jm;
     }
     
     @POPSyncSeq
