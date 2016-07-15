@@ -39,15 +39,9 @@ public class ApplicationMasterPOPServer {
         
         AppRoutine appRoutine = new AppRoutine(taskServer.getAccessPoint().toString());
         
-        POPJavaJobManager keepAlive = PopJava.newActive(POPJavaJobManager.class, jobManager.getAccessPoint());
-        POPJavaJobManager tmpAlive;
         while(!appRoutine.server.getStatus().isKill()) {
-            tmpAlive = PopJava.newActive(POPJavaJobManager.class, jobManager.getAccessPoint());
-            keepAlive.exit();
-            keepAlive = tmpAlive;
             Thread.sleep(1000);
         }
-        keepAlive.exit();
         Thread.sleep(10000);
         POPSystem.end();
     }
