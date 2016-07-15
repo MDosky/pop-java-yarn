@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
@@ -44,7 +45,7 @@ public class ApplicationMasterPOP {
     private String taskServer;
     private String jobManager;
     
-    private int requestedContainers;
+    private AtomicInteger requestedContainers = new AtomicInteger();
 
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
@@ -136,7 +137,7 @@ public class ApplicationMasterPOP {
 
         // Make container requests to ResourceManager
         AMRMClient.ContainerRequest containerAsk = new AMRMClient.ContainerRequest(capability, null, null, priority);
-        System.out.println("[AM] Making reservation request " + requestedContainers++);
+        System.out.println("[AM] Making reservation request " + requestedContainers.getAndIncrement());
         rmClient.addContainerRequest(containerAsk);
     }
 

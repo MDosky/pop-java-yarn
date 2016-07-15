@@ -6,6 +6,7 @@
 package yarn.popjava;
 
 import popjava.PopJava;
+import popjava.annotation.POPClass;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
 import popjava.util.Util;
@@ -17,6 +18,7 @@ import yarn.popjava.command.TaskServer;
  *
  * @author Dosky
  */
+@POPClass(isDistributable = false)
 public class ApplicationMasterPOPServer {
     public static final String TASK = "TASK_SERVER_AP=";
     public static final String JOBM = "JOBM_SERVER_AP=";
@@ -25,11 +27,10 @@ public class ApplicationMasterPOPServer {
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
-        jobManager = PopJava.newActive(POPJavaJobManager.class);
-        POPSystem.jobService = jobManager.getAccessPoint();
-        taskServer = PopJava.newActive(TaskServer.class);
+        jobManager = new POPJavaJobManager();
+        POPSystem.jobService = PopJava.getAccessPoint(jobManager);
+        taskServer = new TaskServer(jobManager);
         
-        taskServer.setJobManager(jobManager.getAccessPoint());
         // server status, waiting
         taskServer.setStatus(POPAppStatus.WAITING);
         
