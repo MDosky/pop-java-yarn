@@ -25,24 +25,29 @@ public class AppRoutine {
     public void waitAndQuit() {
         int killStatus = -1;
         while(true) {
-            POPAppStatus status = server.getStatus();
-            if(status.isKill()) {
-                switch(status) {
-                    case FINISHED:
-                        killStatus = 0;
-                        break;
-                    case FAILED:
-                        killStatus = 11;
-                        break;
-                    case KILLED:
-                        killStatus = 50;
-                        break;
+            try {
+                POPAppStatus status = server.getStatus();
+                if(status.isKill()) {
+                    switch(status) {
+                        case FINISHED:
+                            killStatus = 0;
+                            break;
+                        case FAILED:
+                            killStatus = 11;
+                            break;
+                        case KILLED:
+                            killStatus = 50;
+                            break;
+                    }
+
+                    if(killStatus != -1) {
+                        POPSystem.end();
+                        System.exit(killStatus);
+                    }
                 }
-                
-                if(killStatus != -1) {
-                    POPSystem.end();
-                    System.exit(killStatus);
-                }
+            } catch(IllegalArgumentException ex) {
+                System.err.println("Failed to get Status, waiting...");
+                System.err.println(ex.getMessage());
             }
             try {
                 Thread.sleep(1000);
