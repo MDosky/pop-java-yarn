@@ -1,16 +1,11 @@
 package yarn.popjava.command;
 
-import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
-import popjava.annotation.POPParameter;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncMutex;
-import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
 import popjava.jobmanager.POPJavaJobManager;
-import popjava.jobmanager.ServiceConnector;
-import popjava.service.DaemonInfo;
 
 /**
  *
@@ -32,7 +27,7 @@ public class TaskServer extends POPObject {
     }
     
     @POPSyncMutex
-    public void registerDaemon(@POPParameter(POPParameter.Direction.INOUT) DaemonInfo di) {
+    public void registerDaemon(String di) {
         jm.registerService(di);
         System.out.println("[TS] Registering service " + di);
     }

@@ -35,7 +35,7 @@ public class DaemonService {
         mainService.start();
         // server address
         AppRoutine appRoutine = new AppRoutine(args[0]);
-        appRoutine.registerDaemon(mainService.di);
+        appRoutine.registerDaemon(mainService.di.toString());
         appRoutine.waitAndQuit();
     }
 
