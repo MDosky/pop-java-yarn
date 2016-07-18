@@ -7,6 +7,7 @@ import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.jobmanager.ServiceConnector;
+import popjava.service.DaemonInfo;
 
 /**
  *
@@ -28,7 +29,7 @@ public class TaskServer extends POPObject {
     }
     
     @POPSyncSeq
-    public void registerDaemon(ServiceConnector di) {
+    public void registerDaemon(DaemonInfo di) {
         jm.registerService(di);
         System.out.println("[TS] Registering service " + di);
     }

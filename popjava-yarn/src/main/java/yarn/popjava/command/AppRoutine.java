@@ -3,6 +3,7 @@ package yarn.popjava.command;
 import popjava.PopJava;
 import popjava.baseobject.POPAccessPoint;
 import popjava.jobmanager.ServiceConnector;
+import popjava.service.DaemonInfo;
 import popjava.system.POPSystem;
 
 /**
@@ -17,7 +18,7 @@ public class AppRoutine {
         this.server = PopJava.newActive(TaskServer.class, new POPAccessPoint(taskAP));
     }
     
-    public void registerDaemon(ServiceConnector di) {
+    public void registerDaemon(DaemonInfo di) {
         server.registerDaemon(di);
     }
     
