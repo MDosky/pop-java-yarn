@@ -28,7 +28,7 @@ public class TaskServer extends POPObject {
     
     @POPSyncMutex
     public void registerDaemon(String di) {
-        jm.registerService(di);
+        jm.registerDaemon(di);
         System.out.println("[TS] Registering service " + di);
     }
     
@@ -39,12 +39,6 @@ public class TaskServer extends POPObject {
     
     @POPSyncConc
     public POPAppStatus getStatus() {
-        try {
-            // try value, if not send wait
-            POPAppStatus as = POPAppStatus.valueOf(status.name());
-            return status;
-        } catch(IllegalArgumentException e) {
-            return POPAppStatus.WAITING;
-        }
+        return status;
     }
 }
