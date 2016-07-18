@@ -25,9 +25,9 @@ public class ApplicationMasterPOPServer {
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
-        jobManager = PopJava.newActive(POPJavaJobManager.class);
+        jobManager = new POPJavaJobManager();
         POPSystem.jobService = jobManager.getAccessPoint();
-        taskServer = PopJava.newActive(TaskServer.class, jobManager);
+        taskServer = new TaskServer(jobManager);
         
         // server status, waiting
         taskServer.setStatus(POPAppStatus.WAITING);
