@@ -29,7 +29,7 @@ public class TaskServer extends POPObject {
     }
     
     @POPSyncSeq
-    public void registerDaemon(@POPParameter(POPParameter.Direction.IN) ServiceConnector di) {
+    public void registerDaemon(@POPParameter(POPParameter.Direction.INOUT) ServiceConnector di) {
         jm.registerService(di);
         System.out.println("[TS] Registering service " + di);
     }
