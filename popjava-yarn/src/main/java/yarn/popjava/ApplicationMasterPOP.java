@@ -4,20 +4,15 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.Priority;
@@ -56,8 +51,6 @@ public class ApplicationMasterPOP extends POPObject {
     private AtomicInteger requestedContainers = new AtomicInteger();
 
     private boolean ready = false;
-
-    private PrintStream strout = System.out;
 
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
@@ -222,35 +215,6 @@ public class ApplicationMasterPOP extends POPObject {
                 pw.println(line);
             }
         } catch (IOException ex) {
-        }
-    }
-
-    private class InterceptOutput extends PrintStream {
-
-        private boolean t, j;
-
-        public InterceptOutput(OutputStream os) {
-            super(os, true);
-        }
-
-        @Override
-        public void print(String string) {
-            super.print("[Override] " + string);
-
-            if (string != null) {
-                if (string.startsWith(ApplicationMasterPOPServer.TASK)) {
-                    taskServer = string.substring(ApplicationMasterPOPServer.TASK.length());
-                    t = true;
-                }
-                if (string.startsWith(ApplicationMasterPOPServer.JOBM)) {
-                    jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
-                    j = true;
-                }
-
-                if (t && j) {
-                    resetStream();
-                }
-            }
         }
     }
 }
