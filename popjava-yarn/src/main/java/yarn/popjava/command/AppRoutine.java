@@ -24,9 +24,11 @@ public class AppRoutine {
     
     public void waitAndQuit() {
         int killStatus = -1;
+        POPAppStatus status = null;
         while(true) {
             try {
-                POPAppStatus status = server.getStatus();
+                System.out.println("Prev status " + status);
+                status = server.getStatus();
                 if(status.isKill()) {
                     switch(status) {
                         case FINISHED:
@@ -48,6 +50,7 @@ public class AppRoutine {
             } catch(IllegalArgumentException ex) {
                 System.err.println("Failed to get Status, waiting...");
                 System.err.println(ex.getMessage());
+                ex.printStackTrace();
             }
             try {
                 Thread.sleep(1000);

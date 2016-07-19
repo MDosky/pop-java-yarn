@@ -34,6 +34,7 @@ public class TaskServer extends POPObject {
     
     @POPSyncMutex
     public void setStatus(POPAppStatus status) {
+        System.out.println("set status " + status);
         this.status = status;
     }
     

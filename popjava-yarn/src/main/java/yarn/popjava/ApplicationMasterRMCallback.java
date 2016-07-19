@@ -79,8 +79,6 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + ";",
                     "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
                     + ";",
-                    "sleep 3"
-                    + ";",
                     "$JAVA_HOME/bin/java"
                     + " -javaagent:popjava.jar"
                     + " -cp popjava.jar:pop-app.jar"
