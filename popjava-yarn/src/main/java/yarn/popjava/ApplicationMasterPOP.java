@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,8 @@ public class ApplicationMasterPOP extends POPObject {
     private AtomicInteger requestedContainers = new AtomicInteger();
     
     private boolean ready = false;
+    
+    private PrintStream strout = System.out;
 
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
@@ -177,36 +180,46 @@ public class ApplicationMasterPOP extends POPObject {
             
             System.out.println("[AM] Getting servers");
             
-            // temporarery replate system stdout with ouwn
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PrintStream ps = new PrintStream(baos);
-            PrintStream stdout = System.out;
-            
-            //System.setOut(ps);
-            
-            System.out.println(popProcess.getErrorStream());
-            System.out.println(popProcess.getInputStream());
-            System.out.println(popProcess.getOutputStream());
-            
-//            try (BufferedReader reader = new BufferedReader(new ByteArrayInputStream())) {
-//                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK))
-//                    System.err.println("Faux read tsk: " + taskServer);
-//                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
-//                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM))
-//                    System.err.println("Faux read jbm: " + jobManager);
-//                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
-//            }
-            
-            System.setOut(stdout);
-            
-            System.out.println("[AM] Servers are: " + taskServer + " " + jobManager);
-            ready = true;
-            
-            System.out.println("[AM] Waiting for completation");
+            // temporarery replate system stdout with ouwn to catch APs
+            System.setOut(new InterceptOutput(strout));
+
             popProcess.waitFor();
-            System.out.println("[AM] Process is completed, application should close");
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    
+    private void resetStream() {
+            System.out.println("[AM] Servers are: " + taskServer + " " + jobManager);
+            ready = true;
+            System.setOut(strout);
+    }
+    
+    private class InterceptOutput extends PrintStream {
+
+        private int n = 0;
+        
+        public InterceptOutput(OutputStream os) {
+            super(os, true);
+        }
+
+        @Override
+        public void print(String string) {
+            super.print(string);
+            
+            if(string != null) {
+                if(string.startsWith(ApplicationMasterPOPServer.TASK)) {
+                    taskServer = string.substring(ApplicationMasterPOPServer.TASK.length());
+                    n++;
+                }
+                if(string.startsWith(ApplicationMasterPOPServer.JOBM)) {
+                    jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
+                    n++;
+                }
+                
+                if(n == 2) 
+                    resetStream();
+            }
         }
     }
 }
