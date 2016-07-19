@@ -15,38 +15,30 @@ import popjava.system.POPSystem;
 public class NoSpec {
 
     public static void main(String[] args) {
-        try {
-            System.out.println("Starting pop java app");
-            AAA aaa;
+        System.out.println("Starting pop java app");
+        AAA aaa;
 
-            System.out.println("first");
-            aaa = new AAA();
-            System.out.println(new Date(aaa.aaa()));
-            Thread.sleep(5000);
-            
-            System.out.println("second");
-            aaa = new AAA();
-            System.out.println(new Date(aaa.aaa()));
-            Thread.sleep(5000);
-            
-            System.out.println("third");
-            aaa = new AAA();
-            System.out.println(new Date(aaa.aaa()));
-            Thread.sleep(5000);
-            
-            System.out.println("forth");
-            aaa = new AAA();
-            System.out.println(new Date(aaa.aaa()));
-            Thread.sleep(5000);
-            
-            System.out.println("fifth");
-            aaa = new AAA();
-            System.out.println(new Date(aaa.aaa()));
+        System.out.println("first");
+        aaa = new AAA();
+        System.out.println(System.currentTimeMillis() - aaa.aaa());
 
-            System.out.println("end app");
-        } catch (InterruptedException ex) {
-            Logger.getLogger(NoSpec.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        System.out.println("second");
+        aaa = new AAA();
+        System.out.println(System.currentTimeMillis() - aaa.aaa());
+
+        System.out.println("third");
+        aaa = new AAA();
+        System.out.println(System.currentTimeMillis() - aaa.aaa());
+
+        System.out.println("forth");
+        aaa = new AAA();
+        System.out.println(System.currentTimeMillis() - aaa.aaa());
+
+        System.out.println("fifth");
+        aaa = new AAA();
+        System.out.println(System.currentTimeMillis() - aaa.aaa());
+
+        System.out.println("end app");
     }
 
     @POPClass
