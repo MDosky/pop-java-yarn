@@ -71,7 +71,7 @@ public class ApplicationMasterPOP extends POPObject {
         new JCommander(this, args);
     }
 
-    @POPSyncSeq
+    @POPSyncConc
     public void setup() {
         configuration = new YarnConfiguration();
         
@@ -89,7 +89,7 @@ public class ApplicationMasterPOP extends POPObject {
         PopJava.getThis(this).startCentralServers();
     }
     
-    @POPSyncSeq
+    @POPSyncConc
     public void setServer(String task, String jobm) {
         System.out.println("Setting up " + task + " " + jobm);
         
