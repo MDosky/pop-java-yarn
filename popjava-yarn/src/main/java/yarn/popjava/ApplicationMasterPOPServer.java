@@ -24,9 +24,6 @@ public class ApplicationMasterPOPServer {
     
     public static void main(String[] args) throws InterruptedException {
         
-        // created the old way, but we have to know where it is
-        ApplicationMasterPOP amp = PopJava.newActive(ApplicationMasterPOP.class, new POPAccessPoint(args[0]));
-        
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
