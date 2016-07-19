@@ -28,9 +28,9 @@ public class ApplicationMasterPOPServer {
         POPJavaJobManager jobManager;
         
         System.out.println("[POPServer] Starting servers");
-        jobManager = new POPJavaJobManager();
+        jobManager = PopJava.newActive(POPJavaJobManager.class);
         POPSystem.jobService = jobManager.getAccessPoint();
-        taskServer = new TaskServer(jobManager);
+        taskServer = PopJava.newActive(TaskServer.class, jobManager);
         System.out.println("[POPServer] Done");
         
         System.out.println("[POPServer] Setting App Status as ACCEPTED");
