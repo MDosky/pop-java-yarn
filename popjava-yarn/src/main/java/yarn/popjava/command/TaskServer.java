@@ -34,7 +34,6 @@ public class TaskServer extends POPObject {
     
     @POPAsyncConc
     public void setStatus(POPAppStatus status) {
-        System.out.println("set status " + status);
         this.status = status;
     }
     

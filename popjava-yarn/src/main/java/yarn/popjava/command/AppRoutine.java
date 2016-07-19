@@ -27,9 +27,8 @@ public class AppRoutine {
         POPAppStatus status = null;
         while(true) {
             try {
-                System.out.println("Prev status " + status);
                 status = server.getStatus();
-                if(status.isKill()) {
+                if(status != null && status.isKill()) {
                     switch(status) {
                         case FINISHED:
                             killStatus = 0;
@@ -48,7 +47,7 @@ public class AppRoutine {
                     }
                 }
             } catch(IllegalArgumentException ex) {
-                System.err.println("Failed to get Status, waiting...");
+                System.err.println("Failed to get Status, continue...");
                 System.err.println(ex.getMessage());
                 ex.printStackTrace();
             }
