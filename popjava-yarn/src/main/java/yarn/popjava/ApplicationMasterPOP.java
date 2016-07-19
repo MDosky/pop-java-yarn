@@ -7,13 +7,17 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.Priority;
@@ -41,18 +45,18 @@ public class ApplicationMasterPOP extends POPObject {
 
     private Configuration configuration;
     private NMClient nmClient;
-    
+
     private ApplicationMasterRMCallback rmCallback;
     private AMRMClientAsync<AMRMClient.ContainerRequest> rmClient;
 
     private Process popProcess;
     private String taskServer;
     private String jobManager;
-    
+
     private AtomicInteger requestedContainers = new AtomicInteger();
-    
+
     private boolean ready = false;
-    
+
     private PrintStream strout = System.out;
 
     @Parameter(names = "--dir", required = true)
@@ -67,11 +71,11 @@ public class ApplicationMasterPOP extends POPObject {
     private String main;
     @Parameter
     private final List<String> args = new ArrayList<>();
-    
+
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP() {
     }
-    
+
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP(String... args) {
         new JCommander(this, args);
@@ -80,21 +84,21 @@ public class ApplicationMasterPOP extends POPObject {
     @POPAsyncConc
     public void setup() {
         configuration = new YarnConfiguration();
-        
+
         nmClient = NMClient.createNMClient();
         nmClient.init(configuration);
         nmClient.start();
-        
+
         rmCallback = new ApplicationMasterRMCallback(nmClient, hdfs_dir, askedContainers, main, args);
-        
+
         rmClient = AMRMClientAsync.createAMRMClientAsync(100, rmCallback);
         rmClient.init(configuration);
         rmClient.start();
-        
+
         // start as thread
         PopJava.getThis(this).startCentralServers();
     }
-    
+
     @POPSyncConc
     public boolean isReady() {
         return ready;
@@ -102,27 +106,28 @@ public class ApplicationMasterPOP extends POPObject {
 
     @POPSyncSeq
     public void runMainLoop() {
-        if(!ready)
+        if (!ready) {
             return;
-        
+        }
+
         try {
             // set servers
             rmCallback.setServer(taskServer, jobManager);
-            
+
             // Register with ResourceManager
             System.out.println("[AM] registerApplicationMaster 0%");
             rmClient.registerApplicationMaster("", 0, "");
             System.out.println("[AM] registerApplicationMaster 100%");
-            
+
             for (int i = 0; i < askedContainers; i++) {
                 PopJava.getThis(this).requestContainer(memory, vcores);
             }
-            
+
             System.out.println("[AM] waiting for containers to finish");
             while (!rmCallback.doneWithContainers()) {
                 Thread.sleep(100);
             }
-            
+
             System.out.println("[AM] unregisterApplicationMaster 0%");
             // Un-register with ResourceManager
             rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
@@ -131,11 +136,12 @@ public class ApplicationMasterPOP extends POPObject {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * Request a new container
+     *
      * @param memory
-     * @param vcores 
+     * @param vcores
      */
     @POPAsyncConc
     public void requestContainer(int memory, int vcores) {
@@ -172,16 +178,16 @@ public class ApplicationMasterPOP extends POPObject {
             System.out.println("[AM] Command is " + Arrays.toString(popServer.toArray()));
 
             System.out.println("[AM] Starting process");
-            
-            // temporarery replate system stdout with ouwn to catch APs
-            System.setOut(new InterceptOutput(strout));
-            
+
             ProcessBuilder pb = new ProcessBuilder(popServer);
-            pb.inheritIO();
-            
+
             System.out.println("[AM] Started process");
             popProcess = pb.start();
-            
+
+            ApplicationMasterPOP thos = PopJava.getThis(this);
+            thos.printStream(popProcess.getInputStream(), true, false);
+            thos.printStream(popProcess.getErrorStream(), true, true);
+
             System.out.println("[AM] Getting servers");
 
             popProcess.waitFor();
@@ -189,17 +195,40 @@ public class ApplicationMasterPOP extends POPObject {
             ex.printStackTrace();
         }
     }
-    
-    private void resetStream() {
-            System.out.println("[AM] Servers are: " + taskServer + " " + jobManager);
-            ready = true;
-            System.setOut(strout);
+
+    @POPAsyncConc
+    public void printStream(InputStream is, boolean parse, boolean err) {
+        PrintStream pw = err ? System.err : System.out;
+
+        boolean t, j = t = false;
+        String line;
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        try {
+            while ((line = br.readLine()) != null) {
+                if (parse && (!t || !j)) {
+                    if (line.startsWith(ApplicationMasterPOPServer.TASK)) {
+                        taskServer = line.substring(ApplicationMasterPOPServer.TASK.length());
+                        t = true;
+                    }
+                    if (line.startsWith(ApplicationMasterPOPServer.JOBM)) {
+                        jobManager = line.substring(ApplicationMasterPOPServer.JOBM.length());
+                        j = true;
+                    }
+
+                    if(t && j)
+                        ready = true;
+                }
+
+                pw.println(line);
+            }
+        } catch (IOException ex) {
+        }
     }
-    
+
     private class InterceptOutput extends PrintStream {
 
         private boolean t, j;
-        
+
         public InterceptOutput(OutputStream os) {
             super(os, true);
         }
@@ -207,19 +236,20 @@ public class ApplicationMasterPOP extends POPObject {
         @Override
         public void print(String string) {
             super.print("[Override] " + string);
-            
-            if(string != null) {
-                if(string.startsWith(ApplicationMasterPOPServer.TASK)) {
+
+            if (string != null) {
+                if (string.startsWith(ApplicationMasterPOPServer.TASK)) {
                     taskServer = string.substring(ApplicationMasterPOPServer.TASK.length());
                     t = true;
                 }
-                if(string.startsWith(ApplicationMasterPOPServer.JOBM)) {
+                if (string.startsWith(ApplicationMasterPOPServer.JOBM)) {
                     jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
                     j = true;
                 }
-                
-                if(t && j) 
+
+                if (t && j) {
                     resetStream();
+                }
             }
         }
     }
