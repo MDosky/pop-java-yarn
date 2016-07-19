@@ -174,9 +174,11 @@ public class ApplicationMasterPOP extends POPObject {
             
             System.out.println("[AM] Getting servers");
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
+                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK))
+                    System.err.println("Faux read tsk: " + taskServer);
                 taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
-                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
+                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM))
+                    System.err.println("Faux read jbm: " + jobManager);
                 jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
             }
             System.out.println("[AM] Servers are: " + taskServer + " " + jobManager);
