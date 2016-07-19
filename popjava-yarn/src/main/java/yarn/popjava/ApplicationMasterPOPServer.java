@@ -26,17 +26,23 @@ public class ApplicationMasterPOPServer {
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
+        System.out.println("[POPServer] Starting servers");
         jobManager = new POPJavaJobManager();
         POPSystem.jobService = jobManager.getAccessPoint();
         taskServer = new TaskServer(jobManager);
+        System.out.println("[POPServer] Done");
         
+        System.out.println("[POPServer] Setting App Status as ACCEPTED");
         // server status, waiting
-        taskServer.setStatus(POPAppStatus.WAITING);
+        taskServer.setStatus(POPAppStatus.ACCEPTED);
+        System.out.println("[POPServer] Status Changed");
         
-        
+        System.out.println("[POPServer] Setting servers addresses in AppMaster");
         // set server
         amp.setServer(taskServer.getAccessPoint().toString(), jobManager.getAccessPoint().toString());
+        System.out.println("[POPServer] Addresses set");
         
+        System.out.println("[POPServer] Waiting for application to die");
         while(!taskServer.getStatus().isKill()) {
             Thread.sleep(1000);
         }

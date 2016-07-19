@@ -162,25 +162,24 @@ public class ApplicationMasterPOP {
      */
     @POPAsyncConc
     public void startCentralServers() {
-        List<String> popServer = Lists.newArrayList(
-                System.getProperty("java.home") + "/bin/java",
-                "-javaagent:popjava.jar",
-                "-cp", "popjava.jar:pop-app.jar",
-                ApplicationMasterPOPServer.class.getName(),
-                PopJava.getAccessPoint(this).toString()
-        );
-
-        ProcessBuilder pb = new ProcessBuilder(popServer);
-
         try {
+            List<String> popServer = Lists.newArrayList(
+                    System.getProperty("java.home") + "/bin/java",
+                    "-javaagent:popjava.jar",
+                    "-cp", "popjava.jar:pop-app.jar",
+                    ApplicationMasterPOPServer.class.getName(),
+                    PopJava.getAccessPoint(this).toString()
+            );
+
+            ProcessBuilder pb = new ProcessBuilder(popServer);
+
             popProcess = pb.start();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 String out;
-                while ((out = reader.readLine()) != null) {
+                while ((out = reader.readLine()) != null)
                     System.err.println(out);
-                }
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
