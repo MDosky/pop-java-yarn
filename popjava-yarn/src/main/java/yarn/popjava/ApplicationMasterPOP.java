@@ -177,8 +177,8 @@ public class ApplicationMasterPOP extends POPObject {
             System.out.println("[AM] Started process");
             popProcess = pb.start();
 
-            this.printStream(popProcess.getInputStream(), true, false);
-            this.printStream(popProcess.getErrorStream(), true, true);
+            this.printStream(popProcess.getInputStream(), 1, false);
+            this.printStream(popProcess.getErrorStream(), -1, true);
 
             System.out.println("[AM] Getting servers");
 
@@ -188,7 +188,14 @@ public class ApplicationMasterPOP extends POPObject {
         }
     }
 
-    private void printStream(InputStream is, boolean parse, boolean err) {
+    /**
+     * Print a stream and handle it if required.
+     * Not a POP method because InputStream is not serializable.
+     * @param is
+     * @param parse
+     * @param err 
+     */
+    private void printStream(InputStream is, int parse, boolean err) {
         new Thread(() -> {
             PrintStream pw = err ? System.err : System.out;
 
@@ -197,7 +204,8 @@ public class ApplicationMasterPOP extends POPObject {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             try {
                 while ((line = br.readLine()) != null) {
-                    if (parse && (!t || !j)) {
+                    // get servers
+                    if (parse == 1 && (!t || !j)) {
                         if (line.startsWith(ApplicationMasterPOPServer.TASK)) {
                             taskServer = line.substring(ApplicationMasterPOPServer.TASK.length());
                             t = true;
@@ -211,8 +219,12 @@ public class ApplicationMasterPOP extends POPObject {
                             ready = true;
                         }
                     }
-
-                    pw.println(line);
+                    else if (parse == 2) {
+                        
+                    }
+                    else {
+                        pw.println(line);
+                    }
                 }
             } catch (IOException ex) {
             }

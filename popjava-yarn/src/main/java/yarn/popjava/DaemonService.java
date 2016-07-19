@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
+import popjava.baseobject.ConnectionType;
 import popjava.baseobject.POPAccessPoint;
 import popjava.jobmanager.ServiceConnector;
 import popjava.service.POPJavaDeamon;
@@ -40,7 +41,7 @@ public class DaemonService {
     }
 
     private DaemonService() {
-        di = new ServiceConnector(generatePassword());
+        di = new ServiceConnector(generatePassword(), 0, ConnectionType.DEAMON);
     }
 
     private void start() {
