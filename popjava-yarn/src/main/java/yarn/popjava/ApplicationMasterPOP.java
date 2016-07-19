@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hadoop.conf.Configuration;
@@ -25,13 +26,14 @@ import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
+import popjava.base.POPObject;
 
 /**
  *
  * @author Dosky
  */
 @POPClass
-public class ApplicationMasterPOP {
+public class ApplicationMasterPOP extends POPObject {
 
     private Configuration configuration;
     private NMClient nmClient;
@@ -163,16 +165,18 @@ public class ApplicationMasterPOP {
     @POPAsyncConc
     public void startCentralServers() {
         try {
+            System.out.println("[AM] Creating servers command");
             List<String> popServer = Lists.newArrayList(
                     System.getProperty("java.home") + "/bin/java",
                     "-javaagent:popjava.jar",
                     "-cp", "popjava.jar:pop-app.jar",
                     ApplicationMasterPOPServer.class.getName(),
-                    PopJava.getAccessPoint(this).toString()
+                    getAccessPoint().toString()
             );
+            System.out.println("[AM] Command is " + Arrays.toString(popServer.toArray()));
 
+            System.out.println("[AM] Starting process");
             ProcessBuilder pb = new ProcessBuilder(popServer);
-
             popProcess = pb.start();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 String out;
