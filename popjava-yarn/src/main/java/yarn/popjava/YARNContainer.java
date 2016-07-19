@@ -79,12 +79,6 @@ public class YARNContainer {
      * Start the JobManager and then the POP Main class
      */
     private void startMainContainer() {
-        // give it time to start
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-        }
-
         // Init POP-Java
         POPSystem.jobService = new POPAccessPoint(jobManagerAP);
         POPSystem.setStarted();
@@ -115,21 +109,6 @@ public class YARNContainer {
             // tell everyone to finish their tasks
             appRoutine.waitAndQuit();
         }
-    }
-
-    /**
-     * Take a list of object and turn it into a String to use as parameter
-     *
-     * @param args [ E1, E2, ... ]
-     * @return E1.toString E2.toString ...
-     */
-    private String groupList(List args) {
-        StringBuilder out = new StringBuilder();
-        for (Object arg : args) {
-            out.append(arg.toString()).append(" ");
-        }
-
-        return out.toString();
     }
 
     /**

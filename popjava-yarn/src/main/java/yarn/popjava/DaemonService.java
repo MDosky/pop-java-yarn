@@ -52,9 +52,6 @@ public class DaemonService {
         thread.setName("POP-Java Daemon");
         
         thread.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {}
         System.out.println("[DM] Started POP Daemon on " + di.toString());
     }
 
