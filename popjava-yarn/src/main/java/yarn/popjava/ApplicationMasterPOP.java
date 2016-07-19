@@ -71,7 +71,7 @@ public class ApplicationMasterPOP extends POPObject {
         new JCommander(this, args);
     }
 
-    @POPSyncConc
+    @POPAsyncConc
     public void setup() {
         configuration = new YarnConfiguration();
         
@@ -87,16 +87,6 @@ public class ApplicationMasterPOP extends POPObject {
         
         // start as thread
         PopJava.getThis(this).startCentralServers();
-    }
-    
-    @POPSyncConc
-    public void setServer(String task, String jobm) {
-        System.out.println("Setting up " + task + " " + jobm);
-        
-        taskServer = task;
-        jobManager = jobm;
-        
-        ready = true;
     }
     
     @POPSyncConc
@@ -179,17 +169,22 @@ public class ApplicationMasterPOP extends POPObject {
             ProcessBuilder pb = new ProcessBuilder(popServer);
             pb.inheritIO();
             
-            System.out.println("[AM] Started");
+            System.out.println("[AM] Started process");
             popProcess = pb.start();
+            
+            System.out.println("[AM] Getting servers");
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
+                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
+                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
+                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
+            }
+            System.out.println("[AM] Servers are: " + taskServer + " " + jobManager);
+            ready = true;
+            
             System.out.println("[AM] Waiting for completation");
             popProcess.waitFor();
             System.out.println("[AM] Process is completed, application should close");
-//            System.out.println("[AM] Process started, printing its stdout to stderr");
-//            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-//                String out;
-//                while ((out = reader.readLine()) != null)
-//                    System.err.println(out);
-//            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

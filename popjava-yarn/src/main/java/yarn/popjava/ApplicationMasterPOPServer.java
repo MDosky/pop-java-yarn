@@ -19,6 +19,8 @@ import yarn.popjava.command.TaskServer;
  */
 @POPClass(isDistributable = false)
 public class ApplicationMasterPOPServer {
+    public static final String TASK = "TASK_SERVER_AP=";
+    public static final String JOBM = "JOBM_SERVER_AP=";
     
     public static void main(String[] args) throws InterruptedException {
         
@@ -40,8 +42,10 @@ public class ApplicationMasterPOPServer {
         System.out.println("[POPServer] Status Changed");
         
         System.out.println("[POPServer] Setting servers addresses in AppMaster");
-        // set server
-        amp.setServer(taskServer.getAccessPoint().toString(), jobManager.getAccessPoint().toString());
+        // set server by using known strings
+        System.out.println(TASK + taskServer.getAccessPoint());
+        System.out.println(JOBM + jobManager.getAccessPoint());
+        
         System.out.println("[POPServer] Addresses set");
         
         System.out.println("[POPServer] Waiting for application to die");
