@@ -44,6 +44,8 @@ public class ApplicationMasterPOP {
     private String jobManager;
     
     private AtomicInteger requestedContainers = new AtomicInteger();
+    
+    private boolean ready = false;
 
     @Parameter(names = "--dir", required = true)
     private String hdfs_dir;
@@ -84,20 +86,35 @@ public class ApplicationMasterPOP {
         // start as thread
         PopJava.getThis(this).startCentralServers();
     }
-
+    
+    @POPSyncSeq
+    public void setServer(String task, String jobm) {
+        System.out.println("Setting up " + task + " " + jobm);
+        
+        taskServer = task;
+        jobManager = jobm;
+        
+        ready = true;
+    }
+    
     @POPSyncConc
+    public boolean isReady() {
+        return ready;
+    }
+
+    @POPSyncSeq
     public void runMainLoop() {
+        if(!ready)
+            return;
+        
         try {
-            // wait for Central Servers to be up
-            Thread.sleep(5000);
-            
             // set servers
             rmCallback.setServer(taskServer, jobManager);
             
             // Register with ResourceManager
-            System.out.println("[AM] registerApplicationMaster 0");
+            System.out.println("[AM] registerApplicationMaster 0%");
             rmClient.registerApplicationMaster("", 0, "");
-            System.out.println("[AM] registerApplicationMaster 1");
+            System.out.println("[AM] registerApplicationMaster 100%");
             
             for (int i = 0; i < askedContainers; i++) {
                 PopJava.getThis(this).requestContainer(memory, vcores);
@@ -108,10 +125,10 @@ public class ApplicationMasterPOP {
                 Thread.sleep(100);
             }
             
-            System.out.println("[AM] unregisterApplicationMaster 0");
+            System.out.println("[AM] unregisterApplicationMaster 0%");
             // Un-register with ResourceManager
             rmClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", "");
-            System.out.println("[AM] unregisterApplicationMaster 1");
+            System.out.println("[AM] unregisterApplicationMaster 100%");
         } catch (InterruptedException | YarnException | IOException ex) {
             ex.printStackTrace();
         }
@@ -149,7 +166,8 @@ public class ApplicationMasterPOP {
                 System.getProperty("java.home") + "/bin/java",
                 "-javaagent:popjava.jar",
                 "-cp", "popjava.jar:pop-app.jar",
-                ApplicationMasterPOPServer.class.getName()
+                ApplicationMasterPOPServer.class.getName(),
+                PopJava.getAccessPoint(this).toString()
         );
 
         ProcessBuilder pb = new ProcessBuilder(popServer);
@@ -158,11 +176,6 @@ public class ApplicationMasterPOP {
             popProcess = pb.start();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 String out;
-                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK));
-                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
-                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM));
-                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
-
                 while ((out = reader.readLine()) != null) {
                     System.err.println(out);
                 }

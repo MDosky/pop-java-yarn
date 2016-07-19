@@ -14,6 +14,8 @@ public class ApplicationMasterAsync {
     public static void main(String[] args) throws InterruptedException {
         ApplicationMasterPOP master = new ApplicationMasterPOP(args);
         master.setup();
+        while(!master.isReady())
+            Thread.sleep(100);
         master.runMainLoop();
     }
 }

@@ -7,6 +7,7 @@ package yarn.popjava;
 
 import popjava.PopJava;
 import popjava.annotation.POPClass;
+import popjava.baseobject.POPAccessPoint;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
 import yarn.popjava.command.POPAppStatus;
@@ -18,10 +19,10 @@ import yarn.popjava.command.TaskServer;
  */
 @POPClass(isDistributable = false)
 public class ApplicationMasterPOPServer {
-    public static final String TASK = "TASK_SERVER_AP=";
-    public static final String JOBM = "JOBM_SERVER_AP=";
     
     public static void main(String[] args) throws InterruptedException {
+        ApplicationMasterPOP amp = PopJava.newActive(ApplicationMasterPOP.class, new POPAccessPoint(args[0]));
+        
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
@@ -32,9 +33,9 @@ public class ApplicationMasterPOPServer {
         // server status, waiting
         taskServer.setStatus(POPAppStatus.WAITING);
         
-        // printout to share
-        System.out.println(TASK + taskServer.getAccessPoint());
-        System.out.println(JOBM + jobManager.getAccessPoint());
+        
+        // set server
+        amp.setServer(taskServer.getAccessPoint().toString(), jobManager.getAccessPoint().toString());
         
         while(!taskServer.getStatus().isKill()) {
             Thread.sleep(1000);
