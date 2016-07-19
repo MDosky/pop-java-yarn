@@ -1,9 +1,9 @@
 package yarn.popjava.command;
 
+import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
-import popjava.annotation.POPSyncMutex;
 import popjava.base.POPObject;
 import popjava.jobmanager.POPJavaJobManager;
 
@@ -26,13 +26,13 @@ public class TaskServer extends POPObject {
         this.jm = jm;
     }
     
-    @POPSyncMutex
+    @POPAsyncConc
     public void registerDaemon(String di) {
         jm.registerDaemon(di);
         System.out.println("[TS] Registering service " + di);
     }
     
-    @POPSyncMutex
+    @POPAsyncConc
     public void setStatus(POPAppStatus status) {
         System.out.println("set status " + status);
         this.status = status;
