@@ -172,11 +172,12 @@ public class ApplicationMasterPOP extends POPObject {
             System.out.println("[AM] Command is " + Arrays.toString(popServer.toArray()));
 
             System.out.println("[AM] Starting process");
-            ProcessBuilder pb = new ProcessBuilder(popServer);
-            pb.inheritIO();
             
             // temporarery replate system stdout with ouwn to catch APs
             System.setOut(new InterceptOutput(strout));
+            
+            ProcessBuilder pb = new ProcessBuilder(popServer);
+            pb.inheritIO();
             
             System.out.println("[AM] Started process");
             popProcess = pb.start();
@@ -197,7 +198,7 @@ public class ApplicationMasterPOP extends POPObject {
     
     private class InterceptOutput extends PrintStream {
 
-        private int n = 0;
+        private boolean t, j;
         
         public InterceptOutput(OutputStream os) {
             super(os, true);
@@ -205,19 +206,19 @@ public class ApplicationMasterPOP extends POPObject {
 
         @Override
         public void print(String string) {
-            super.print(string);
+            super.print("[Override] " + string);
             
             if(string != null) {
                 if(string.startsWith(ApplicationMasterPOPServer.TASK)) {
                     taskServer = string.substring(ApplicationMasterPOPServer.TASK.length());
-                    n++;
+                    t = true;
                 }
                 if(string.startsWith(ApplicationMasterPOPServer.JOBM)) {
                     jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
-                    n++;
+                    j = true;
                 }
                 
-                if(n == 2) 
+                if(t && j) 
                     resetStream();
             }
         }
