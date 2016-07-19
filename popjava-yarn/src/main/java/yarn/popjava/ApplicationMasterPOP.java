@@ -177,15 +177,19 @@ public class ApplicationMasterPOP extends POPObject {
 
             System.out.println("[AM] Starting process");
             ProcessBuilder pb = new ProcessBuilder(popServer);
-            pb.redirectError(pb.redirectOutput());
+            pb.inheritIO();
             
+            System.out.println("[AM] Started");
             popProcess = pb.start();
-            System.out.println("[AM] Process started, printing its stdout to stderr");
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-                String out;
-                while ((out = reader.readLine()) != null)
-                    System.err.println(out);
-            }
+            System.out.println("[AM] Waiting for completation");
+            popProcess.waitFor();
+            System.out.println("[AM] Process is completed, application should close");
+//            System.out.println("[AM] Process started, printing its stdout to stderr");
+//            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
+//                String out;
+//                while ((out = reader.readLine()) != null)
+//                    System.err.println(out);
+//            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
