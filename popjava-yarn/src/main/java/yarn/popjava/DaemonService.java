@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 import popjava.baseobject.POPAccessPoint;
-import popjava.service.DaemonInfo;
+import popjava.jobmanager.ServiceConnector;
 import popjava.service.POPJavaDeamon;
 import popjava.system.POPSystem;
 import yarn.popjava.command.AppRoutine;
@@ -17,7 +17,7 @@ import yarn.popjava.command.AppRoutine;
 public class DaemonService {
     
     private POPJavaDeamon daemon;
-    private DaemonInfo di;
+    private ServiceConnector di;
     
     private static final Random rnd = new SecureRandom();
 
@@ -35,12 +35,12 @@ public class DaemonService {
         mainService.start();
         // server address
         AppRoutine appRoutine = new AppRoutine(args[0]);
-        appRoutine.registerDaemon(mainService.di.toString());
+        appRoutine.registerService(mainService.di);
         appRoutine.waitAndQuit();
     }
 
     private DaemonService() {
-        di = new DaemonInfo(generatePassword());
+        di = new ServiceConnector(generatePassword());
     }
 
     private void start() {
