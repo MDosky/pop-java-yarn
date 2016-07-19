@@ -1,5 +1,6 @@
 package ch.heia.pop.yarn.example;
 
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import popjava.annotation.POPClass;
@@ -57,9 +58,8 @@ public class NoSpec {
         }
 
         @POPSyncSeq
-        public long aaa() {
-            System.out.println("aaa write aaa");
-            return System.currentTimeMillis();
+        public Date aaa() {
+            return new Date();
         }
     }
 
