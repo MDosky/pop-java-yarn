@@ -36,7 +36,6 @@ public class ApplicationMasterPOPServer {
         System.out.println("[POPServer] Setting App Status as ACCEPTED");
         // server status, waiting
         taskServer.setStatus(POPAppStatus.ACCEPTED);
-        System.out.println("[POPServer] Status Changed");
         
         System.out.println("[POPServer] Setting servers addresses in AppMaster");
         // set server by using known strings

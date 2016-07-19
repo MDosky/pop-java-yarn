@@ -175,13 +175,13 @@ public class ApplicationMasterPOP extends POPObject {
             ProcessBuilder pb = new ProcessBuilder(popServer);
             pb.inheritIO();
             
+            // temporarery replate system stdout with ouwn to catch APs
+            System.setOut(new InterceptOutput(strout));
+            
             System.out.println("[AM] Started process");
             popProcess = pb.start();
             
             System.out.println("[AM] Getting servers");
-            
-            // temporarery replate system stdout with ouwn to catch APs
-            System.setOut(new InterceptOutput(strout));
 
             popProcess.waitFor();
         } catch (Exception ex) {
