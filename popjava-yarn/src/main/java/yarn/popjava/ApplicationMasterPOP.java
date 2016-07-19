@@ -4,8 +4,11 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -173,14 +176,29 @@ public class ApplicationMasterPOP extends POPObject {
             popProcess = pb.start();
             
             System.out.println("[AM] Getting servers");
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
-                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK))
-                    System.err.println("Faux read tsk: " + taskServer);
-                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
-                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM))
-                    System.err.println("Faux read jbm: " + jobManager);
-                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
-            }
+            
+            // temporarery replate system stdout with ouwn
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(baos);
+            PrintStream stdout = System.out;
+            
+            //System.setOut(ps);
+            
+            System.out.println(popProcess.getErrorStream());
+            System.out.println(popProcess.getInputStream());
+            System.out.println(popProcess.getOutputStream());
+            
+//            try (BufferedReader reader = new BufferedReader(new ByteArrayInputStream())) {
+//                while (!(taskServer = reader.readLine()).startsWith(ApplicationMasterPOPServer.TASK))
+//                    System.err.println("Faux read tsk: " + taskServer);
+//                taskServer = taskServer.substring(ApplicationMasterPOPServer.TASK.length());
+//                while (!(jobManager = reader.readLine()).startsWith(ApplicationMasterPOPServer.JOBM))
+//                    System.err.println("Faux read jbm: " + jobManager);
+//                jobManager = jobManager.substring(ApplicationMasterPOPServer.JOBM.length());
+//            }
+            
+            System.setOut(stdout);
+            
             System.out.println("[AM] Servers are: " + taskServer + " " + jobManager);
             ready = true;
             
