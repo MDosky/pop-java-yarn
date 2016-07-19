@@ -21,27 +21,27 @@ public class NoSpec {
 
             System.out.println("first");
             aaa = new AAA();
-            System.out.println(aaa.aaa());
+            System.out.println(new Date(aaa.aaa()));
             Thread.sleep(5000);
             
             System.out.println("second");
             aaa = new AAA();
-            System.out.println(aaa.aaa());
+            System.out.println(new Date(aaa.aaa()));
             Thread.sleep(5000);
             
             System.out.println("third");
             aaa = new AAA();
-            System.out.println(aaa.aaa());
+            System.out.println(new Date(aaa.aaa()));
             Thread.sleep(5000);
             
             System.out.println("forth");
             aaa = new AAA();
-            System.out.println(aaa.aaa());
+            System.out.println(new Date(aaa.aaa()));
             Thread.sleep(5000);
             
             System.out.println("fifth");
             aaa = new AAA();
-            System.out.println(aaa.aaa());
+            System.out.println(new Date(aaa.aaa()));
 
             System.out.println("end app");
         } catch (InterruptedException ex) {
@@ -58,8 +58,8 @@ public class NoSpec {
         }
 
         @POPSyncSeq
-        public Date aaa() {
-            return new Date();
+        public long aaa() {
+            return System.currentTimeMillis();
         }
     }
 
