@@ -177,8 +177,8 @@ public class ApplicationMasterPOP extends POPObject {
             System.out.println("[AM] Started process");
             popProcess = pb.start();
 
-            printStream(popProcess.getInputStream(), true, false);
-            printStream(popProcess.getErrorStream(), true, true);
+            this.printStream(popProcess.getInputStream(), true, false);
+            this.printStream(popProcess.getErrorStream(), true, true);
 
             System.out.println("[AM] Getting servers");
 
