@@ -5,8 +5,13 @@ This project contains two sub-projects, an extension to the original pop-java an
 
 POP-Java doesn't currently have a online maven repository, it's necessary to install it manually in the local.
 `$ cd pop-java`
+
 `$ ant`
+
 `$ mvn install:install-file -Dfile=build/jar/popjava.jar -DgroupId=popjava -DartifactId=popjava -Dversion=1.0 -Dpackaging=jar`
+
 `$ cd ../pop-java-yarn`
+
 `$ mvn install`
+
 This procedure will compile the standard popjava and make it available to other projects.
