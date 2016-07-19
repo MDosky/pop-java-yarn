@@ -177,7 +177,10 @@ public class ApplicationMasterPOP extends POPObject {
 
             System.out.println("[AM] Starting process");
             ProcessBuilder pb = new ProcessBuilder(popServer);
+            pb.redirectError(pb.redirectOutput());
+            
             popProcess = pb.start();
+            System.out.println("[AM] Process started, printing its stdout to stderr");
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(popProcess.getInputStream()))) {
                 String out;
                 while ((out = reader.readLine()) != null)
