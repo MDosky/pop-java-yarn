@@ -30,6 +30,7 @@ import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
+import popjava.jobmanager.POPJavaJobManager;
 
 /**
  *
@@ -48,7 +49,7 @@ public class ApplicationMasterPOP extends POPObject {
     private String taskServer;
     private String jobManager;
 
-    private AtomicInteger requestedContainers = new AtomicInteger();
+    private final AtomicInteger requestedContainers = new AtomicInteger();
 
     private boolean ready = false;
 
@@ -138,6 +139,10 @@ public class ApplicationMasterPOP extends POPObject {
      */
     @POPAsyncConc
     public void requestContainer(int memory, int vcores) {
+        // kind of sanitize
+        memory = memory < 256 ? 256 : memory;
+        vcores = vcores < 1 ? 1 : vcores;
+        
         // Priority for worker containers - priorities are intra-application
         Priority priority = Records.newRecord(Priority.class);
         priority.setPriority(0);
@@ -177,8 +182,8 @@ public class ApplicationMasterPOP extends POPObject {
             System.out.println("[AM] Started process");
             popProcess = pb.start();
 
-            this.printStream(popProcess.getInputStream(), 1, false);
-            this.printStream(popProcess.getErrorStream(), -1, true);
+            this.printStream(popProcess.getInputStream(), true);
+            this.printStream(popProcess.getErrorStream(), false);
 
             System.out.println("[AM] Getting servers");
 
@@ -192,12 +197,12 @@ public class ApplicationMasterPOP extends POPObject {
      * Print a stream and handle it if required.
      * Not a POP method because InputStream is not serializable.
      * @param is
-     * @param parse
+     * @param parseServer
      * @param err 
      */
-    private void printStream(InputStream is, int parse, boolean err) {
+    private void printStream(InputStream is, boolean parseServer) {
         new Thread(() -> {
-            PrintStream pw = err ? System.err : System.out;
+            final PrintStream pw = !parseServer ? System.err : System.out;
 
             boolean t, j = t = false;
             String line;
@@ -205,26 +210,39 @@ public class ApplicationMasterPOP extends POPObject {
             try {
                 while ((line = br.readLine()) != null) {
                     // get servers
-                    if (parse == 1 && (!t || !j)) {
-                        if (line.startsWith(ApplicationMasterPOPServer.TASK)) {
-                            taskServer = line.substring(ApplicationMasterPOPServer.TASK.length());
-                            t = true;
+                    if (parseServer) {
+                        // server start setup
+                        if (!t || !j) {
+                            // get and set task server for containers
+                            if (line.startsWith(ApplicationMasterPOPServer.TASK)) {
+                                taskServer = line.substring(ApplicationMasterPOPServer.TASK.length());
+                                t = true;
+                            }
+                            // get and set jobmanager for containers
+                            else if (line.startsWith(ApplicationMasterPOPServer.JOBM)) {
+                                jobManager = line.substring(ApplicationMasterPOPServer.JOBM.length());
+                                j = true;
+                            }
+                            // both are set, main can now run
+                            if (t && j)
+                                ready = true;
                         }
-                        if (line.startsWith(ApplicationMasterPOPServer.JOBM)) {
-                            jobManager = line.substring(ApplicationMasterPOPServer.JOBM.length());
-                            j = true;
-                        }
-
-                        if (t && j) {
-                            ready = true;
-                        }
-                    }
-                    else if (parse == 2) {
                         
+                        // handle commands from JM written in sysout
+                        if (line.startsWith(POPJavaJobManager.MSG_ALLOC)) {
+                            // remove identifier
+                            line = line.substring(POPJavaJobManager.MSG_ALLOC.length());
+                            // get params
+                            String[] values = line.split("\\s+");
+                            int memory = (int) Float.parseFloat(values[0]);
+                            int power  = (int) Float.parseFloat(values[1]);
+                            
+                            // ask for new alloc
+                            PopJava.getThis(this).requestContainer(memory, vcores);
+                        }
                     }
-                    else {
-                        pw.println(line);
-                    }
+                    
+                    pw.println(line);
                 }
             } catch (IOException ex) {
             }
