@@ -79,6 +79,12 @@ public class YARNContainer {
      * Start the JobManager and then the POP Main class
      */
     private void startMainContainer() {
+        // give it time to start
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+        }
+
         // Init POP-Java
         POPSystem.jobService = new POPAccessPoint(jobManagerAP);
         POPSystem.setStarted();
