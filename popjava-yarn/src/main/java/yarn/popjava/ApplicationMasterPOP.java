@@ -229,9 +229,9 @@ public class ApplicationMasterPOP extends POPObject {
                         }
                         
                         // handle commands from JM written in sysout
-                        if (line.startsWith(POPJavaJobManager.MSG_ALLOC)) {
+                        if (line.startsWith(JobManagerAllocator.MSG_ALLOC)) {
                             // remove identifier
-                            line = line.substring(POPJavaJobManager.MSG_ALLOC.length()).trim();
+                            line = line.substring(JobManagerAllocator.MSG_ALLOC.length()).trim();
                             // get params
                             String[] values = line.split("\\s+");
                             int memory = (int) Float.parseFloat(values[0]);

@@ -27,8 +27,10 @@ public class ApplicationMasterPOPServer {
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
+        JobManagerAllocator jma = new JobManagerAllocator();
+        
         System.out.println("[POPServer] Starting servers");
-        jobManager = PopJava.newActive(POPJavaJobManager.class);
+        jobManager = PopJava.newActive(POPJavaJobManager.class, jma);
         POPSystem.jobService = jobManager.getAccessPoint();
         taskServer = PopJava.newActive(TaskServer.class, jobManager);
         System.out.println("[POPServer] Done");
