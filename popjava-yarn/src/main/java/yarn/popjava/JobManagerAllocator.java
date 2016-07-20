@@ -63,14 +63,4 @@ public class JobManagerAllocator implements ResourceAllocator {
         // add to counter
         await.release();
     }
-
-    @Override
-    public boolean serialize(POPBuffer popb) {
-        return true;
-    }
-
-    @Override
-    public boolean deserialize(POPBuffer popb) {
-        return true;
-    }
 }
