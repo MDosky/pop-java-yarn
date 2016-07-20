@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
+import popjava.buffer.POPBuffer;
 import popjava.dataswaper.ObjectDescriptionInput;
 import popjava.jobmanager.ResourceAllocator;
 import popjava.jobmanager.ServiceConnector;
@@ -61,5 +62,15 @@ public class JobManagerAllocator implements ResourceAllocator {
         services.add(service);
         // add to counter
         await.release();
+    }
+
+    @Override
+    public boolean serialize(POPBuffer popb) {
+        return true;
+    }
+
+    @Override
+    public boolean deserialize(POPBuffer popb) {
+        return true;
     }
 }
