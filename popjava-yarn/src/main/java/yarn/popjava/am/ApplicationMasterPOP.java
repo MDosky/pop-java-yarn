@@ -1,4 +1,4 @@
-package yarn.popjava;
+package yarn.popjava.am;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;

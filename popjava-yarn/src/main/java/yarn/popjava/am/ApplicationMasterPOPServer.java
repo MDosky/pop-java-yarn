@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package yarn.popjava;
+package yarn.popjava.am;
 
 import popjava.PopJava;
 import popjava.annotation.POPClass;

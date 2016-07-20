@@ -1,4 +1,4 @@
-package yarn.popjava;
+package yarn.popjava.am;
 
 import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;

@@ -1,4 +1,4 @@
-package yarn.popjava;
+package yarn.popjava.am;
 
 import java.util.LinkedList;
 import java.util.List;

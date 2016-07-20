@@ -1,4 +1,4 @@
-package yarn.popjava;
+package yarn.popjava.am;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.Records;
+import yarn.popjava.YARNContainer;
 
 /**
  *
