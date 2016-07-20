@@ -4,7 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import popjava.buffer.POPBuffer;
+import popjava.PopJava;
+import popjava.annotation.POPClass;
+import popjava.annotation.POPObjectDescription;
+import popjava.annotation.POPSyncConc;
+import popjava.annotation.POPSyncSeq;
+import popjava.base.POPObject;
+import popjava.baseobject.POPAccessPoint;
 import popjava.dataswaper.ObjectDescriptionInput;
 import popjava.jobmanager.ResourceAllocator;
 import popjava.jobmanager.ServiceConnector;
@@ -13,19 +19,29 @@ import popjava.jobmanager.ServiceConnector;
  *
  * @author Dosky
  */
-public class JobManagerAllocator implements ResourceAllocator {
+@POPClass
+public class JobManagerAllocator extends POPObject implements ResourceAllocator {
 
     private final List<ServiceConnector> services;
 
     private final AtomicInteger currentHost = new AtomicInteger();
 
     private final Semaphore await = new Semaphore(0, true);
-    private final Semaphore sync = new Semaphore(1, true);
+    
+    private final ApplicationMasterChannel channel;
 
-    public static final String MSG_ALLOC = "[JMC] alloc";
+//    public static final String MSG_ALLOC = "[JMC] alloc";
 
+    @POPObjectDescription(url = "localhost")
     public JobManagerAllocator() {
-        this.services = new LinkedList<>();
+        services = null;
+        channel = null;
+    }
+    
+    @POPObjectDescription(url = "localhost")
+    public JobManagerAllocator(String channelPapString) {
+        services = new LinkedList<>();
+        channel = PopJava.newActive(ApplicationMasterChannel.class, new POPAccessPoint(channelPapString));
     }
 
     /**
@@ -36,15 +52,14 @@ public class JobManagerAllocator implements ResourceAllocator {
      * @return
      */
     @Override
+    @POPSyncSeq
     public ServiceConnector getNextHost(ObjectDescriptionInput odi) {
         try {
-            sync.acquire();
             // out of bound, reset
             if (currentHost.get() >= services.size()) {
-                // write request to stdout, AM will catch it
-                System.out.println(String.format(MSG_ALLOC + " %f %f", odi.getMemoryReq(), odi.getMemoryReq()));
+                // write request in channel to AM
+                channel.requestContainer((int) odi.getMemoryReq(), (int) odi.getMemoryReq());
             }
-            sync.release();
             await.acquire();
         } catch (InterruptedException ex) {
         }
@@ -58,6 +73,7 @@ public class JobManagerAllocator implements ResourceAllocator {
      * @param service 
      */
     @Override
+    @POPSyncConc
     public void registerService(ServiceConnector service) {
         services.add(service);
         // add to counter

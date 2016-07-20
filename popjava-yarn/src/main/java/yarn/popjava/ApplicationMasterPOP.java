@@ -30,7 +30,6 @@ import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
 import popjava.base.POPObject;
-import popjava.jobmanager.POPJavaJobManager;
 
 /**
  *
@@ -50,6 +49,7 @@ public class ApplicationMasterPOP extends POPObject {
     private String jobManager;
 
     private final AtomicInteger requestedContainers = new AtomicInteger();
+    private ApplicationMasterChannel channel;
 
     private boolean ready = false;
 
@@ -88,6 +88,9 @@ public class ApplicationMasterPOP extends POPObject {
         rmClient = AMRMClientAsync.createAMRMClientAsync(100, rmCallback);
         rmClient.init(configuration);
         rmClient.start();
+        
+        // setup channel
+        channel = new ApplicationMasterChannel(getAccessPoint());
 
         // start as thread
         PopJava.getThis(this).startCentralServers();
@@ -157,6 +160,18 @@ public class ApplicationMasterPOP extends POPObject {
         System.out.println("[AM] Making reservation request " + requestedContainers.getAndIncrement());
         rmClient.addContainerRequest(containerAsk);
     }
+    
+    /**
+     * Setup servers AP and be ready to deploy
+     * @param task
+     * @param jobm 
+     */
+    @POPAsyncConc
+    public void setupServers(String task, String jobm) {
+        taskServer = task;
+        jobManager = jobm;
+        ready = true;
+    }
 
     /**
      * Start a clean version of POP-Java which will be used to create processes.
@@ -171,7 +186,7 @@ public class ApplicationMasterPOP extends POPObject {
                     "-javaagent:popjava.jar",
                     "-cp", "popjava.jar:pop-app.jar",
                     ApplicationMasterPOPServer.class.getName(),
-                    getAccessPoint().toString()
+                    PopJava.getAccessPoint(channel).toString()
             );
             System.out.println("[AM] Command is " + Arrays.toString(popServer.toArray()));
 
@@ -210,37 +225,37 @@ public class ApplicationMasterPOP extends POPObject {
             try {
                 while ((line = br.readLine()) != null) {
                     // get servers
-                    if (parseServer) {
-                        // server start setup
-                        if (!t || !j) {
-                            // get and set task server for containers
-                            if (line.startsWith(ApplicationMasterPOPServer.TASK)) {
-                                taskServer = line.substring(ApplicationMasterPOPServer.TASK.length());
-                                t = true;
-                            }
-                            // get and set jobmanager for containers
-                            else if (line.startsWith(ApplicationMasterPOPServer.JOBM)) {
-                                jobManager = line.substring(ApplicationMasterPOPServer.JOBM.length());
-                                j = true;
-                            }
-                            // both are set, main can now run
-                            if (t && j)
-                                ready = true;
-                        }
-                        
-                        // handle commands from JM written in sysout
-                        if (line.startsWith(JobManagerAllocator.MSG_ALLOC)) {
-                            // remove identifier
-                            line = line.substring(JobManagerAllocator.MSG_ALLOC.length()).trim();
-                            // get params
-                            String[] values = line.split("\\s+");
-                            int memory = (int) Float.parseFloat(values[0]);
-                            int power  = (int) Float.parseFloat(values[1]);
-                            
-                            // ask for new alloc
-                            PopJava.getThis(this).requestContainer(memory, vcores);
-                        }
-                    }
+//                    if (parseServer) {
+//                        // server start setup
+//                        if (!t || !j) {
+//                            // get and set task server for containers
+//                            if (line.startsWith(ApplicationMasterPOPServer.TASK)) {
+//                                taskServer = line.substring(ApplicationMasterPOPServer.TASK.length());
+//                                t = true;
+//                            }
+//                            // get and set jobmanager for containers
+//                            else if (line.startsWith(ApplicationMasterPOPServer.JOBM)) {
+//                                jobManager = line.substring(ApplicationMasterPOPServer.JOBM.length());
+//                                j = true;
+//                            }
+//                            // both are set, main can now run
+//                            if (t && j)
+//                                ready = true;
+//                        }
+//                        
+//                        // handle commands from JM written in sysout
+//                        if (line.startsWith(JobManagerAllocator.MSG_ALLOC)) {
+//                            // remove identifier
+//                            line = line.substring(JobManagerAllocator.MSG_ALLOC.length()).trim();
+//                            // get params
+//                            String[] values = line.split("\\s+");
+//                            int memory = (int) Float.parseFloat(values[0]);
+//                            int power  = (int) Float.parseFloat(values[1]);
+//                            
+//                            // ask for new alloc
+//                            PopJava.getThis(this).requestContainer(memory, vcores);
+//                        }
+//                    }
                     
                     pw.println(line);
                 }
