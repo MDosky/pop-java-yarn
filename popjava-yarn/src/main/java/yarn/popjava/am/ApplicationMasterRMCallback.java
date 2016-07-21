@@ -2,8 +2,12 @@ package yarn.popjava.am;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.Container;
 import org.apache.hadoop.yarn.api.records.ContainerLaunchContext;
@@ -23,8 +27,8 @@ import yarn.popjava.YARNContainer;
 public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHandler {
 
     private Container mainContainer = null;
-    private int lauchedContainers;
-    private int allocatedContainers;
+    private final AtomicInteger lauchedContainers = new AtomicInteger();
+    private final AtomicInteger allocatedContainers = new AtomicInteger();
 
     private final String hdfs_dir;
     private final int askedContainers;
@@ -52,6 +56,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         this.main = main;
         this.args = args;
     }
+    
+    List<Long> conList = new ArrayList<>();
+    Map<Long, String> conMap = new HashMap<>();
 
     @Override
     public void onContainersAllocated(List<Container> containers) {
@@ -62,12 +69,22 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         }
         // look for last container for main
         for (Container cont : containers) {
-            if (++allocatedContainers == askedContainers) {
+            if (allocatedContainers.incrementAndGet() == askedContainers) {
                 mainContainer = cont;
             }
         }
 
         for (Container container : containers) {
+            
+            long key = container.getId().getContainerId();
+            conList.add(key);
+            if(conMap.containsKey(key))
+               conMap.put(key, container.getId() + " ");
+            else
+                conMap.put(key, conMap.get(key) + container.getId() + " ");
+            
+            System.out.println("[RM] Check " + conList.size() + " =? " + conMap.size());
+            System.out.println("[RM] Check " + conMap.get(key));
 
             String mainStarter = "";
             // master container, who will start the main
@@ -81,7 +98,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                         + " -mainClass " + main + " " + argsString;
             }
 
-            System.out.println("[AM] Starting client");
+            System.out.println("[RM] Starting client");
             // Launch container by create ContainerLaunchContext
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
@@ -101,15 +118,15 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                     + ";"
             );
-            System.out.println("[AM] Executing: " + Arrays.toString(script.toArray(new String[0])));
+            System.out.println("[RM] Executing: " + Arrays.toString(script.toArray(new String[0])));
             ctx.setCommands(script);
 
-            System.out.println("[AM] Launching container " + container.getId());
+            System.out.println("[RM] Launching container " + container.getId());
             try {
                 nmClient.startContainer(container, ctx);
-                lauchedContainers++;
+                lauchedContainers.incrementAndGet();
             } catch (YarnException | IOException ex) {
-                System.err.println("[AM] Error launching container " + container.getId() + " " + ex);
+                System.err.println("[RM] Error launching container " + container.getId() + " " + ex);
             }
         }
     }
@@ -117,7 +134,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     @Override
     public void onContainersCompleted(List<ContainerStatus> statuses) {
         for (ContainerStatus status : statuses) {
-            System.out.println("[AM] Completed container " + status.getContainerId());
+            System.out.println("[RM] Completed container " + status.getContainerId());
             synchronized (this) {
                 numContainersToWaitFor--;
             }
@@ -139,9 +156,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
 
     @Override
     public float getProgress() {
-        if(lauchedContainers >= askedContainers)
+        if(lauchedContainers.get() >= askedContainers)
             return 1f;
-        return lauchedContainers / (float) askedContainers;
+        return lauchedContainers.get() / (float) askedContainers;
     }
 
     public boolean doneWithContainers() {
