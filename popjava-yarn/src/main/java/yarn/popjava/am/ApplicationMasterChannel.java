@@ -16,14 +16,15 @@ public class ApplicationMasterChannel {
     
     private final ApplicationMasterPOP master;
 
+    // this constructor shouldn't be used
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterChannel() {
         this.master = null;
     }
 
-    @POPObjectDescription(url = "localhost")
-    public ApplicationMasterChannel(POPAccessPoint master) {
-        this.master = PopJava.newActive(ApplicationMasterPOP.class, master);
+    @POPObjectDescription(url = "localhost")    
+    public ApplicationMasterChannel(String master) {
+        this.master = PopJava.newActive(ApplicationMasterPOP.class, new POPAccessPoint(master));
     }
     
     /**

@@ -90,7 +90,7 @@ public class ApplicationMasterPOP extends POPObject {
         rmClient.start();
         
         // setup channel
-        channel = new ApplicationMasterChannel(getAccessPoint());
+        channel = PopJava.newActive(ApplicationMasterChannel.class, getAccessPoint().toString());
 
         // start as thread
         PopJava.getThis(this).startCentralServers();
