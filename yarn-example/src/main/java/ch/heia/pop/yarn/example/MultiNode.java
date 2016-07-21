@@ -2,6 +2,7 @@ package ch.heia.pop.yarn.example;
 
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
+import popjava.system.POPSystem;
 
 /**
  *
@@ -12,7 +13,9 @@ public class MultiNode {
 
     public static void main(String[] args) {
         RemoteNode rn = new RemoteNode(10);
+        System.out.println("Starting creation...");
         int res = rn.doCreate();
+        System.out.print("End, result is ");
         System.out.println(res);
     }
     
@@ -33,6 +36,9 @@ public class MultiNode {
         public int doCreate() {
             if(remaining <= 0)
                 return 0;
+            
+            System.out.println("doCreate called on node " + POPSystem.getHostIP());
+            
             RemoteNode rn = new RemoteNode(remaining - 1);
             return remaining + rn.doCreate();
         }
