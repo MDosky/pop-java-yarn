@@ -13,46 +13,46 @@ public class JMAllocation {
 
     public static void main(String[] args) {
         System.out.println("Starting pop java app");
-        AAA aaa;
+        
+        TestClass instance;
 
-        System.out.println("first");
-        aaa = new AAA();
-        aaa.aaa();
-        System.out.println(new Date());
+        System.out.println("First");
+        instance = new TestClass();
+        report(instance.getMillis());
 
-        System.out.println("second");
-        aaa = new AAA();
-        aaa.aaa();
-        System.out.println(new Date());
+        System.out.println("Second");
+        instance = new TestClass();
+        report(instance.getMillis());
 
-        System.out.println("third");
-        aaa = new AAA();
-        aaa.aaa();
-        System.out.println(new Date());
+        System.out.println("Third");
+        instance = new TestClass();
+        report(instance.getMillis());
 
-        System.out.println("forth");
-        aaa = new AAA();
-        aaa.aaa();
-        System.out.println(new Date());
+        System.out.println("Forth");
+        instance = new TestClass();
+        report(instance.getMillis());
 
-        System.out.println("fifth");
-        aaa = new AAA();
-        aaa.aaa();
-        System.out.println(new Date());
+        System.out.println("Fifth");
+        instance = new TestClass();
+        report(instance.getMillis());
 
-        System.out.println("end app");
+        System.out.println("End app");
+    }
+    
+    private static void report(long millis) {
+        System.out.println("Remote Obj reported: " + new Date(millis));
+        System.out.println("Server time is     : " + new Date());
+        System.out.println();
     }
 
     @POPClass
-    public static class AAA {
+    public static class TestClass {
 
-        static int aAa = 1000;
-
-        public AAA() {
+        public TestClass() {
         }
 
         @POPSyncSeq
-        public long aaa() {
+        public long getMillis() {
             return System.currentTimeMillis();
         }
     }
