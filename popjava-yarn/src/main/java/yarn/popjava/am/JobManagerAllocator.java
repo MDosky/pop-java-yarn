@@ -30,8 +30,6 @@ public class JobManagerAllocator implements ResourceAllocator {
     
     private ApplicationMasterChannel channel;
 
-//    public static final String MSG_ALLOC = "[JMC] alloc";
-
     @POPObjectDescription(url = "localhost")
     public JobManagerAllocator() {
         services = new LinkedList<>();
@@ -52,13 +50,16 @@ public class JobManagerAllocator implements ResourceAllocator {
     @Override
     @POPSyncSeq
     public ServiceConnector getNextHost(ObjectDescriptionInput odi) {
+        System.out.println("[JMA] Request in");
         try {
             // out of bound, reset
             if (currentHost.get() >= services.size()) {
+                System.out.println("[JMA] Requesting new container");
                 // write request in channel to AM
                 channel.requestContainer((int) odi.getMemoryReq(), (int) odi.getMemoryReq());
             }
             await.acquire();
+            System.out.println("[JMA] Can acquire resource");
         } catch (InterruptedException ex) {
         }
 
@@ -73,6 +74,7 @@ public class JobManagerAllocator implements ResourceAllocator {
     @Override
     @POPSyncConc
     public void registerService(ServiceConnector service) {
+        System.out.println("[JMA] Adding service " + service);
         services.add(service);
         // add to counter
         await.release();
