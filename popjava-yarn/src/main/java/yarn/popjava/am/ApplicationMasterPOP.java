@@ -144,8 +144,8 @@ public class ApplicationMasterPOP {
     @POPAsyncConc
     public void requestContainer(int memory, int vcores) {
         // kind of sanitize
-        memory = memory < 256 ? 256 : memory;
-        vcores = vcores < 1 ? 1 : vcores;
+        memory = memory < 0 ? this.memory : memory;
+        vcores = vcores < 1 ? this.vcores : vcores;
         
         // Priority for worker containers - priorities are intra-application
         Priority priority = Records.newRecord(Priority.class);
