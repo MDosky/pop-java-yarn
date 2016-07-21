@@ -29,14 +29,13 @@ import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
-import popjava.base.POPObject;
 
 /**
  *
  * @author Dosky
  */
 @POPClass
-public class ApplicationMasterPOP extends POPObject {
+public class ApplicationMasterPOP {
 
     private Configuration configuration;
     private NMClient nmClient;
@@ -90,7 +89,7 @@ public class ApplicationMasterPOP extends POPObject {
         rmClient.start();
         
         // setup channel
-        channel = PopJava.newActive(ApplicationMasterChannel.class, getAccessPoint().toString());
+        channel = new ApplicationMasterChannel(PopJava.getAccessPoint(this));
 
         // start as thread
         PopJava.getThis(this).startCentralServers();

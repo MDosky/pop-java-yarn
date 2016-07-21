@@ -23,8 +23,8 @@ public class ApplicationMasterChannel {
     }
 
     @POPObjectDescription(url = "localhost")    
-    public ApplicationMasterChannel(String master) {
-        this.master = PopJava.newActive(ApplicationMasterPOP.class, new POPAccessPoint(master));
+    public ApplicationMasterChannel(POPAccessPoint master) {
+        this.master = PopJava.newActive(ApplicationMasterPOP.class, master);
     }
     
     /**
