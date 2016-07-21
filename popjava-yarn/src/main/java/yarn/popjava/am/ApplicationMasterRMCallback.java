@@ -57,9 +57,6 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         this.args = args;
     }
     
-    List<Long> conList = new ArrayList<>();
-    Map<Long, String> conMap = new HashMap<>();
-
     @Override
     public void onContainersAllocated(List<Container> containers) {
         synchronized (this) {
@@ -75,19 +72,6 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         }
 
         for (Container container : containers) {
-            
-            long key = container.getId().getContainerId();
-            conList.add(key);
-            if(!conMap.containsKey(key))
-                conMap.put(key, container.getId() + " ");
-            else
-                conMap.put(key, conMap.get(key) + container.getId() + " ");
-            
-            System.out.println("[RM] Check " + containers.size());
-            System.out.println("[RM] Check " + container.getResource().getMemory() + " " + container.getResource().getVirtualCores());
-            System.out.println("[RM] Check " + conList.size() + " =? " + conMap.size());
-            System.out.println("[RM] Check " + conMap.get(key));
-
             String mainStarter = "";
             // master container, who will start the main
             if (container == mainContainer) {
