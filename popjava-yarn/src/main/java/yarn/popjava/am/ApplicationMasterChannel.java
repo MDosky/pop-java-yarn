@@ -14,7 +14,7 @@ import popjava.baseobject.POPAccessPoint;
 @POPClass
 public class ApplicationMasterChannel {
     
-    private final ApplicationMasterPOP master;
+    private ApplicationMasterPOP master;
 
     // this constructor shouldn't be used
     @POPObjectDescription(url = "localhost")
