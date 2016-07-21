@@ -6,7 +6,10 @@ import popjava.jobmanager.ServiceConnector;
 import popjava.system.POPSystem;
 
 /**
- *
+ * This class offer some help handling the end of the application.
+ * We can wait for the application to finish or set the status of the application
+ * so it will finish and close all YARN's daemons.
+ * It mostly offer what TaskServer does, only this time it's local on the machine.
  * @author Dosky
  */
 public class AppRoutine {

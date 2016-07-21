@@ -3,12 +3,7 @@ package yarn.popjava.am;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +26,9 @@ import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
 
 /**
- *
+ * This class implement an asynchronous application master, thanks to
+ * AMRMClientAsync.
+ * It's also a ParClass so it can be passed around.
  * @author Dosky
  */
 @POPClass
@@ -76,6 +73,9 @@ public class ApplicationMasterPOP {
 
     @POPAsyncConc
     public void setup() {
+        if(askedContainers <= 0)
+            askedContainers = 1;
+        
         configuration = new YarnConfiguration();
 
         nmClient = NMClient.createNMClient();

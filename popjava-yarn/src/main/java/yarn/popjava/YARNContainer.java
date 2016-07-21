@@ -2,23 +2,19 @@ package yarn.popjava;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import popjava.baseobject.POPAccessPoint;
 import popjava.system.POPSystem;
 import popjava.util.Util;
 import yarn.popjava.command.AppRoutine;
 
 /**
- *
+ * This class is started on every allocated YARN container.
+ * Depending on the given attributes it will start a simple DaemonService that
+ * will register itself and accept object creation or also start a 
  * @author Dosky
  */
 public class YARNContainer {
@@ -64,12 +60,18 @@ public class YARNContainer {
         // start in parallel if it's the main class
         if (main) {
             String daemonCmd = System.getProperty("java.home") + "/bin/java -javaagent:popjava.jar -cp popjava.jar:pop-app.jar %s %s %s";
+            String cmdImp = String.format(daemonCmd, DaemonService.class.getName(), taskServerAP, "-jobservice=" + jobManagerAP);
             try {
-                runCmd(String.format(daemonCmd, DaemonService.class.getName(), taskServerAP, "-jobservice=" + jobManagerAP));
+                ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmdImp));
+                pb.redirectOutput(pb.redirectError());
+                pb.inheritIO();
+                Process popProcess = pb.start();
+                // don't wait, we have to execute the main class
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        } // start in the thread if there is only a single daemon
+        }
+        // start in the thread if there is no main class to start
         else {
             DaemonService.main(taskServerAP, "-jobservice=" + jobManagerAP);
         }
@@ -116,15 +118,4 @@ public class YARNContainer {
             appRoutine.waitAndQuit();
         }
     }
-
-    /**
-     * Run a given command string
-     *
-     * @param cmd A linux command
-     */
-    private void runCmd(String cmd) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(Util.splitTheCommand(cmd));
-        Process popProcess = pb.start();
-    }
-
 }

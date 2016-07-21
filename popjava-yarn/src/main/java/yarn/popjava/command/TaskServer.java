@@ -8,7 +8,9 @@ import popjava.jobmanager.POPJavaJobManager;
 import popjava.jobmanager.ServiceConnector;
 
 /**
- *
+ * Offer method to set or see the status of the application.
+ * It's also the link to the POPJavaJobManager so we can easily register
+ * ServiceConnectors to it.
  * @author Dosky
  */
 @POPClass

@@ -21,7 +21,7 @@ public class ApplicationMasterChannel {
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterChannel() {
     }
- 
+    
     @POPSyncConc
     public void setMaster(POPAccessPoint master) {
         this.master = PopJava.newActive(ApplicationMasterPOP.class, master);

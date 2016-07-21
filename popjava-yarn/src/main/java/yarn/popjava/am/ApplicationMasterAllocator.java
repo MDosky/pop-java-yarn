@@ -9,18 +9,21 @@ import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.annotation.POPSyncSeq;
-import popjava.base.POPObject;
 import popjava.baseobject.POPAccessPoint;
 import popjava.dataswaper.ObjectDescriptionInput;
 import popjava.jobmanager.ResourceAllocator;
 import popjava.jobmanager.ServiceConnector;
 
 /**
- *
+ * Implementation of a ResourceAllocator.
+ * This class need a POP Application Master Channel to be set to work.
+ * The Channel is meanly a rely to the AM which need a lot of the Hadoop library
+ * to work, by using a channel in the middle we don't need to include those
+ * libraries in our classpath, making the application a lot more lightweight.
  * @author Dosky
  */
 @POPClass
-public class JobManagerAllocator implements ResourceAllocator {
+public class ApplicationMasterAllocator implements ResourceAllocator {
 
     private List<ServiceConnector> services;
 
@@ -31,7 +34,7 @@ public class JobManagerAllocator implements ResourceAllocator {
     private ApplicationMasterChannel channel;
 
     @POPObjectDescription(url = "localhost")
-    public JobManagerAllocator() {
+    public ApplicationMasterAllocator() {
         services = new LinkedList<>();
     }
     
@@ -50,16 +53,16 @@ public class JobManagerAllocator implements ResourceAllocator {
     @Override
     @POPSyncSeq
     public ServiceConnector getNextHost(ObjectDescriptionInput odi) {
-        System.out.println("[JMA] Request in");
+        System.out.println("[JMA] Request incoming");
         try {
-            // out of bound, reset
+            // out of bound, ask for more resources
             if (currentHost.get() >= services.size()) {
                 System.out.println("[JMA] Requesting new container");
                 // write request in channel to AM
                 channel.requestContainer((int) odi.getMemoryReq(), (int) odi.getMemoryReq());
             }
             await.acquire();
-            System.out.println("[JMA] Can acquire resource");
+            System.out.println("[JMA] Resource is available");
         } catch (InterruptedException ex) {
         }
 

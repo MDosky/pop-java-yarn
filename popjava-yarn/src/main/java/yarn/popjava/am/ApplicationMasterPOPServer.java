@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package yarn.popjava.am;
 
 import popjava.PopJava;
@@ -14,7 +9,9 @@ import yarn.popjava.command.POPAppStatus;
 import yarn.popjava.command.TaskServer;
 
 /**
- *
+ * This class start the centralized servers
+ * The JM which will be passed to all daemons
+ * The TaskServer which keep track of the status of the application
  * @author Dosky
  */
 @POPClass(isDistributable = false)
@@ -34,11 +31,11 @@ public class ApplicationMasterPOPServer {
         
         System.out.println("[POPServer] Creating Job Allocator");
         // create allocator
-        JobManagerAllocator allocator = new JobManagerAllocator();
+        ApplicationMasterAllocator allocator = new ApplicationMasterAllocator();
         allocator.setChannel(channelAP);
         
         System.out.println("[POPServer] Starting servers");
-        jobManager = PopJava.newActive(POPJavaJobManager.class, JobManagerAllocator.class.getName(), PopJava.getAccessPoint(allocator));
+        jobManager = PopJava.newActive(POPJavaJobManager.class, ApplicationMasterAllocator.class.getName(), PopJava.getAccessPoint(allocator));
         POPSystem.jobService = jobManager.getAccessPoint();
         taskServer = new TaskServer(jobManager);
         System.out.println("[POPServer] Done");

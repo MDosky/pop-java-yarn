@@ -12,7 +12,7 @@ import popjava.system.POPSystem;
 import yarn.popjava.command.AppRoutine;
 
 /**
- * Start the POP-Java daemon
+ * Start a POP-Java daemon and kill at the end of the application
  * @author Dosky
  */
 public class DaemonService {

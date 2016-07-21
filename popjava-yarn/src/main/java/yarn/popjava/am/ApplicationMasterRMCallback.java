@@ -16,7 +16,8 @@ import org.apache.hadoop.yarn.util.Records;
 import yarn.popjava.YARNContainer;
 
 /**
- *
+ * This class is called by the RS when new containers are allocated and
+ * to know the overall status of the application.
  * @author Dosky
  */
 public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHandler {
@@ -33,8 +34,17 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     private String jobManager;
     private int numContainersToWaitFor = -1;
 
-    private NMClient nmClient;
+    private final NMClient nmClient;
 
+    /**
+     * Some information from the main class, where things are located and
+     * whatnot.
+     * @param nmClient
+     * @param hdfs_dir
+     * @param askedContainers
+     * @param main
+     * @param args 
+     */
     public ApplicationMasterRMCallback(NMClient nmClient, String hdfs_dir, int askedContainers, String main, List<String> args) {
         this.nmClient = nmClient;
         this.hdfs_dir = hdfs_dir;
@@ -129,9 +139,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
 
     @Override
     public float getProgress() {
-        if(lauchedContainers == 0)
-            return 0f;
-        return askedContainers / (float) lauchedContainers;
+        if(lauchedContainers >= askedContainers)
+            return 1f;
+        return lauchedContainers / (float) askedContainers;
     }
 
     public boolean doneWithContainers() {
