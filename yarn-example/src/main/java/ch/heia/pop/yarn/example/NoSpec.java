@@ -20,23 +20,28 @@ public class NoSpec {
 
         System.out.println("first");
         aaa = new AAA();
-        System.out.println(System.currentTimeMillis() - aaa.aaa());
+        aaa.aaa();
+        System.out.println(new Date());
 
         System.out.println("second");
         aaa = new AAA();
-        System.out.println(System.currentTimeMillis() - aaa.aaa());
+        aaa.aaa();
+        System.out.println(new Date());
 
         System.out.println("third");
         aaa = new AAA();
-        System.out.println(System.currentTimeMillis() - aaa.aaa());
+        aaa.aaa();
+        System.out.println(new Date());
 
         System.out.println("forth");
         aaa = new AAA();
-        System.out.println(System.currentTimeMillis() - aaa.aaa());
+        aaa.aaa();
+        System.out.println(new Date());
 
         System.out.println("fifth");
         aaa = new AAA();
-        System.out.println(System.currentTimeMillis() - aaa.aaa());
+        aaa.aaa();
+        System.out.println(new Date());
 
         System.out.println("end app");
     }
