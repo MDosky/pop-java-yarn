@@ -78,11 +78,12 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             
             long key = container.getId().getContainerId();
             conList.add(key);
-            if(conMap.containsKey(key))
-               conMap.put(key, container.getId() + " ");
+            if(!conMap.containsKey(key))
+                conMap.put(key, container.getId() + " ");
             else
                 conMap.put(key, conMap.get(key) + container.getId() + " ");
             
+            System.out.println("[RM] Check " + containers.size());
             System.out.println("[RM] Check " + conList.size() + " =? " + conMap.size());
             System.out.println("[RM] Check " + conMap.get(key));
 
