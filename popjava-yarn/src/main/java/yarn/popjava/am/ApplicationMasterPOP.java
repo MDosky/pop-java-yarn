@@ -89,7 +89,9 @@ public class ApplicationMasterPOP {
         rmClient.start();
         
         // setup channel
-        channel = new ApplicationMasterChannel(PopJava.getAccessPoint(this));
+        channel = new ApplicationMasterChannel();
+        System.out.println("This AP " + PopJava.getAccessPoint(this));
+        channel.setMaster(PopJava.getAccessPoint(this));
 
         // start as thread
         PopJava.getThis(this).startCentralServers();
