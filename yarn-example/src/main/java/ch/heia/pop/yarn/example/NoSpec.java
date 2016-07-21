@@ -1,11 +1,8 @@
 package ch.heia.pop.yarn.example;
 
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
-import popjava.system.POPSystem;
 
 /**
  *
