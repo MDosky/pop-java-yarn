@@ -3,6 +3,7 @@ package yarn.popjava.am;
 import popjava.PopJava;
 import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
+import popjava.annotation.POPObjectDescription;
 import popjava.baseobject.POPAccessPoint;
 
 /**
@@ -15,10 +16,12 @@ public class ApplicationMasterChannel {
     
     private final ApplicationMasterPOP master;
 
+    @POPObjectDescription(url = "localhost")
     public ApplicationMasterChannel() {
         this.master = null;
     }
 
+    @POPObjectDescription(url = "localhost")
     public ApplicationMasterChannel(POPAccessPoint master) {
         this.master = PopJava.newActive(ApplicationMasterPOP.class, master);
     }
