@@ -38,7 +38,7 @@ public class ApplicationMasterPOPServer {
         allocator.setChannel(channelAP);
         
         System.out.println("[POPServer] Starting servers");
-        jobManager = PopJava.newActive(POPJavaJobManager.class, JobManagerAllocator.class.getName(), PopJava.getAccessPoint(allocator));
+        jobManager = PopJava.newActive(POPJavaJobManager.class, PopJava.getAccessPoint(allocator).toString(), JobManagerAllocator.class.getName());
         POPSystem.jobService = jobManager.getAccessPoint();
         taskServer = new TaskServer(jobManager);
         System.out.println("[POPServer] Done");
