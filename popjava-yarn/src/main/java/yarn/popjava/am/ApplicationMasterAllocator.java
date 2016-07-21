@@ -2,6 +2,8 @@ package yarn.popjava.am;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import popjava.PopJava;
@@ -25,7 +27,7 @@ import popjava.jobmanager.ServiceConnector;
 @POPClass
 public class ApplicationMasterAllocator implements ResourceAllocator {
 
-    private List<ServiceConnector> services;
+    private Queue<ServiceConnector> services;
 
     private final AtomicInteger currentHost = new AtomicInteger();
 
@@ -35,7 +37,7 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
 
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterAllocator() {
-        services = new LinkedList<>();
+        services = new ConcurrentLinkedQueue<>();
     }
     
     @POPSyncSeq
@@ -67,7 +69,8 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
         }
 
         // linear allocation
-        return services.get(currentHost.getAndIncrement());
+        currentHost.getAndIncrement();
+        return services.poll();
     }
 
     /**
