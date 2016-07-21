@@ -75,6 +75,10 @@ public class ApplicationMasterPOP {
     public void setup() {
         if(askedContainers <= 0)
             askedContainers = 1;
+        if(memory < 1)
+            memory = 256;
+        if(vcores < 1)
+            vcores = 1;
         
         configuration = new YarnConfiguration();
 
@@ -144,7 +148,7 @@ public class ApplicationMasterPOP {
     @POPAsyncConc
     public void requestContainer(int memory, int vcores) {
         // kind of sanitize
-        memory = memory < 0 ? this.memory : memory;
+        memory = memory < 1 ? this.memory : memory;
         vcores = vcores < 1 ? this.vcores : vcores;
         
         // Priority for worker containers - priorities are intra-application
