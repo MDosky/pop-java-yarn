@@ -9,7 +9,7 @@ import popjava.annotation.POPSyncSeq;
  * @author Dosky
  */
 @POPClass(isDistributable = false)
-public class NoSpec {
+public class JMAllocation {
 
     public static void main(String[] args) {
         System.out.println("Starting pop java app");
