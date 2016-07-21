@@ -20,28 +20,26 @@ import popjava.jobmanager.ServiceConnector;
  * @author Dosky
  */
 @POPClass
-public class JobManagerAllocator extends POPObject implements ResourceAllocator {
+public class JobManagerAllocator implements ResourceAllocator {
 
-    private final List<ServiceConnector> services;
+    private List<ServiceConnector> services;
 
     private final AtomicInteger currentHost = new AtomicInteger();
 
     private final Semaphore await = new Semaphore(0, true);
     
-    private final ApplicationMasterChannel channel;
+    private ApplicationMasterChannel channel;
 
 //    public static final String MSG_ALLOC = "[JMC] alloc";
 
     @POPObjectDescription(url = "localhost")
     public JobManagerAllocator() {
-        services = null;
-        channel = null;
+        services = new LinkedList<>();
     }
     
-    @POPObjectDescription(url = "localhost")
-    public JobManagerAllocator(String channelPapString) {
-        services = new LinkedList<>();
-        channel = PopJava.newActive(ApplicationMasterChannel.class, new POPAccessPoint(channelPapString));
+    @POPSyncSeq
+    public void setChannel(POPAccessPoint pap) {
+        channel = PopJava.newActive(ApplicationMasterChannel.class, pap);
     }
 
     /**

@@ -4,7 +4,6 @@ import popjava.annotation.POPAsyncConc;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
-import popjava.base.POPObject;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.jobmanager.ServiceConnector;
 
@@ -13,7 +12,7 @@ import popjava.jobmanager.ServiceConnector;
  * @author Dosky
  */
 @POPClass
-public class TaskServer extends POPObject {
+public class TaskServer {
     
     private POPAppStatus status = POPAppStatus.WAITING;
     private POPJavaJobManager jm;

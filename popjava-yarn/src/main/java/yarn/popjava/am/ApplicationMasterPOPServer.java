@@ -27,17 +27,20 @@ public class ApplicationMasterPOPServer {
         TaskServer taskServer;
         POPJavaJobManager jobManager;
         
+        System.out.println("[POPServer] Connecting to channel");
         // connect to channel
         POPAccessPoint channelAP = new POPAccessPoint(args[0]);
         ApplicationMasterChannel channel = PopJava.newActive(ApplicationMasterChannel.class, channelAP);
         
+        System.out.println("[POPServer] Creating Job Allocator");
         // create allocator
-        JobManagerAllocator allocator = PopJava.newActive(JobManagerAllocator.class, channelAP.toString());
+        JobManagerAllocator allocator = new JobManagerAllocator();
+        allocator.setChannel(channelAP);
         
         System.out.println("[POPServer] Starting servers");
-        jobManager = PopJava.newActive(POPJavaJobManager.class, JobManagerAllocator.class, allocator.getAccessPoint());
+        jobManager = new POPJavaJobManager(JobManagerAllocator.class, PopJava.getAccessPoint(allocator));
         POPSystem.jobService = jobManager.getAccessPoint();
-        taskServer = PopJava.newActive(TaskServer.class, jobManager);
+        taskServer = new TaskServer(jobManager);
         System.out.println("[POPServer] Done");
         
         System.out.println("[POPServer] Setting App Status as ACCEPTED");
@@ -46,7 +49,7 @@ public class ApplicationMasterPOPServer {
         
         System.out.println("[POPServer] Setting servers addresses in AppMaster");
         // set server by using known strings
-        channel.setupServers(taskServer.getAccessPoint().toString(), jobManager.getAccessPoint().toString());
+        channel.setupServers(PopJava.getAccessPoint(taskServer).toString(), jobManager.getAccessPoint().toString());
         
         System.out.println("[POPServer] Addresses set");
         
