@@ -162,6 +162,9 @@ public class ApplicationMasterPOP {
         Resource capability = Records.newRecord(Resource.class);
         capability.setMemory(memory);
         capability.setVirtualCores(vcores);
+        
+        // add request to queue
+        rmCallback.addToResourceRequestPool(capability);
 
         // Make container requests to ResourceManager
         AMRMClient.ContainerRequest containerAsk = new AMRMClient.ContainerRequest(capability, null, null, priority);

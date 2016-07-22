@@ -4,15 +4,17 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.Container;
 import org.apache.hadoop.yarn.api.records.ContainerLaunchContext;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
 import org.apache.hadoop.yarn.api.records.NodeReport;
+import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -29,6 +31,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     private Container mainContainer = null;
     private final AtomicInteger lauchedContainers = new AtomicInteger();
     private final AtomicInteger allocatedContainers = new AtomicInteger();
+    private final AtomicInteger numContainersToWaitFor = new AtomicInteger(-1);
 
     private final String hdfs_dir;
     private final int askedContainers;
@@ -36,9 +39,12 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     private final List<String> args;
     private String taskServer;
     private String jobManager;
-    private int numContainersToWaitFor = -1;
 
     private final NMClient nmClient;
+    
+    private List<Resource> resourcesRequests = new ArrayList<>();
+    
+    private Semaphore mutex = new Semaphore(1);
 
     /**
      * Some information from the main class, where things are located and
@@ -59,23 +65,50 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     
     @Override
     public void onContainersAllocated(List<Container> containers) {
-        synchronized (this) {
-            if (numContainersToWaitFor == -1)
-                numContainersToWaitFor = 0;
-            numContainersToWaitFor += containers.size();
-        }
-        // look for last container for main
-        for (Container cont : containers) {
-            if (allocatedContainers.incrementAndGet() == askedContainers) {
-                mainContainer = cont;
+        // continue list
+        boolean[] canStart = new boolean[containers.size()];
+        
+        try {
+            mutex.acquire();
+
+            // look for last container for main
+            for (int i = 0; i < containers.size(); i++) {
+                Container cont = containers.get(i);
+                
+                if(resourcesRequests.contains(cont.getResource())) {
+                    // set to start
+                    canStart[i] = true;
+                    
+                    // remove from requests
+                    resourcesRequests.remove(cont.getResource());
+                    
+                    // look for main
+                    if (allocatedContainers.incrementAndGet() == askedContainers) {
+                        mainContainer = cont;
+                    }
+                    
+                    // increment to see the end
+                    if (numContainersToWaitFor.get() == -1)
+                        numContainersToWaitFor.set(1);
+                    else
+                        numContainersToWaitFor.incrementAndGet();
+                }
             }
-        }
-
-        for (Container container : containers) {
             
-            System.out.println("[RM] Check " + containers.size());
-            System.out.println("[RM] Check " + container.getResource().getMemory() + " " + container.getResource().getVirtualCores());
-
+            mutex.release();
+        } catch(InterruptedException e) {}
+        
+        for (int i = 0; i < containers.size(); i++) {
+            Container container = containers.get(i);
+            
+            // stop extra containers before they start
+            if(!canStart[i]) {
+                try {
+                    nmClient.stopContainer(container.getId(), container.getNodeId());
+                } catch (YarnException | IOException ex) { }
+                continue;
+            }
+            
             String mainStarter = "";
             // master container, who will start the main
             if (container == mainContainer) {
@@ -125,9 +158,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     public void onContainersCompleted(List<ContainerStatus> statuses) {
         for (ContainerStatus status : statuses) {
             System.out.println("[RM] Completed container " + status.getContainerId());
-            synchronized (this) {
-                numContainersToWaitFor--;
-            }
+            numContainersToWaitFor.decrementAndGet();
         }
     }
 
@@ -152,13 +183,19 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     }
 
     public boolean doneWithContainers() {
-        synchronized (this) {
-            return numContainersToWaitFor == 0;
-        }
+        return numContainersToWaitFor.get() == 0;
     }
 
     void setServer(String taskServer, String jobManager) {
         this.taskServer = taskServer;
         this.jobManager = jobManager;
+    }
+
+    void addToResourceRequestPool(Resource capability) {
+        try {
+            mutex.acquire();
+            resourcesRequests.add(capability);
+            mutex.release();
+        } catch (InterruptedException ex) { }
     }
 }
