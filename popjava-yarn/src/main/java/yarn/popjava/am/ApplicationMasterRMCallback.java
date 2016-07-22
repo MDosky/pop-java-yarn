@@ -45,9 +45,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
 
     private final NMClient nmClient;
     
-    private Map<Resource, List<AMRMClient.ContainerRequest>> resourcesRequests = new HashMap<>();
+    private final Map<Resource, List<AMRMClient.ContainerRequest>> resourcesRequests = new HashMap<>();
     
-    private Semaphore mutex = new Semaphore(1);
+    private final Semaphore mutex = new Semaphore(1, true);
 
     /**
      * Some information from the main class, where things are located and
