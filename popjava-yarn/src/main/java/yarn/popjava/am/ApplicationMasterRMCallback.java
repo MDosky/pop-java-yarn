@@ -75,6 +75,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         else
             numContainersToWaitFor.getAndAdd(containers.size());
         
+        // this lot is done because of this
+        // https://issues.apache.org/jira/browse/YARN-1902
+        // extra containers are arriving so we have to close them
         try {
             mutex.acquire();
 
