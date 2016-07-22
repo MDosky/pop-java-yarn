@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
@@ -43,7 +45,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
 
     private final NMClient nmClient;
     
-    private List<Resource> resourcesRequests = new ArrayList<>();
+    private Map<Resource, List<AMRMClient.ContainerRequest>> resourcesRequests = new HashMap<>();
     
     private Semaphore mutex = new Semaphore(1);
 
@@ -67,7 +69,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     @Override
     public void onContainersAllocated(List<Container> containers) {
         // continue list
-        boolean[] canStart = new boolean[containers.size()];
+        AMRMClient.ContainerRequest[] canStart = new AMRMClient.ContainerRequest[containers.size()];
         
         // keep track of all containers
         if (numContainersToWaitFor.get() == -1)
@@ -84,13 +86,14 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             // look for last container for main
             for (int i = 0; i < containers.size(); i++) {
                 Container cont = containers.get(i);
+                Resource res = cont.getResource();
                 
-                if(resourcesRequests.contains(cont.getResource())) {
+                if(resourcesRequests.containsKey(res) && !resourcesRequests.get(res).isEmpty()) {
                     // set to start
-                    canStart[i] = true;
+                    canStart[i] = resourcesRequests.get(res).get(0);
                     
                     // remove from requests
-                    resourcesRequests.remove(cont.getResource());
+                    resourcesRequests.get(res).remove(0);
                     
                     // look for main
                     if (allocatedContainers.incrementAndGet() == askedContainers) {
@@ -106,10 +109,13 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             Container container = containers.get(i);
             
             // stop extra containers before they start, why are they even here?!
-            if(!canStart[i]) {
+            if(canStart[i] == null) {
                 rmClient.releaseAssignedContainer(container.getId());
                 continue;
             }
+            
+            // remove request from client, it's allocated now
+            rmClient.removeContainerRequest(canStart[i]);
             
             String mainStarter = "";
             // master container, who will start the main
@@ -193,10 +199,12 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         this.jobManager = jobManager;
     }
 
-    void addToResourceRequestPool(Resource capability) {
+    void addToResourceRequestPool(AMRMClient.ContainerRequest request) {
         try {
             mutex.acquire();
-            resourcesRequests.add(capability);
+            if(!resourcesRequests.containsKey(request.getCapability()))
+                resourcesRequests.put(request.getCapability(), new ArrayList<>());
+            resourcesRequests.get(request.getCapability()).add(request);
             mutex.release();
         } catch (InterruptedException ex) { }
     }

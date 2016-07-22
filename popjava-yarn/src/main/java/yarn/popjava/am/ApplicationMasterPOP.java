@@ -162,11 +162,12 @@ public class ApplicationMasterPOP {
         capability.setMemory(memory);
         capability.setVirtualCores(vcores);
         
-        // add request to queue
-        rmCallback.addToResourceRequestPool(capability);
-
         // Make container requests to ResourceManager
         AMRMClient.ContainerRequest containerAsk = new AMRMClient.ContainerRequest(capability, null, null, priority);
+        
+        // add request to queue
+        rmCallback.addToResourceRequestPool(containerAsk);
+
         System.out.println("[AM] Making reservation request " + requestedContainers.getAndIncrement());
         rmClient.addContainerRequest(containerAsk);
     }
