@@ -29,8 +29,6 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
 
     private Queue<ServiceConnector> services;
 
-    private final AtomicInteger currentHost = new AtomicInteger();
-
     private final Semaphore await = new Semaphore(0, true);
     
     private ApplicationMasterChannel channel;
@@ -58,7 +56,7 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
         System.out.println("[JMA] Request incoming");
         try {
             // out of bound, ask for more resources
-            if (currentHost.get() >= services.size()) {
+            if (services.size() <= 0) {
                 System.out.println("[JMA] Requesting new container");
                 // write request in channel to AM
                 channel.requestContainer((int) odi.getMemoryReq(), (int) odi.getMemoryReq());
@@ -69,7 +67,6 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
         }
 
         // linear allocation
-        currentHost.getAndIncrement();
         return services.poll();
     }
 
