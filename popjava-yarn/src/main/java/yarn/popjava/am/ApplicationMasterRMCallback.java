@@ -7,14 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.records.Container;
 import org.apache.hadoop.yarn.api.records.ContainerLaunchContext;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
 import org.apache.hadoop.yarn.api.records.NodeReport;
 import org.apache.hadoop.yarn.api.records.Resource;
+import org.apache.hadoop.yarn.client.api.AMRMClient;
 import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -32,6 +31,8 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
     private final AtomicInteger lauchedContainers = new AtomicInteger();
     private final AtomicInteger allocatedContainers = new AtomicInteger();
     private final AtomicInteger numContainersToWaitFor = new AtomicInteger(-1);
+    
+    private AMRMClientAsync<AMRMClient.ContainerRequest> rmClient;
 
     private final String hdfs_dir;
     private final int askedContainers;
@@ -101,11 +102,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         for (int i = 0; i < containers.size(); i++) {
             Container container = containers.get(i);
             
-            // stop extra containers before they start
+            // stop extra containers before they start, why are they even here?!
             if(!canStart[i]) {
-                try {
-                    nmClient.stopContainer(container.getId(), container.getNodeId());
-                } catch (YarnException | IOException ex) { }
+                rmClient.releaseAssignedContainer(container.getId());
                 continue;
             }
             
@@ -197,5 +196,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             resourcesRequests.add(capability);
             mutex.release();
         } catch (InterruptedException ex) { }
+    }
+
+    void setRMClient(AMRMClientAsync<AMRMClient.ContainerRequest> rmClient) {
+        this.rmClient = rmClient;
     }
 }

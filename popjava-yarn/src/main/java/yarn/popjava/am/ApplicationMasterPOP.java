@@ -92,6 +92,8 @@ public class ApplicationMasterPOP {
         rmClient.init(configuration);
         rmClient.start();
         
+        rmCallback.setRMClient(rmClient);
+        
         // setup channel
         channel = new ApplicationMasterChannel();
         System.out.println("This AP " + PopJava.getAccessPoint(this));
