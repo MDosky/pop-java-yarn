@@ -14,26 +14,26 @@ public class JMAllocation {
     public static void main(String[] args) {
         System.out.println("Starting pop java app");
         
-        TestClass instance;
+        MyAllocator instance;
 
         System.out.println("First");
-        instance = new TestClass();
+        instance = new MyAllocator();
         report(instance.getMillis());
 
         System.out.println("Second");
-        instance = new TestClass();
+        instance = new MyAllocator();
         report(instance.getMillis());
 
         System.out.println("Third");
-        instance = new TestClass();
+        instance = new MyAllocator();
         report(instance.getMillis());
 
         System.out.println("Forth");
-        instance = new TestClass();
+        instance = new MyAllocator();
         report(instance.getMillis());
 
         System.out.println("Fifth");
-        instance = new TestClass();
+        instance = new MyAllocator();
         report(instance.getMillis());
 
         System.out.println("End app");
@@ -46,9 +46,9 @@ public class JMAllocation {
     }
 
     @POPClass
-    public static class TestClass {
+    public static class MyAllocator {
 
-        public TestClass() {
+        public MyAllocator() {
         }
 
         @POPSyncSeq
