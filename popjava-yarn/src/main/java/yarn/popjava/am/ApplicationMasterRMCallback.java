@@ -72,6 +72,10 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         }
 
         for (Container container : containers) {
+            
+            System.out.println("[RM] Check " + containers.size());
+            System.out.println("[RM] Check " + container.getResource().getMemory() + " " + container.getResource().getVirtualCores());
+
             String mainStarter = "";
             // master container, who will start the main
             if (container == mainContainer) {
