@@ -69,6 +69,12 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         // continue list
         boolean[] canStart = new boolean[containers.size()];
         
+        // keep track of all containers
+        if (numContainersToWaitFor.get() == -1)
+            numContainersToWaitFor.set(containers.size());
+        else
+            numContainersToWaitFor.getAndAdd(containers.size());
+        
         try {
             mutex.acquire();
 
@@ -87,12 +93,6 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     if (allocatedContainers.incrementAndGet() == askedContainers) {
                         mainContainer = cont;
                     }
-                    
-                    // increment to see the end
-                    if (numContainersToWaitFor.get() == -1)
-                        numContainersToWaitFor.set(1);
-                    else
-                        numContainersToWaitFor.incrementAndGet();
                 }
             }
             
