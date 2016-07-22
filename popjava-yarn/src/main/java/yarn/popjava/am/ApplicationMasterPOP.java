@@ -145,13 +145,10 @@ public class ApplicationMasterPOP {
      * @param memory
      * @param vcores
      */
-    private int m = 5;
     @POPAsyncConc
     public void requestContainer(int memory, int vcores) {
-        // check launched container
-        
         // kind of sanitize
-        memory = memory < 1 ? this.memory : 1024 * m++;
+        memory = memory < 1 ? this.memory : memory;
         vcores = vcores < 1 ? this.vcores : vcores;
         
         // Priority for worker containers - priorities are intra-application
