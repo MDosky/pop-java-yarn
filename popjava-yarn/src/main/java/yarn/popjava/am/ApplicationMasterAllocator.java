@@ -25,7 +25,7 @@ import popjava.jobmanager.ServiceConnector;
  * @author Dosky
  */
 @POPClass
-public class ApplicationMasterAllocator implements ResourceAllocator {
+public class ApplicationMasterAllocator extends ResourceAllocator {
 
     private Queue<ServiceConnector> services;
 
@@ -39,8 +39,8 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
     }
     
     @POPSyncSeq
-    public void setChannel(POPAccessPoint pap) {
-        channel = PopJava.newActive(ApplicationMasterChannel.class, pap);
+    public void setChannel(ApplicationMasterChannel amc) {
+        channel = amc;
     }
 
     /**
@@ -50,7 +50,6 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
      * @param odi
      * @return
      */
-    @Override
     @POPSyncSeq
     public ServiceConnector getNextHost(ObjectDescriptionInput odi) {
         System.out.println("[JMA] Request incoming");
@@ -74,7 +73,6 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
      * Register a service for maybe latter use
      * @param service 
      */
-    @Override
     @POPSyncConc
     public void registerService(ServiceConnector service) {
         System.out.println("[JMA] Adding service " + service);
