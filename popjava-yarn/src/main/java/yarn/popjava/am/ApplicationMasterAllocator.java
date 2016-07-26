@@ -22,7 +22,7 @@ import popjava.jobmanager.ServiceConnector;
  * @author Dosky
  */
 @POPClass
-public class ApplicationMasterAllocator extends ResourceAllocator {
+public class ApplicationMasterAllocator implements ResourceAllocator {
 
     private Queue<ServiceConnector> services;
 

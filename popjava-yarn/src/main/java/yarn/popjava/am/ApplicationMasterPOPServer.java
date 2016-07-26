@@ -2,6 +2,7 @@ package yarn.popjava.am;
 
 import popjava.PopJava;
 import popjava.annotation.POPClass;
+import popjava.base.POPException;
 import popjava.baseobject.POPAccessPoint;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.system.POPSystem;
@@ -16,7 +17,7 @@ import yarn.popjava.command.TaskServer;
  */
 @POPClass(isDistributable = false)
 public class ApplicationMasterPOPServer {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, POPException, ClassNotFoundException {
         
         TaskServer taskServer;
         POPJavaJobManager jobManager;
@@ -32,7 +33,7 @@ public class ApplicationMasterPOPServer {
         allocator.setChannel(channelAP);
         
         System.out.println("[POPServer] Starting servers");
-        jobManager = new POPJavaJobManager(allocator);
+        jobManager = new POPJavaJobManager(allocator.getClass().getName(), PopJava.getAccessPoint(allocator));
         POPSystem.jobService = PopJava.getAccessPoint(jobManager);
         taskServer = new TaskServer(jobManager);
         System.out.println("[POPServer] Done");
