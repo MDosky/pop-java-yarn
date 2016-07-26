@@ -16,6 +16,9 @@ import yarn.popjava.command.TaskServer;
  */
 @POPClass(isDistributable = false)
 public class ApplicationMasterPOPServer {
+    public static final String TASK = "TASK_SERVER_AP=";
+    public static final String JOBM = "JOBM_SERVER_AP=";
+    
     public static void main(String[] args) throws InterruptedException {
         
         TaskServer taskServer;
@@ -32,8 +35,8 @@ public class ApplicationMasterPOPServer {
         allocator.setChannel(channelAP);
         
         System.out.println("[POPServer] Starting servers");
-        jobManager = new POPJavaJobManager(allocator);
-        POPSystem.jobService = PopJava.getAccessPoint(jobManager);
+        jobManager = PopJava.newActive(POPJavaJobManager.class, ApplicationMasterAllocator.class.getName(), PopJava.getAccessPoint(allocator));
+        POPSystem.jobService = jobManager.getAccessPoint();
         taskServer = new TaskServer(jobManager);
         System.out.println("[POPServer] Done");
         
@@ -43,7 +46,7 @@ public class ApplicationMasterPOPServer {
         
         System.out.println("[POPServer] Setting servers addresses in AppMaster");
         // set server by using known strings
-        channel.setupServers(PopJava.getAccessPoint(taskServer).toString(), POPSystem.jobService.toString());
+        channel.setupServers(PopJava.getAccessPoint(taskServer).toString(), jobManager.getAccessPoint().toString());
         
         System.out.println("[POPServer] Addresses set");
         

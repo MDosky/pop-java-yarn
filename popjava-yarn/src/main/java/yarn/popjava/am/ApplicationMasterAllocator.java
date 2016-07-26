@@ -1,8 +1,11 @@
 package yarn.popjava.am;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;
@@ -22,7 +25,7 @@ import popjava.jobmanager.ServiceConnector;
  * @author Dosky
  */
 @POPClass
-public class ApplicationMasterAllocator extends ResourceAllocator {
+public class ApplicationMasterAllocator implements ResourceAllocator {
 
     private Queue<ServiceConnector> services;
 
@@ -47,6 +50,7 @@ public class ApplicationMasterAllocator extends ResourceAllocator {
      * @param odi
      * @return
      */
+    @Override
     @POPSyncSeq
     public ServiceConnector getNextHost(ObjectDescriptionInput odi) {
         System.out.println("[JMA] Request incoming");
@@ -70,6 +74,7 @@ public class ApplicationMasterAllocator extends ResourceAllocator {
      * Register a service for maybe latter use
      * @param service 
      */
+    @Override
     @POPSyncConc
     public void registerService(ServiceConnector service) {
         System.out.println("[JMA] Adding service " + service);
