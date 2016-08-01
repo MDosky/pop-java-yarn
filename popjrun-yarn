@@ -206,4 +206,7 @@ fi
 # Start YARN client
 yarn jar "$popjava" --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
 
+# Cleanup by removing temp dir
+hdfs dfs -rm -R "$TMP_DIR"
+
 graceful_exit
