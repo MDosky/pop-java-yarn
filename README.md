@@ -6,11 +6,14 @@ This project contains two sub-projects, an extension to the original pop-java an
 POP-Java doesn't currently have a online maven repository, it's necessary to install it manually in the local.
 
 ```sh
+$ git clone https://github.com/MDosky/pop-java.git
+$ git clone https://github.com/MDosky/pop-java-yarn.git
 $ cd pop-java
 $ ant
 $ mvn install:install-file -Dfile=build/jar/popjava.jar -DgroupId=popjava -DartifactId=popjava -Dversion=1.0 -Dpackaging=jar
 $ cd ../pop-java-yarn
 $ mvn install
+$ ./popjrun-yarn --pop popjava-yarn/target/popjava-yarn-1.0-jar-with-dependencies.jar --jar yarn-example/target/yarn-example-1.0-jar-with-dependencies.jar --main JMAllocation
 ```
 
 This procedure will compile the standard popjava and make it available to other projects.
