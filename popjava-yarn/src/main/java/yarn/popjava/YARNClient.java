@@ -98,11 +98,8 @@ public class YARNClient {
 
         // Setup jar for ApplicationMaster
         LocalResource appMasterJar = Records.newRecord(LocalResource.class);
-        LocalResource appJar = Records.newRecord(LocalResource.class);
         setupAppMasterJar(new Path(hdfs_dir + "/popjava.jar"), appMasterJar);
-        setupAppMasterJar(new Path(hdfs_dir + "/pop-app.jar"), appJar);
         Map<String, LocalResource> resources = new HashMap<>();
-        resources.put("pop-app.jar", appJar);
         resources.put("popjava.jar", appMasterJar);
         amContainer.setLocalResources(resources);
 

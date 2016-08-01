@@ -134,11 +134,20 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
-                    "hdfs dfs -copyToLocal " + hdfs_dir + "/pop-app.jar"
+                    // copy temp dir
+                      "hdfs dfs -copyToLocal " + hdfs_dir + "/*"
                     + ";",
-                    "hdfs dfs -copyToLocal " + hdfs_dir + "/popjava.jar"
+                    // create in case no script is present
+                      "touch premain.sh postmain.sh"
                     + ";",
-                    "$JAVA_HOME/bin/java"
+                    // make executable
+                      "chmod +x premain.sh postmain.sh"
+                    + ";",
+                    // execute premain user script
+                      "./premain.sh"
+                    + ";",
+                    // init container
+                      "$JAVA_HOME/bin/java"
                     + " -javaagent:popjava.jar"
                     + " -cp popjava.jar:pop-app.jar"
                     + " " + YARNContainer.class.getName()
@@ -147,6 +156,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + " " + mainStarter
                     + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                     + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                    + ";",
+                    // execute postmain user script
+                      "./postmain.sh"
                     + ";"
             );
             System.out.println("[RM] Executing: " + Arrays.toString(script.toArray(new String[0])));

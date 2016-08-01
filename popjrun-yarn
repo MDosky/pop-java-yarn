@@ -5,7 +5,7 @@
 # Copyright 2016
 # All rights reserved.
 #
-# Usage: popjrun-yarn [-h|--help] [-j|--jar] [-m|--main] [-C|--containers] [-c|--vcpu] [-M|--memory]
+# Usage: popjrun-yarn [-h|--help] [-j|--jar] [-m|--main] [-C|--containers] [-c|--vcpu] [-M|--memory] [--premain] [--postmain]
 #
 # Revision history:
 # 2016-06-22 Created script
@@ -48,7 +48,7 @@ is_numeric() {
 }
 
 usage() {
-  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-m|--memory] {-p|-pop} {-j|--jar} {-m|--main}"
+  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-m|--memory] [--premain] [--postmain] {-p|-pop} {-j|--jar} {-m|--main}"
 }
 
 help_message() {
@@ -66,6 +66,8 @@ help_message() {
   -c, --containers   How many containers should be deployed on the cluster.
   -t, --vcores       How many vCores should each container have.
   -M, --memory       How much Memory should each container have.
+  --premain          A script to execute on each container to setup the enviroment
+  --postmain         A script to execute after the program complete
 
   Extra arguments will be passed to the main class.
 
@@ -77,9 +79,9 @@ _EOF_
 trap "signal_exit TERM" TERM HUP
 trap "signal_exit INT"  INT
 
-containers=4
+containers=1
 vcpu=1
-memory=2048
+memory=3072
 
 args=
 
@@ -136,9 +138,27 @@ while [[ -n $1 ]]; do
         error_exit "The popjava jar file can't be found"
       fi
       ;;
-    -* | --*)
-      usage
-      error_exit "Unknown option $1" ;;
+	--premain)
+	  shift
+	  if [ -e "$1" ]
+	  then
+		premain="$1"
+	  else
+		error_exit "A premain script was set but not found"
+	  fi
+	  ;;
+	--postmain)
+	  shift
+	  if [ -e "$1" ]
+	  then
+		postmain="$1"
+	  else
+		error_exit "A postmain script was set but not found"
+	  fi
+	  ;;
+#    -* | --*)
+#      usage
+#      error_exit "Unknown option $1" ;;
     *)
       args="$args "$1"" ;;
   esac
@@ -173,10 +193,17 @@ hdfs dfs -mkdir "$TMP_DIR"
 hdfs dfs -copyFromLocal "$jar" "${TMP_DIR}/pop-app.jar"
 hdfs dfs -copyFromLocal "$popjava" "${TMP_DIR}/popjava.jar"
 
+# Pre and Post main scripts
+if [ -n "$premain" ]
+then
+	hdfs dfs -copyFromLocal "$premain" "${TMP_DIR}/premain.sh"
+fi
+if [ -n "$postmain" ]
+then
+	hdfs dfs -copyFromLocal "$postmain" "${TMP_DIR}/postmain.sh"
+fi
+
 # Start YARN client
 yarn jar "$popjava" --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
-
-# Cleanup by removing temp dir
-hdfs dfs -rm -R "$TMP_DIR"
 
 graceful_exit

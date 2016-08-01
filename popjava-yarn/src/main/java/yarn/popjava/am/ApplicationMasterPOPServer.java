@@ -16,8 +16,6 @@ import yarn.popjava.command.TaskServer;
  */
 @POPClass(isDistributable = false)
 public class ApplicationMasterPOPServer {
-    public static final String TASK = "TASK_SERVER_AP=";
-    public static final String JOBM = "JOBM_SERVER_AP=";
     
     public static void main(String[] args) throws InterruptedException {
         
