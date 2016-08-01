@@ -160,10 +160,10 @@ public class YARNClient {
                 YarnConfiguration.YARN_APPLICATION_CLASSPATH,
                 YarnConfiguration.DEFAULT_YARN_APPLICATION_CLASSPATH)) {
             Apps.addToEnvironment(appMasterEnv, Environment.CLASSPATH.name(),
-                    c.trim(), ":");
+                    c.trim(), File.pathSeparator);
         }
         Apps.addToEnvironment(appMasterEnv,
                 Environment.CLASSPATH.name(),
-                Environment.PWD.$() + File.separator + "*", ":");
+                Environment.PWD.$() + File.separator + "*", File.pathSeparator);
     }
 }
