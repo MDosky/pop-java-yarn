@@ -134,6 +134,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
+                    "if [ -e \"/tmp/AMdump\" ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;",
                     // copy temp dir
                       "hdfs dfs -copyToLocal " + hdfs_dir + "/*"
                     + ";",
