@@ -19,7 +19,7 @@ public class JMAllocation {
         int n;
         try {
             n = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             n = 20;
         }
 
