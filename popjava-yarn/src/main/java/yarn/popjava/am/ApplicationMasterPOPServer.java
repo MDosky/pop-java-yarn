@@ -1,6 +1,5 @@
 package yarn.popjava.am;
 
-import java.text.NumberFormat;
 import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.baseobject.POPAccessPoint;
@@ -48,24 +47,6 @@ public class ApplicationMasterPOPServer {
         channel.setupServers(PopJava.getAccessPoint(taskServer).toString(), jobManager.getAccessPoint().toString());
         
         System.out.println("[POPServer] Addresses set");
-        
-        
-        NumberFormat format = NumberFormat.getInstance();
-        new Thread(() -> {
-            while(true) {
-                Runtime runtime = Runtime.getRuntime();
-                StringBuilder sb = new StringBuilder();
-                long maxMemory = runtime.maxMemory();
-                long allocatedMemory = runtime.totalMemory();
-                long freeMemory = runtime.freeMemory();
-
-                System.out.format("[POPServerD] Max: %s, Alloc: %s, Free: %s\n", format.format(maxMemory / 1024), format.format(allocatedMemory / 1024), format.format(freeMemory / 1024));
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                }
-            }
-        }).start();
         
         System.out.println("[POPServer] Waiting for application to die");
         while(!taskServer.getStatus().isKill()) {
