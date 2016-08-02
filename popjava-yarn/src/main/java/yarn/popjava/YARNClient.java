@@ -84,8 +84,6 @@ public class YARNClient {
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
         amContainer.setCommands(Lists.newArrayList(
-                        "if [ -e /tmp/AMdump ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;",
-                
                           "$JAVA_HOME/bin/java"
                         + " -Xmx" + (memory / 2) + "M"
                         + " -XX:+HeapDumpOnOutOfMemoryError"
@@ -100,7 +98,8 @@ public class YARNClient {
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";"
+                        + ";",
+                        "if [ -e /tmp/AMdump ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;"
                 )
         );
 
