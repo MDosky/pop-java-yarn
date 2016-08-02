@@ -99,7 +99,7 @@ public class YARNClient {
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                         + ";",
                 
-                        "if [ -e \"/tmp/AMdump\" ]; than hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;"
+                        "if [ -e \"/tmp/AMdump\" ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;"
                 )
         );
 
