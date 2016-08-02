@@ -113,8 +113,8 @@ public class YARNClient {
 
         // Set up resource type requirements for ApplicationMaster
         Resource capability = Records.newRecord(Resource.class);
-        capability.setMemory(memory);
-        capability.setVirtualCores(vcores);
+        capability.setMemory(10240);
+        capability.setVirtualCores(1);
 
         // Finally, set-up ApplicationSubmissionContext for the application
         ApplicationSubmissionContext appContext
