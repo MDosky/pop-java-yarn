@@ -96,7 +96,8 @@ public class YARNClient {
                         + " --main " + main
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr",
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + ";",
                 
                         "if [ -e \"/tmp/AMdump\" ]; than hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;"
                 )
