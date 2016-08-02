@@ -12,7 +12,15 @@ import popjava.system.POPSystem;
 public class MultiNode {
 
     public static void main(String[] args) {
-        RemoteNode rn = new RemoteNode(10);
+        
+        int n;
+        try {
+            n = Integer.parseInt(args[0]);
+        } catch (Exception e) {
+            n = 10;
+        }
+        
+        RemoteNode rn = new RemoteNode(n);
         System.out.println("Starting creation...");
         int res = rn.doCreate();
         System.out.print("End, result is ");
