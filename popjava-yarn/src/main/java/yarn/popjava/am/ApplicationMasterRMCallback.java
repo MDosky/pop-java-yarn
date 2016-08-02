@@ -159,7 +159,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + ";",
                     // execute postmain user script
                       "./postmain.sh"
-                    + ";"
+                    + ";",
             );
             System.out.println("[RM] Executing: " + Arrays.toString(script.toArray(new String[0])));
             ctx.setCommands(script);
