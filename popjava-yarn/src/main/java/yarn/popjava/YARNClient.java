@@ -85,7 +85,7 @@ public class YARNClient {
                 = Records.newRecord(ContainerLaunchContext.class);
         amContainer.setCommands(Lists.newArrayList(
                           "$JAVA_HOME/bin/java"
-                        + " -Xmx" + (memory / 2) + "M"
+                        + " -Xmx5120M"
                         + " -XX:+HeapDumpOnOutOfMemoryError"
                         + " -XX:HeapDumpPath=/tmp/AMdump"
                         + " -javaagent:popjava.jar"
@@ -98,8 +98,7 @@ public class YARNClient {
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
-                        "if [ -e /tmp/AMdump ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;"
+                        + ";"
                 )
         );
 
@@ -120,7 +119,7 @@ public class YARNClient {
 
         // Set up resource type requirements for ApplicationMaster
         Resource capability = Records.newRecord(Resource.class);
-        capability.setMemory(memory);
+        capability.setMemory(10240);
         capability.setVirtualCores(1);
 
         // Finally, set-up ApplicationSubmissionContext for the application
