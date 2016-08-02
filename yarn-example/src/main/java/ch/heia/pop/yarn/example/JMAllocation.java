@@ -20,7 +20,7 @@ public class JMAllocation {
         try {
             n = Integer.parseInt(args[0]);
         } catch (Exception e) {
-            n = 20;
+            n = 50;
         }
 
         for (int i = 0; i < n; i++) {
