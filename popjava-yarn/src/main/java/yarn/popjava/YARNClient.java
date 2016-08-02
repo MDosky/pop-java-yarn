@@ -3,6 +3,7 @@ package yarn.popjava;
 import yarn.popjava.am.ApplicationMaster;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,7 +83,10 @@ public class YARNClient {
         // Set up the container launch context for the application master
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
-        amContainer.setCommands(Collections.singletonList("$JAVA_HOME/bin/java"
+        amContainer.setCommands(Lists.newArrayList("$JAVA_HOME/bin/java"
+                        + " -Xmx" + memory + "M"
+                        + " -XX:+HeapDumpOnOutOfMemoryError"
+                        + " -XX:HeapDumpPath=/tmp/AMdump"
                         + " -javaagent:popjava.jar"
                         + " " + ApplicationMaster.class.getName()
                         + " --dir " + hdfs_dir
@@ -92,7 +96,9 @@ public class YARNClient {
                         + " --main " + main
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
-                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                        + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr",
+                
+                        "if [ -e \"/tmp/AMdump\" ]; than hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi;"
                 )
         );
 
@@ -113,7 +119,7 @@ public class YARNClient {
 
         // Set up resource type requirements for ApplicationMaster
         Resource capability = Records.newRecord(Resource.class);
-        capability.setMemory(10240);
+        capability.setMemory(memory);
         capability.setVirtualCores(1);
 
         // Finally, set-up ApplicationSubmissionContext for the application
