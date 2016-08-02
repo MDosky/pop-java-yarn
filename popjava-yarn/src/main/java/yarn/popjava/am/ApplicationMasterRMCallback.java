@@ -148,6 +148,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + ";",
                     // init container
                       "$JAVA_HOME/bin/java"
+                    + " -Xmx1024M"
+                    + " -XX:+HeapDumpOnOutOfMemoryError"
+                    + " -XX:HeapDumpPath=/tmp/" + container.getId().getContainerId() + "dump"
                     + " -javaagent:popjava.jar"
                     + " -cp popjava.jar:pop-app.jar"
                     + " " + YARNContainer.class.getName()
@@ -159,7 +162,9 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + ";",
                     // execute postmain user script
                       "./postmain.sh"
-                    + ";"
+                    + ";",
+                        "if [ -e /tmp/" + container.getId().getContainerId() + "dump ]; then hdfs dfs -copyFromLocal /tmp//tmp/" + container.getId().getContainerId() + "dump /tmp/AMdump; rm /tmp//tmp/" + container.getId().getContainerId() + "dump; fi;"
+                      + ";"
             );
             System.out.println("[RM] Executing: " + Arrays.toString(script.toArray(new String[0])));
             ctx.setCommands(script);
