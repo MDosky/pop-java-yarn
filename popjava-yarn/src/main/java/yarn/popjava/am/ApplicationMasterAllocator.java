@@ -1,5 +1,6 @@
 package yarn.popjava.am;
 
+import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -36,6 +37,23 @@ public class ApplicationMasterAllocator implements ResourceAllocator {
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterAllocator() {
         services = new ConcurrentLinkedQueue<>();
+        
+        NumberFormat format = NumberFormat.getInstance();
+        new Thread(() -> {
+            while(true) {
+                Runtime runtime = Runtime.getRuntime();
+                StringBuilder sb = new StringBuilder();
+                long maxMemory = runtime.maxMemory();
+                long allocatedMemory = runtime.totalMemory();
+                long freeMemory = runtime.freeMemory();
+
+                System.out.format("[JMAD] Max: %s, Alloc: %s, Free: %s\n", format.format(maxMemory / 1024), format.format(allocatedMemory / 1024), format.format(freeMemory / 1024));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                }
+            }
+        }).start();
     }
     
     @POPSyncSeq

@@ -83,7 +83,7 @@ public class YARNClient {
         // Set up the container launch context for the application master
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
-        amContainer.setCommands(Lists.newArrayList(
+        amContainer.setCommands(Collections.singletonList(
                           "$JAVA_HOME/bin/java"
                         + " -Xmx5120M"
                         + " -XX:+HeapDumpOnOutOfMemoryError"
@@ -98,8 +98,6 @@ public class YARNClient {
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
-                          "if [ -e /tmp/AMdump ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi"
                         + ";"
                 )
         );
