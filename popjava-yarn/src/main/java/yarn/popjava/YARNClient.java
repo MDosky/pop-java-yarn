@@ -3,7 +3,6 @@ package yarn.popjava;
 import yarn.popjava.am.ApplicationMaster;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,11 +82,8 @@ public class YARNClient {
         // Set up the container launch context for the application master
         ContainerLaunchContext amContainer
                 = Records.newRecord(ContainerLaunchContext.class);
-        amContainer.setCommands(Lists.newArrayList(
+        amContainer.setCommands(Collections.singletonList(
                           "$JAVA_HOME/bin/java"
-                        + " -Xmx5120M"
-                        + " -XX:+HeapDumpOnOutOfMemoryError"
-                        + " -XX:HeapDumpPath=/tmp/AMdump"
                         + " -javaagent:popjava.jar"
                         + " " + ApplicationMaster.class.getName()
                         + " --dir " + hdfs_dir
@@ -98,8 +94,6 @@ public class YARNClient {
                         + " " + argsString
                         + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                         + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
-                        + ";",
-                          "if [ -e /tmp/AMdump ]; then hdfs dfs -copyFromLocal /tmp/AMdump /tmp/AMdump; rm /tmp/AMdump; fi"
                         + ";"
                 )
         );
