@@ -88,7 +88,7 @@ public class YARNContainer {
         }
 
         // Init POP-Java
-        POPSystem.jobService = new POPAccessPoint(jobManagerAP);
+        POPSystem.jobService.setAccessString(jobManagerAP);
         POPSystem.setStarted();
         // start the given main class
         AppRoutine appRoutine = new AppRoutine(taskServerAP);

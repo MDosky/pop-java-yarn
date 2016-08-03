@@ -30,7 +30,7 @@ public class DaemonService {
         if(args.length != 2)
             throw new IllegalArgumentException("Expected: TaskServer AP, JM AP");
         
-        POPSystem.jobService = new POPAccessPoint(args[1]);
+        POPSystem.jobService.setAccessString(args[1]);
         
         DaemonService mainService = new DaemonService();
         mainService.start();
