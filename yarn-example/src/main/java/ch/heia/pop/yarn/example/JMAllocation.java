@@ -14,8 +14,6 @@ public class JMAllocation {
     public static void main(String[] args) {
         System.out.println("Starting pop java app");
 
-        MyAllocator instance;
-
         int n;
         try {
             n = Integer.parseInt(args[0]);
@@ -25,7 +23,7 @@ public class JMAllocation {
 
         for (int i = 0; i < n; i++) {
             System.out.println("Run " + i);
-            instance = new MyAllocator();
+            MyAllocator instance = new MyAllocator();
             report(instance.getMillis(), instance.getContainer());
         }
 
