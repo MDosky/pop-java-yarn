@@ -25,6 +25,7 @@ public class JMAllocation {
             System.out.println("Run " + i);
             MyAllocator instance = new MyAllocator();
             report(instance.getMillis(), instance.getContainer());
+            System.gc();
         }
 
         System.out.println("End app");
