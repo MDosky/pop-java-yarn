@@ -1,11 +1,8 @@
 package yarn.popjava.am;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPObjectDescription;

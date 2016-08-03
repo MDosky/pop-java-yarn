@@ -2,9 +2,9 @@ package yarn.popjava.am;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -215,7 +215,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
         try {
             mutex.acquire();
             if(!resourcesRequests.containsKey(request.getCapability()))
-                resourcesRequests.put(request.getCapability(), new LinkedList<>());
+                resourcesRequests.put(request.getCapability(), new ArrayList<>());
             resourcesRequests.get(request.getCapability()).add(request);
             mutex.release();
         } catch (InterruptedException ex) { }
