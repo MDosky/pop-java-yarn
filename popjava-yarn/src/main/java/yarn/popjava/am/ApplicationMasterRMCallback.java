@@ -134,6 +134,11 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             ContainerLaunchContext ctx
                     = Records.newRecord(ContainerLaunchContext.class);
             List script = Lists.newArrayList(
+                    // add java to path
+                      "PATH=${JAVA_HOME}/bin/:$PATH"
+                    + ";",
+                      "export PATH"
+                    + ";",
                     // copy temp dir
                       "hdfs dfs -copyToLocal " + hdfs_dir + "/*"
                     + ";",
