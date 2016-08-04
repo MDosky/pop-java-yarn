@@ -67,13 +67,9 @@ public class ApplicationMasterPOP {
     }
 
     @POPObjectDescription(url = "localhost")
-    public ApplicationMasterPOP(String... args) {
+    public ApplicationMasterPOP(String[] args) {
         new JCommander(this, args);
         
-        for(String s : args) {
-            System.out.println("Arg: \""+s+"\"");
-        }
-        System.out.println();
         for(String s : this.args) {
             System.out.println("ArgL: \""+s+"\"");
         }
