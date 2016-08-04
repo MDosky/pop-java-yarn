@@ -12,13 +12,6 @@ import popjava.annotation.POPClass;
 public class ApplicationMaster {
 
     public static void main(String[] args) throws InterruptedException {
-        
-        
-        for(String s : args) {
-            System.out.println("Arg: \""+s+"\"");
-        }
-        System.out.println();
-        
         ApplicationMasterPOP master = new ApplicationMasterPOP(args);
         // setup app master
         master.setup();
