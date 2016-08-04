@@ -69,6 +69,20 @@ public class ApplicationMasterPOP {
     @POPObjectDescription(url = "localhost")
     public ApplicationMasterPOP(String... args) {
         new JCommander(this, args);
+        
+        for(String s : args) {
+            System.out.println("Arg: \""+s+"\"");
+        }
+        System.out.println();
+        for(String s : this.args) {
+            System.out.println("ArgL: \""+s+"\"");
+        }
+        
+        // POP-DNA hostname for JM
+        for(int i = 0; i < this.args.size(); i++) {
+            if(this.args.get(i).equals("nullhost"))
+                this.args.set(i, "");
+        }
     }
 
     @POPAsyncConc
