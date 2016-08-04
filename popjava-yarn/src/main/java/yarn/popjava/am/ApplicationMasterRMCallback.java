@@ -144,7 +144,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                       "chmod +x premain.sh postmain.sh"
                     + ";",
                     // execute premain user script
-                      "./premain.sh"
+                      "./premain.sh " + container.getId().getContainerId()
                     + ";",
                     // init container
                       "$JAVA_HOME/bin/java"
@@ -158,7 +158,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                     + ";",
                     // execute postmain user script
-                      "./postmain.sh"
+                      "./postmain.sh " + container.getId().getContainerId()
                     + ";"
             );
             System.out.println("[RM] Executing: " + Arrays.toString(script.toArray(new String[0])));
