@@ -76,7 +76,7 @@ public class YARNClient {
 
         String argsString = "";
         for (String s : args) {
-            argsString += s + " ";
+            argsString += " \"" + s + "\" ";
         }
 
         // Set up the container launch context for the application master

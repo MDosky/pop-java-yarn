@@ -122,7 +122,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
             if (container == mainContainer) {
                 String argsString = "";
                 for (String s : args) {
-                    argsString += s + " ";
+                    argsString += " \"" + s + "\" ";
                 }
                 
                 mainStarter = " -main "
