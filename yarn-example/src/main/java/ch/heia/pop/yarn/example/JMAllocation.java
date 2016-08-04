@@ -1,6 +1,7 @@
 package ch.heia.pop.yarn.example;
 
 import java.util.Date;
+import popjava.PopJava;
 import popjava.annotation.POPClass;
 import popjava.annotation.POPSyncSeq;
 
@@ -25,6 +26,7 @@ public class JMAllocation {
             System.out.println("Run " + i);
             MyAllocator instance = new MyAllocator();
             report(instance.getMillis(), instance.getContainer());
+            PopJava.destroy(instance);
         }
 
         System.out.println("End app");
