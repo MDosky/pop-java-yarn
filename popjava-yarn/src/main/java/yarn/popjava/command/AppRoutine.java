@@ -4,6 +4,7 @@ import popjava.PopJava;
 import popjava.baseobject.POPAccessPoint;
 import popjava.jobmanager.ServiceConnector;
 import popjava.system.POPSystem;
+import popjava.util.SystemUtil;
 
 /**
  * This class offer some help handling the end of the application.
@@ -27,9 +28,13 @@ public class AppRoutine {
     public void waitAndQuit() {
         int killStatus = -1;
         POPAppStatus status = null;
+        int objs;
+        boolean canDie = false;
         while(true) {
             try {
                 status = server.getStatus();
+                objs = server.runningObjects(SystemUtil.machineIdentifier());
+                
                 if(status != null && status.isKill()) {
                     switch(status) {
                         case FINISHED:
@@ -42,11 +47,17 @@ public class AppRoutine {
                             killStatus = 50;
                             break;
                     }
+                }
+                
+                // no more object running
+                if(objs > 0 && !canDie)
+                    canDie = true;
+                if(canDie && objs == 0)
+                    killStatus = 0;
 
-                    if(killStatus != -1) {
-                        POPSystem.end();
-                        System.exit(killStatus);
-                    }
+                if(killStatus != -1) {
+                    POPSystem.end();
+                    System.exit(killStatus);
                 }
             } catch(IllegalArgumentException ex) {
                 System.err.println("Failed to get Status, continue...");

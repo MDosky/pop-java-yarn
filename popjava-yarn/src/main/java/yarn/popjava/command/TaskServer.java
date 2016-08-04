@@ -6,6 +6,7 @@ import popjava.annotation.POPObjectDescription;
 import popjava.annotation.POPSyncConc;
 import popjava.jobmanager.POPJavaJobManager;
 import popjava.jobmanager.ServiceConnector;
+import popjava.util.SystemUtil;
 
 /**
  * Offer method to set or see the status of the application.
@@ -42,5 +43,10 @@ public class TaskServer {
     @POPSyncConc
     public POPAppStatus getStatus() {
         return status;
+    }
+    
+    @POPSyncConc
+    public int runningObjects(int identity) {
+        return jm.objectReport(identity);
     }
 }
