@@ -48,7 +48,7 @@ is_numeric() {
 }
 
 usage() {
-  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-m|--memory] [--premain] [--postmain] {-p|-pop} {-j|--jar} {-m|--main}"
+  echo -e "Usage: $PROGNAME [-h|--help] [-c|--containers] [-t|--vcpu] [-M|--memory] [--premain] [--postmain] {-p|-pop} {-j|--jar} {-m|--main}"
 }
 
 help_message() {
@@ -160,7 +160,8 @@ while [[ -n $1 ]]; do
 #      usage
 #      error_exit "Unknown option $1" ;;
     *)
-      args="$args "$1"" ;;
+#      args="$args "$1"" ;;
+       break;
   esac
   shift
 done
@@ -204,7 +205,7 @@ then
 fi
 
 # Start YARN client
-yarn jar "$popjava" --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" $args
+yarn jar "$popjava" --dir "hdfs://${TMP_DIR}" --vcores "$vcpu" --memory "$memory" --containers "$containers" --main "$main" "$@"
 
 # Cleanup by removing temp dir
 hdfs dfs -rm -R "$TMP_DIR"
