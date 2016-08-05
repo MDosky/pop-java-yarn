@@ -149,7 +149,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                       "chmod +x premain.sh postmain.sh"
                     + ";",
                     // execute premain user script
-                      "./premain.sh " + container.getId().getContainerId()
+                      ". premain.sh " + container.getId().getContainerId()
                     + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                     + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                     + ";",
@@ -165,7 +165,7 @@ public class ApplicationMasterRMCallback implements AMRMClientAsync.CallbackHand
                     + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                     + ";",
                     // execute postmain user script
-                      "./postmain.sh " + container.getId().getContainerId()
+                      ". postmain.sh " + container.getId().getContainerId()
                     + " 1>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout"
                     + " 2>>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                     + ";"
